@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Hot sun icon">
+  <defs>
+    <radialGradient id="sunGrad" cx="35%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#FFE66D"></stop>
+      <stop offset="60%" stop-color="#FFD54A"></stop>
+      <stop offset="100%" stop-color="#FFB300"></stop>
+    </radialGradient>
+  </defs>
+
+  <!-- Rays (one polygon rotated around center) -->
+  <g fill="#FF8C1A" transform="translate(0,0)">
+    <polygon points="32,4 26,20 38,20" transform="rotate(0 32 32)"></polygon>
+    <polygon points="32,4 26,20 38,20" transform="rotate(45 32 32)"></polygon>
+    <polygon points="32,4 26,20 38,20" transform="rotate(90 32 32)"></polygon>
+    <polygon points="32,4 26,20 38,20" transform="rotate(135 32 32)"></polygon>
+    <polygon points="32,4 26,20 38,20" transform="rotate(180 32 32)"></polygon>
+    <polygon points="32,4 26,20 38,20" transform="rotate(225 32 32)"></polygon>
+    <polygon points="32,4 26,20 38,20" transform="rotate(270 32 32)"></polygon>
+    <polygon points="32,4 26,20 38,20" transform="rotate(315 32 32)"></polygon>
+  </g>
+
+  <!-- Inner highlight circle -->
+  <circle cx="32" cy="32" r="14" fill="url(#sunGrad)" stroke="#E86A00" stroke-width="2"></circle>
+
+  <!-- subtle shine -->
+  <ellipse cx="36" cy="28" rx="6.5" ry="4" fill="#FFECB3" opacity="0.28"></ellipse>
+</svg>
