@@ -164,8 +164,3 @@ def get_co2_hist_data():
     df['Name'] = 'CO2_hist'
     return df[['Year', 'Name', 'Value']].sort_values(by='Year')
     
-
-if __name__ == "__main__":
-    #get_be_data()
-    get_cmip6_data()
-    #get_n2o_hist_data()

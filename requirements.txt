@@ -6,3 +6,4 @@ xarray
 datetime
 pathlib
 netcdf4
+openpyxl
