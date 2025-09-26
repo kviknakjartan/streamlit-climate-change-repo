@@ -2,18 +2,19 @@ import pandas as pd
 import requests
 import xarray as xr
 import streamlit as st
+from pathlib import Path
 
 BE_GLOBAL_URL = r'https://berkeley-earth-temperature.s3.us-west-1.amazonaws.com/Global/Land_and_Ocean_summary.txt'
 BE_ANTARCT_URL = r'https://berkeley-earth-temperature.s3.us-west-1.amazonaws.com/Regional/TAVG/antarctica-TAVG-Trend.txt'
-CO2_LATEST_PATH = r'data\\co2_annmean_gl.csv'
-CH4_LATEST_PATH = r'data\\ch4_annmean_gl.csv'
-N2O_LATEST_PATH = r'data\\n2o_annmean_gl.csv'
-OSMAN_PATH = r'data\\LGMR_GMST_climo.nc'
-CO2_HIST_PATH = r'data\\ghg-concentrations_fig-1.csv'
-CH4_HIST_PATH = r'data\\ghg-concentrations_fig-2.csv'
-N2O_HIST_PATH = r'data\\ghg-concentrations_fig-3.csv'
-PARRENIN_PATH = r'data\\ATS.tab'
-CMIP6_PATH = r'data\\global_mean_temp_data.xlsx'
+CO2_LATEST_PATH = Path("data/co2_annmean_gl.csv")
+CH4_LATEST_PATH = Path("data/ch4_annmean_gl.csv")
+N2O_LATEST_PATH = Path("data/n2o_annmean_gl.csv")
+OSMAN_PATH = Path("data/LGMR_GMST_climo.nc")
+CO2_HIST_PATH = Path("data/ghg-concentrations_fig-1.csv")
+CH4_HIST_PATH = Path("data/ghg-concentrations_fig-2.csv")
+N2O_HIST_PATH = Path("data/ghg-concentrations_fig-3.csv")
+PARRENIN_PATH = Path("data/ATS.tab")
+CMIP6_PATH = Path("data/global_mean_temp_data.xlsx")
 
 @st.cache_data()
 def get_cmip6_data():
