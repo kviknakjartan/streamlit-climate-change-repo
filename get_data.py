@@ -4,6 +4,8 @@ import xarray as xr
 import streamlit as st
 from pathlib import Path
 
+SEA_ICE_N_URL = r'https://noaadata.apps.nsidc.org/NOAA/G02135/north/monthly/data/'
+SEA_ICE_S_URL = r'https://noaadata.apps.nsidc.org/NOAA/G02135/south/monthly/data/'
 BE_GLOBAL_URL = r'https://berkeley-earth-temperature.s3.us-west-1.amazonaws.com/Global/Land_and_Ocean_summary.txt'
 BE_ANTARCT_URL = r'https://berkeley-earth-temperature.s3.us-west-1.amazonaws.com/Regional/TAVG/antarctica-TAVG-Trend.txt'
 CO2_LATEST_PATH = Path("data/co2_annmean_gl.csv")
@@ -15,6 +17,33 @@ CH4_HIST_PATH = Path("data/ghg-concentrations_fig-2.csv")
 N2O_HIST_PATH = Path("data/ghg-concentrations_fig-3.csv")
 PARRENIN_PATH = Path("data/ATS.tab")
 CMIP6_PATH = Path("data/global_mean_temp_data.xlsx")
+
+@st.cache_data()
+def get_sea_ice_data():
+    all_months_n_df = pd.DataFrame()
+    all_months_s_df = pd.DataFrame()
+    for month in range(1,13):
+        url_n = f"{SEA_ICE_N_URL}N_{month:02d}_extent_v4.0.csv"
+        url_s = f"{SEA_ICE_S_URL}S_{month:02d}_extent_v4.0.csv"
+        df_n = pd.read_csv(url_n, skipinitialspace=True)
+        df_s = pd.read_csv(url_s, skipinitialspace=True)
+        all_months_n_df = pd.concat([all_months_n_df, df_n])
+        all_months_s_df = pd.concat([all_months_s_df, df_s])
+        
+    # Find each hemisphere missing values and replace with estimations
+    for df in [all_months_n_df, all_months_s_df]:
+        df = df.rename(columns={'mo' : 'month'})
+        df['date'] = pd.to_datetime(df[['year', 'month']].assign(DAY=1))
+        df = df.set_index('date')
+        missing_idx = df[df['source_dataset'] == "-9999"].index
+        for i in missing_idx:
+            print(i)
+            next_datetime = df[df.index > i].index.min()
+            prev_datetime = df[df.index < i].index.max()
+            df.loc[i,'extent'] = (df.loc[next_datetime,'extent'] + df.loc[prev_datetime,'extent'])/2
+            df.loc[i,'area'] = (df.loc[next_datetime,'area'] + df.loc[prev_datetime,'area'])/2
+
+    return pd.concat([all_months_n_df, all_months_s_df])
 
 @st.cache_data()
 def get_cmip6_data():
@@ -164,3 +193,5 @@ def get_co2_hist_data():
     df['Name'] = 'CO2_hist'
     return df[['Year', 'Name', 'Value']].sort_values(by='Year')
     
+if __name__ == "__main__":
+    get_sea_ice_data()
