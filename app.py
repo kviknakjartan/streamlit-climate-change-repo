@@ -333,16 +333,16 @@ def create_cmip6_section():
 
     # Add traces
     fig1.add_trace(
-        go.Scatter(x=df_historical.loc[df['quantile'] == 0.5, 'year'], \
-            y=df_historical.loc[df['quantile'] == 0.5, 'tas'], name="historical 50th quantile",
+        go.Scatter(x=df_historical.loc[df_historical['quantile'] == 0.5, 'year'], \
+            y=df_historical.loc[df_historical['quantile'] == 0.5, 'tas'], name="historical 50th quantile",
             hovertemplate =
             'Value: %{y:.1f} °C'+
             '<br>Year: %{x:.0f}',
             line=dict(color='black'))
     )
     fig1.add_trace(
-        go.Scatter(x=df_historical.loc[df['quantile'] == 0.9, 'year'], \
-            y=df_historical.loc[df['quantile'] == 0.9, 'tas'], name="historical 10th/90th quantiles",
+        go.Scatter(x=df_historical.loc[df_historical['quantile'] == 0.9, 'year'], \
+            y=df_historical.loc[df_historical['quantile'] == 0.9, 'tas'], name="historical 10th/90th quantiles",
             hovertemplate =
             'Value: %{y:.1f} °C'+
             '<br>Year: %{x:.0f}',
@@ -350,8 +350,8 @@ def create_cmip6_section():
             showlegend=False)
     )
     fig1.add_trace(
-        go.Scatter(x=df_historical.loc[df['quantile'] == 0.1, 'year'], \
-            y=df_historical.loc[df['quantile'] == 0.1, 'tas'], name="historical 10th/90th quantiles",
+        go.Scatter(x=df_historical.loc[df_historical['quantile'] == 0.1, 'year'], \
+            y=df_historical.loc[df_historical['quantile'] == 0.1, 'tas'], name="historical 10th/90th quantiles",
             hovertemplate =
             'Value: %{y:.1f} °C'+
             '<br>Year: %{x:.0f}',
@@ -360,16 +360,16 @@ def create_cmip6_section():
             fillcolor = 'rgba(0, 0, 0, 0.2)')
     )
     fig1.add_trace(
-        go.Scatter(x=df_ssp126.loc[df['quantile'] == 0.5, 'year'], \
-            y=df_ssp126.loc[df['quantile'] == 0.5, 'tas'], name="SSP1-2.6 50th quantile",
+        go.Scatter(x=df_ssp126.loc[df_ssp126['quantile'] == 0.5, 'year'], \
+            y=df_ssp126.loc[df_ssp126['quantile'] == 0.5, 'tas'], name="SSP1-2.6 50th quantile",
             hovertemplate =
             'Value: %{y:.1f} °C'+
             '<br>Year: %{x:.0f}',
             line=dict(color='blue'))
     )
     fig1.add_trace(
-        go.Scatter(x=df_ssp126.loc[df['quantile'] == 0.9, 'year'], \
-            y=df_ssp126.loc[df['quantile'] == 0.9, 'tas'], name="SSP1-2.6 10th/90th quantiles",
+        go.Scatter(x=df_ssp126.loc[df_ssp126['quantile'] == 0.9, 'year'], \
+            y=df_ssp126.loc[df_ssp126['quantile'] == 0.9, 'tas'], name="SSP1-2.6 10th/90th quantiles",
             hovertemplate =
             'Value: %{y:.1f} °C'+
             '<br>Year: %{x:.0f}',
@@ -377,8 +377,8 @@ def create_cmip6_section():
             showlegend=False)
     )
     fig1.add_trace(
-        go.Scatter(x=df_ssp126.loc[df['quantile'] == 0.1, 'year'], \
-            y=df_ssp126.loc[df['quantile'] == 0.1, 'tas'], name="SSP1-2.6 10th/90th quantiles",
+        go.Scatter(x=df_ssp126.loc[df_ssp126['quantile'] == 0.1, 'year'], \
+            y=df_ssp126.loc[df_ssp126['quantile'] == 0.1, 'tas'], name="SSP1-2.6 10th/90th quantiles",
             hovertemplate =
             'Value: %{y:.1f} °C'+
             '<br>Year: %{x:.0f}',
@@ -387,16 +387,16 @@ def create_cmip6_section():
             fillcolor = 'rgba(0, 0, 255, 0.2)')
     )
     fig1.add_trace(
-        go.Scatter(x=df_ssp245.loc[df['quantile'] == 0.5, 'year'], \
-            y=df_ssp245.loc[df['quantile'] == 0.5, 'tas'], name="SSP2-4.5 50th quantile",
+        go.Scatter(x=df_ssp245.loc[df_ssp245['quantile'] == 0.5, 'year'], \
+            y=df_ssp245.loc[df_ssp245['quantile'] == 0.5, 'tas'], name="SSP2-4.5 50th quantile",
             hovertemplate =
             'Value: %{y:.1f} °C'+
             '<br>Year: %{x:.0f}',
             line=dict(color='green'))
     )
     fig1.add_trace(
-        go.Scatter(x=df_ssp245.loc[df['quantile'] == 0.9, 'year'], \
-            y=df_ssp245.loc[df['quantile'] == 0.9, 'tas'], name="SSP2-4.5 10th/90th quantiles",
+        go.Scatter(x=df_ssp245.loc[df_ssp245['quantile'] == 0.9, 'year'], \
+            y=df_ssp245.loc[df_ssp245['quantile'] == 0.9, 'tas'], name="SSP2-4.5 10th/90th quantiles",
             hovertemplate =
             'Value: %{y:.1f} °C'+
             '<br>Year: %{x:.0f}',
@@ -404,8 +404,8 @@ def create_cmip6_section():
             showlegend=False)
     )
     fig1.add_trace(
-        go.Scatter(x=df_ssp245.loc[df['quantile'] == 0.1, 'year'], \
-            y=df_ssp245.loc[df['quantile'] == 0.1, 'tas'], name="SSP2-4.5 10th/90th quantiles",
+        go.Scatter(x=df_ssp245.loc[df_ssp245['quantile'] == 0.1, 'year'], \
+            y=df_ssp245.loc[df_ssp245['quantile'] == 0.1, 'tas'], name="SSP2-4.5 10th/90th quantiles",
             hovertemplate =
             'Value: %{y:.1f} °C'+
             '<br>Year: %{x:.0f}',
@@ -414,16 +414,16 @@ def create_cmip6_section():
             fillcolor = 'rgba(0, 255, 0, 0.2)')
     )
     fig1.add_trace(
-        go.Scatter(x=df_ssp585.loc[df['quantile'] == 0.5, 'year'], \
-            y=df_ssp585.loc[df['quantile'] == 0.5, 'tas'], name="SSP5-8.5 50th quantile",
+        go.Scatter(x=df_ssp585.loc[df_ssp585['quantile'] == 0.5, 'year'], \
+            y=df_ssp585.loc[df_ssp585['quantile'] == 0.5, 'tas'], name="SSP5-8.5 50th quantile",
             hovertemplate =
             'Value: %{y:.1f} °C'+
             '<br>Year: %{x:.0f}',
             line=dict(color='red'))
     )
     fig1.add_trace(
-        go.Scatter(x=df_ssp585.loc[df['quantile'] == 0.9, 'year'], \
-            y=df_ssp585.loc[df['quantile'] == 0.9, 'tas'], name="SSP5-8.5 10th/90th quantiles",
+        go.Scatter(x=df_ssp585.loc[df_ssp585['quantile'] == 0.9, 'year'], \
+            y=df_ssp585.loc[df_ssp585['quantile'] == 0.9, 'tas'], name="SSP5-8.5 10th/90th quantiles",
             hovertemplate =
             'Value: %{y:.1f} °C'+
             '<br>Year: %{x:.0f}',
@@ -431,8 +431,8 @@ def create_cmip6_section():
             showlegend=False)
     )
     fig1.add_trace(
-        go.Scatter(x=df_ssp585.loc[df['quantile'] == 0.1, 'year'], \
-            y=df_ssp585.loc[df['quantile'] == 0.1, 'tas'], name="SSP5-8.5 10th/90th quantiles",
+        go.Scatter(x=df_ssp585.loc[df_ssp585['quantile'] == 0.1, 'year'], \
+            y=df_ssp585.loc[df_ssp585['quantile'] == 0.1, 'tas'], name="SSP5-8.5 10th/90th quantiles",
             hovertemplate =
             'Value: %{y:.1f} °C'+
             '<br>Year: %{x:.0f}',
