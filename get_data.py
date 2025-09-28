@@ -29,21 +29,19 @@ def get_sea_ice_data():
         df_s = pd.read_csv(url_s, skipinitialspace=True)
         all_months_n_df = pd.concat([all_months_n_df, df_n])
         all_months_s_df = pd.concat([all_months_s_df, df_s])
-        
-    # Find each hemisphere missing values and replace with estimations
-    for df in [all_months_n_df, all_months_s_df]:
-        df = df.rename(columns={'mo' : 'month'})
-        df['date'] = pd.to_datetime(df[['year', 'month']].assign(DAY=1))
-        df = df.set_index('date')
-        missing_idx = df[df['source_dataset'] == "-9999"].index
-        for i in missing_idx:
-            print(i)
-            next_datetime = df[df.index > i].index.min()
-            prev_datetime = df[df.index < i].index.max()
-            df.loc[i,'extent'] = (df.loc[next_datetime,'extent'] + df.loc[prev_datetime,'extent'])/2
-            df.loc[i,'area'] = (df.loc[next_datetime,'area'] + df.loc[prev_datetime,'area'])/2
+    df = pd.concat([all_months_n_df, all_months_s_df])
+    df = df.rename(columns={'mo' : 'month'})
+    df['date'] = pd.to_datetime(df[['year', 'month']].assign(DAY=1))
 
-    return pd.concat([all_months_n_df, all_months_s_df])
+    # For each hemisphere interpolate missing values, then do 12 month moving average
+    df = df.replace(-9999, float("NaN"))
+    df = df.sort_values(by=['region', 'date']).reset_index()
+    for region in ['N','S']:
+        df.loc[df['region'] == region, 'extent'] = df.loc[df['region'] == region, 'extent'].interpolate(method='spline', order=3)
+        df.loc[df['region'] == region, 'area'] = df.loc[df['region'] == region, 'area'].interpolate(method='spline', order=3)
+        df.loc[df['region'] == region,'ma_extent'] = df.loc[df['region'] == region,'extent'].rolling(window=12).mean()
+        df.loc[df['region'] == region,'ma_area'] = df.loc[df['region'] == region,'area'].rolling(window=12).mean()
+    return df
 
 @st.cache_data()
 def get_cmip6_data():
