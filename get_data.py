@@ -37,8 +37,8 @@ def get_sea_ice_data():
     df = df.replace(-9999, float("NaN"))
     df = df.sort_values(by=['region', 'date']).reset_index()
     for region in ['N','S']:
-        df.loc[df['region'] == region, 'extent'] = df.loc[df['region'] == region, 'extent'].interpolate(method='spline', order=3)
-        df.loc[df['region'] == region, 'area'] = df.loc[df['region'] == region, 'area'].interpolate(method='spline', order=3)
+        df.loc[df['region'] == region, 'extent'] = df.loc[df['region'] == region, 'extent'].interpolate()
+        df.loc[df['region'] == region, 'area'] = df.loc[df['region'] == region, 'area'].interpolate()
         df.loc[df['region'] == region,'ma_extent'] = df.loc[df['region'] == region,'extent'].rolling(window=12).mean()
         df.loc[df['region'] == region,'ma_area'] = df.loc[df['region'] == region,'area'].rolling(window=12).mean()
     return df

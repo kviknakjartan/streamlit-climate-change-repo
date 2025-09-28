@@ -35,8 +35,24 @@ fig1.add_trace(
         '<br>Date: %{x|%Y-%B}',
         line=dict(color='blue'))
 )
+fig1.add_trace(
+    go.Scatter(x=df.loc[df['region'] == selected_hemisphere[0], 'date'], \
+        y=df.loc[df['region'] == selected_hemisphere[0], f'ma_{selected_variable.lower()}']*1000000, 
+        name="12 month moving average",
+        hovertemplate =
+        'Value: %{y:.2e} km<sup>2</sup>'+
+        '<br>Date: %{x|%Y-%B}',
+        line=dict(color='red'))
+)
 fig1.update_layout(
-    title_text=f"Graph 5: {selected_hemisphere} sea ice {selected_variable.lower()}, 12 month moving average"
+    title_text=f"Graph 5: {selected_hemisphere} sea ice {selected_variable.lower()} with 12 month moving average",
+    legend=dict(
+            x=0.1,  # x-position (0.1 is near left)
+            y=0.7,  # y-position (0.9 is near top)
+            xref="container",
+            yref="container",
+            orientation = 'h'
+        )
 )
 # Set x-axis title
 fig1.update_xaxes(title_text="Observation time")
@@ -44,11 +60,7 @@ fig1.update_xaxes(title_text="Observation time")
 # Set y-axes titles
 fig1.update_yaxes(title_text=f"{selected_variable} (km<sup>2</sup>)")
 st.plotly_chart(fig1, use_container_width=True)
-st.caption("""Graph 4: Climate model ensemble annual global average temperature quantiles for four different scenarios 
-    from year 1850 to year 2100. 
-    For each of the three scenarios [SSP1-2.6](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways), 
-    [SSP2-4.5](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways) and 
-    [SSP5-8.5](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways) each model outputs forecast based on 
-    parameters governed by assumptions about socioeconomic factors in the future as well as physical quantities.
-    Each model also outputs estimation of historical global average temperatures based on physical quantities
-    as well as data from past atmospheric records and proxies. The instrumental record is shown for comparison.""")
+st.caption(f"""Graph 5: {selected_hemisphere} monthly sea Ice {selected_variable.lower()} from satelite data.
+    Sea ice extent is the total area of ocean with at least 15% sea ice concentration, while sea ice area is the actual 
+    amount of ice present, accounting for the fractional coverage within each grid cell.  
+    Data from [nsidc.org/data/g02135/versions/4](https://nsidc.org/data/g02135/versions/4).""")
