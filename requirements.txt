@@ -7,3 +7,4 @@ datetime
 pathlib
 netcdf4
 openpyxl
+scipy
