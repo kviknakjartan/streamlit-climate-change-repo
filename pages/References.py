@@ -59,6 +59,14 @@ st.markdown(
     Accessed September 21, 2025.""", unsafe_allow_html=True
 )
 st.markdown(
+    """*Antarctic temperature data (Graph 2)*  \nParrenin, Frédéric; Masson-Delmotte, Valerie; 
+    Köhler, Peter; Raynaud, Dominique; Paillard, Didier; Schwander, Jakob; Barbante, Carlo; Landais, Amaëlle; Wegner, Anna; 
+    Jouzel, Jean (2013): Antarctic Temperature Stack (ATS) from five different ice cores (EDC, Vostok, Dome Fuji, TALDICE, 
+    and EDML) [dataset]. PANGAEA, https://doi.org/10.1594/PANGAEA.810188,  \nIn supplement to: Parrenin, F et al. (2013): 
+    Synchronous change of atmospheric CO2 and Antarctic temperature during the last deglacial warming. Science, 
+    339(6123), 1060-1063, https://doi.org/10.1126/science.1226368.  \nAccessed September 23, 2025.""", unsafe_allow_html=True
+)
+st.markdown(
     """*Global surface temperatures since the last glacial maximum (Graph 3)*  \nMatthew B. Osman, Jessica E. Tierney, 
     Jiang Zhu, Robert Tardif, Gregory J. Hakim, Jonathan King, Christopher J. Poulsen. 2021. 
     Globally resolved surface temperatures since the Last Glacial Maximum. Nature, 599, 239-244. 
@@ -74,7 +82,7 @@ st.markdown(
 st.markdown(
     """*CMIP6 model output data (Graph 4)*  \nCopernicus Climate Change Service, Climate Data Store, 
     (2021): CMIP6 climate projections. Copernicus Climate Change Service (C3S) Climate Data Store (CDS). 
-    DOI: 10.24381/cds.c866074c. 
+    DOI: 10.24381/cds.c866074c. Accessed from https://cds.climate.copernicus.eu/datasets/projections-cmip6?tab=overview
     (Accessed on 24-09-2025)."""
 )
 st.markdown(

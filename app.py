@@ -191,7 +191,8 @@ def create_ghg_section():
     fig1.update_yaxes(title_text="CH<sub>4</sub> (ppb) / N<sub>2</sub>O (ppb)", secondary_y=True)
     st.plotly_chart(fig1, use_container_width=True)
     st.caption("""Graph 1: Estimated atmospheric concentration levels of three greenhouse gases for the past ~800,000 years.
-        Based on Antarctic icecore data. Also shown are modern measured annual average levels (instrumental record).""")
+        Based on Antarctic icecore data. Also shown are modern measured annual average levels (instrumental record).
+        See references for data access.""")
 
     # CO2 VS. TEMPERATURE PLOT
     # Create figure with secondary y-axis
@@ -238,7 +239,8 @@ def create_ghg_section():
     fig2.update_yaxes(title_text="Temperature change (°C)", secondary_y=True)
     st.plotly_chart(fig2, use_container_width=True)
     st.caption("""Graph 2: Recostruction of Antarctic temperature change for the past ~800,000 years, based on Antarctic 
-        icecore data and estimation of past carbon dioxide levels based on Antarctic icecore data.""")
+        icecore data and estimation of past carbon dioxide levels based on Antarctic icecore data. Temperature data from
+        [PANGAEA](https://doi.org/10.1594/PANGAEA.810188).""")
     st.write("")
     st.write("")
 
@@ -318,7 +320,8 @@ def create_ghg_section2():
     st.plotly_chart(fig1, use_container_width=True)
     st.caption("""Graph 3: Recostruction of annual global average temperature for the past ~24,000 years based on climate modeling and geochemical proxy data,
          estimation of past carbon dioxide levels based on Antarctic icecore data and modern measured temperature and 
-         carbon dioxide levels (instrumental record).""")
+         carbon dioxide levels (instrumental record). Temperature reconstruction data from [NOAA](https://doi.org/10.25921/njxd-hg08).
+         Temperature instrumental record from [The Berkeley Earth Land/Ocean Temperature Record](https://doi.org/10.5194/essd-12-3469-2020).""")
 
 def create_cmip6_section():
     df = get_cmip6_data()
@@ -471,7 +474,8 @@ def create_cmip6_section():
         [SSP5-8.5](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways) each model outputs forecast based on 
         parameters governed by assumptions about socioeconomic factors in the future as well as physical quantities.
         Each model also outputs estimation of historical global average temperatures based on physical quantities
-        as well as data from past atmospheric records and proxies. The instrumental record is shown for comparison.""")
+        as well as data from past atmospheric records and proxies. The instrumental record is shown for comparison. 
+        CMIP6 data from [Copernicus Climate Change Service, Climate Data Store](https://cds.climate.copernicus.eu/datasets/projections-cmip6?tab=overview)""")
 
 # Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(
