@@ -49,7 +49,7 @@ fig1.add_trace(
 )
 
 # Generate a trendlince
-t = (x.dt.to_period('M') - x[0].to_period('M')).apply(lambda x: x.n)
+t = (x.dt.to_period('M') - x.iloc[0].to_period('M')).apply(lambda x: x.n)
 # Coefficients: [slope, intercept]
 coefficients = np.polyfit(t, y, 1)
 trendline_function = np.poly1d(coefficients)
@@ -63,7 +63,7 @@ fig1.add_trace(
         'Value: %{y:.2e} km<sup>2</sup>'+
         '<br>Date: %{x|%Y-%B}'+
         f'<br>{coefficients[0]:.2e} * months + {coefficients[1]:.2e}',
-        line=dict(color='magenta', width=0.7))
+        line=dict(color='black', width=1))
 )
 
 fig1.update_layout(
@@ -83,7 +83,7 @@ fig1.update_xaxes(title_text="Observation time")
 fig1.update_yaxes(title_text=f"{selected_variable} (km<sup>2</sup>)")
 st.plotly_chart(fig1, use_container_width=True)
 st.caption(f"""Graph 5: {selected_hemisphere} monthly sea Ice {selected_variable.lower()} from satelite data. 
-    Also shown is the 12 month moving average.
+    Also shown are the 12 month moving average and a trendline.
     Sea ice extent is the total area of ocean with at least 15% sea ice concentration, while sea ice area is the actual 
     amount of ice present, accounting for the fractional coverage within each grid cell. Data from 
     [National Snow and Ice Data Center](https://nsidc.org/data/g02135/versions/4).""")
