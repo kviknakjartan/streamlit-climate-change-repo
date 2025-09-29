@@ -77,3 +77,9 @@ st.markdown(
     DOI: 10.24381/cds.c866074c. 
     (Accessed on 24-09-2025)."""
 )
+st.markdown(
+    f"""*Sea ice extent and area data (Graph 5)*  \nFetterer, F., Knowles, K., Meier, W. N., Savoie, M., Windnagel, 
+    A. K. & Stafford, T. (2025). 
+    Sea Ice Index. (G02135, Version 4). [Data Set]. Boulder, Colorado USA. National Snow and Ice Data Center. 
+    [https://doi.org/10.7265/a98x-0f50](https://doi.org/10.7265/a98x-0f50). Date Accessed {date.today()}."""
+)

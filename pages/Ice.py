@@ -18,7 +18,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     selected_hemisphere = st.selectbox("Choose a hemisphere:", ['Northern hemisphere', 'Southern hemisphere'])
-with col1:
+with col2:
     selected_variable = st.selectbox("Choose a variable:", ['Extent', 'Area'])
 
 fig1 = make_subplots()
@@ -60,7 +60,8 @@ fig1.update_xaxes(title_text="Observation time")
 # Set y-axes titles
 fig1.update_yaxes(title_text=f"{selected_variable} (km<sup>2</sup>)")
 st.plotly_chart(fig1, use_container_width=True)
-st.caption(f"""Graph 5: {selected_hemisphere} monthly sea Ice {selected_variable.lower()} from satelite data.
+st.caption(f"""Graph 5: {selected_hemisphere} monthly sea Ice {selected_variable.lower()} from satelite data. 
+    Also shown is the 12 month moving average.
     Sea ice extent is the total area of ocean with at least 15% sea ice concentration, while sea ice area is the actual 
     amount of ice present, accounting for the fractional coverage within each grid cell.  
-    Data from [nsidc.org/data/g02135/versions/4](https://nsidc.org/data/g02135/versions/4).""")
+    Data from [National Snow and Ice Data Center](https://nsidc.org/data/g02135/versions/4).""")
