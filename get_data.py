@@ -4,6 +4,7 @@ import xarray as xr
 import streamlit as st
 from pathlib import Path
 
+ICE_SHEET_URL = r'https://www.epa.gov/system/files/other-files/2024-05/ice_sheets_fig-1.csv'
 SEA_ICE_N_URL = r'https://noaadata.apps.nsidc.org/NOAA/G02135/north/monthly/data/'
 SEA_ICE_S_URL = r'https://noaadata.apps.nsidc.org/NOAA/G02135/south/monthly/data/'
 BE_GLOBAL_URL = r'https://berkeley-earth-temperature.s3.us-west-1.amazonaws.com/Global/Land_and_Ocean_summary.txt'
@@ -17,6 +18,32 @@ CH4_HIST_PATH = Path("data/ghg-concentrations_fig-2.csv")
 N2O_HIST_PATH = Path("data/ghg-concentrations_fig-3.csv")
 PARRENIN_PATH = Path("data/ATS.tab")
 CMIP6_PATH = Path("data/global_mean_temp_data.xlsx")
+
+def fractional_year_to_datetime(year_float):
+    year = int(year_float)
+    # Calculate days from the fractional part (approximate, considering leap years)
+    days = int((year_float - year) * 365.25)
+    base_date = pd.to_datetime(f'{year}-01-01')
+    return base_date + pd.DateOffset(days=days)
+
+@st.cache_data()
+def get_ice_sheet_data():
+    df = pd.read_csv(ICE_SHEET_URL, skiprows = 6)
+    df['Date'] = df['Year'].apply(fractional_year_to_datetime)
+    # Change into long format
+    df_long = pd.melt(df,
+                  id_vars=['Date', 'Year'],  # Columns to keep as identifiers
+                  var_name='Source',       # Name for the new column holding the original column names
+                  value_name='Value')
+    # Drop all dates with empty Value
+    df_long = df_long[~df_long.Value.isna()]
+    # Add an empty value for Nasa 2018 where there is a gap in the record
+    empty_df = pd.DataFrame({ 'Year' : [2018, 2018],
+                              'Date' : [fractional_year_to_datetime(2018), fractional_year_to_datetime(2018)],
+                              'Source' : ['NASA - Antarctica land ice mass', 'NASA - Greenland land ice mass'],
+                              'Value' : [float("NaN"), float("NaN")]})
+    df_long = pd.concat([df_long, empty_df]).sort_values(by=['Source', 'Date'])
+    return df_long
 
 @st.cache_data()
 def get_sea_ice_data():
@@ -192,4 +219,4 @@ def get_co2_hist_data():
     return df[['Year', 'Name', 'Value']].sort_values(by='Year')
     
 if __name__ == "__main__":
-    get_sea_ice_data()
+    get_ice_sheet_data()

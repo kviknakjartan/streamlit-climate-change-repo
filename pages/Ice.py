@@ -5,7 +5,8 @@ import numpy as np
 from plotly.subplots import make_subplots
 
 from get_data import (
-    get_sea_ice_data
+    get_sea_ice_data,
+    get_ice_sheet_data
 )
 
 # Set the title and favicon that appear in the Browser's tab bar.
@@ -87,3 +88,98 @@ st.caption(f"""Graph 5: {selected_hemisphere} monthly sea Ice {selected_variable
     Sea ice extent is the total area of ocean with at least 15% sea ice concentration, while sea ice area is the actual 
     amount of ice present, accounting for the fractional coverage within each grid cell. Data from 
     [National Snow and Ice Data Center](https://nsidc.org/data/g02135/versions/4).""")
+
+
+fig2 = make_subplots()
+
+df = get_ice_sheet_data()
+
+# Add traces
+fig2.add_trace(
+    go.Scatter(x=df.loc[df['Source'] == 'NASA - Antarctica land ice mass','Date'],
+        y=df.loc[df['Source'] == 'NASA - Antarctica land ice mass','Value'] * 1000000000, 
+        name='Antarctica (NASA JPL)',
+        hovertemplate =
+        'Value: %{y:.2e} tons'+
+        '<br>Date: %{x|%B %d, %Y}',
+        line=dict(color='blue', width=1))
+)
+fig2.add_trace(
+    go.Scatter(x=df.loc[df['Source'] == 'NASA - Greenland land ice mass','Date'],
+        y=df.loc[df['Source'] == 'NASA - Greenland land ice mass','Value'] * 1000000000, 
+        name='Greenland (NASA JPL)',
+        hovertemplate =
+        'Value: %{y:.2e} tons'+
+        '<br>Date: %{x|%B %d, %Y}',
+        line=dict(color='red', width=1))
+)
+fig2.add_trace(
+    go.Scatter(x=df.loc[df['Source'] == 'IMBIE - Antarctica cumulative mass balance','Date'],
+        y=df.loc[df['Source'] == 'IMBIE - Antarctica cumulative mass balance','Value'] * 1000000000, 
+        name='Antarctica (Combined data)',
+        hovertemplate =
+        'Value: %{y:.2e} tons'+
+        '<br>Date: %{x|%B %d, %Y}',
+        line=dict(color='darkblue', width=4))
+)
+fig2.add_trace(
+    go.Scatter(x=df.loc[df['Source'] == 'IMBIE - Greenland cumulative mass balance','Date'],
+        y=df.loc[df['Source'] == 'IMBIE - Greenland cumulative mass balance','Value'] * 1000000000, 
+        name='Greenland (Combined data)',
+        hovertemplate =
+        'Value: %{y:.2e} tons'+
+        '<br>Date: %{x|%B %d, %Y}',
+        line=dict(color='darkred', width=4))
+)
+# Uncertainties
+x = df.loc[df['Source'] == 'IMBIE - Antarctica cumulative mass balance uncertainty','Date']
+y = df.loc[df['Source'] == 'IMBIE - Antarctica cumulative mass balance','Value'].reset_index(drop=True) * 1000000000
+y_unc = df.loc[df['Source'] == 'IMBIE - Antarctica cumulative mass balance uncertainty','Value'].reset_index(drop=True) * 1000000000
+y_lower = y - y_unc
+y_upper = y + y_unc
+fig2.add_trace(
+    go.Scatter(x=pd.concat([x, x[::-1]]),
+        y=pd.concat([y_upper, y_lower[::-1]]), 
+        name='Antarctica uncertainty (Combined data)',
+        fill='toself',
+        fillcolor='rgba(0,0,255,0.2)',
+        hoverinfo="skip",
+        line=dict(color='rgba(0,0,255,0.2)', width=0.1))
+)
+x = df.loc[df['Source'] == 'IMBIE - Greenland cumulative mass balance uncertainty','Date']
+y = df.loc[df['Source'] == 'IMBIE - Greenland cumulative mass balance','Value'].reset_index(drop=True) * 1000000000
+y_unc = df.loc[df['Source'] == 'IMBIE - Greenland cumulative mass balance uncertainty','Value'].reset_index(drop=True) * 1000000000
+y_lower = y - y_unc
+y_upper = y + y_unc
+print(y,y_unc,y_lower)
+fig2.add_trace(
+    go.Scatter(x=pd.concat([x, x[::-1]]),
+        y=pd.concat([y_upper, y_lower[::-1]]), 
+        name='Greenland uncertainty (Combined data)',
+        fill='toself',
+        fillcolor='rgba(255,0,0,0.2)',
+        hoverinfo="skip",
+        line=dict(color='rgba(255,0,0,0.2)', width=0.1))
+)
+fig2.update_layout(
+        title_text="Graph 6: Cumulative Mass Balance of Greenland and Antarctica",
+        legend=dict(
+            x=0.1,  # x-position (0.1 is near left)
+            y=0.1  # y-position (0.9 is near top)
+        )
+)
+
+# Set x-axis title
+fig2.update_xaxes(title_text="Observation time")
+
+# Set y-axes titles
+fig2.update_yaxes(title_text="Cumulative mass change (tons)")
+st.plotly_chart(fig2, use_container_width=True)
+st.caption("""Graph 6: Cumulative Mass Balance of Greenland and Antarctica 1992 to present. 
+    The dark lines show combined data that is based on more than 20 different studies where data has been combined 
+    over multiple region. Shading shows the uncertainty estimates that is cumulated from uncertainties calculated for each study.
+    The two thin lines show data from one commonly cited analysis where seasonal variations can be seen. 
+    All estimates are centered at zero in 2002. A downward slope indicates a net loss of ice and snow. 
+    For reference, 1,000 billion metric tons (one Teraton) is equal to about 260 cubic miles of ice which is enough to raise sea 
+    level by about 3 millimeters (IPCC, 2013). 
+    Data from [EPA](https://www.epa.gov/climate-indicators/climate-change-indicators-ice-sheets)""")

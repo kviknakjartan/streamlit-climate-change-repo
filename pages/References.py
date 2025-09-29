@@ -91,3 +91,14 @@ st.markdown(
     Sea Ice Index. (G02135, Version 4). [Data Set]. Boulder, Colorado USA. National Snow and Ice Data Center. 
     [https://doi.org/10.7265/a98x-0f50](https://doi.org/10.7265/a98x-0f50). Date Accessed {date.today()}."""
 )
+st.markdown(
+    f"""*Cumulative Mass Balance of Greenland and Antarctica (Graph 6)*  \nUnited States Environmental Protection Agency. (2023). 
+    Climate Change Indicators: Ice Sheets [Dataset]. US EPA. https://www.epa.gov/climate-indicators/climate-change-indicators-ice-sheets. 
+    Date Accessed {date.today()}."""
+)
+st.markdown(
+    """*Information on sea level rise (Graph 6 caption)*  \nIPCC (Intergovernmental Panel on Climate Change). (2013). 
+    Climate change 2013—The physical science basis: Contribution of Working Group I to the Fifth Assessment Report of 
+    the Intergovernmental Panel on Climate Change (T. F. Stocker, D. Qin, G.-K. Plattner, M. Tignor, S. K. Allen, 
+    A. Boschung, A. Nauels, Y. Xia, V. Bex, & Midgley, Eds.). Cambridge University Press. www.ipcc.ch/report/ar5/wg1"""
+)
