@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
+import numpy as np
 from plotly.subplots import make_subplots
 
 from get_data import (
@@ -24,11 +25,13 @@ with col2:
 fig1 = make_subplots()
 
 df = get_sea_ice_data()
+x = df.loc[df['region'] == selected_hemisphere[0], 'date']
+y = df.loc[df['region'] == selected_hemisphere[0], selected_variable.lower()]*1000000
 
 # Add traces
 fig1.add_trace(
-    go.Scatter(x=df.loc[df['region'] == selected_hemisphere[0], 'date'], \
-        y=df.loc[df['region'] == selected_hemisphere[0], selected_variable.lower()]*1000000, 
+    go.Scatter(x=x,
+        y=y, 
         name=selected_variable,
         hovertemplate =
         'Value: %{y:.2e} km<sup>2</sup>'+
@@ -36,7 +39,7 @@ fig1.add_trace(
         line=dict(color='blue'))
 )
 fig1.add_trace(
-    go.Scatter(x=df.loc[df['region'] == selected_hemisphere[0], 'date'], \
+    go.Scatter(x=x,
         y=df.loc[df['region'] == selected_hemisphere[0], f'ma_{selected_variable.lower()}']*1000000, 
         name="12 month moving average",
         hovertemplate =
@@ -44,6 +47,25 @@ fig1.add_trace(
         '<br>Date: %{x|%Y-%B}',
         line=dict(color='red'))
 )
+
+# Generate a trendlince
+t = (x.dt.to_period('M') - x[0].to_period('M')).apply(lambda x: x.n)
+# Coefficients: [slope, intercept]
+coefficients = np.polyfit(t, y, 1)
+trendline_function = np.poly1d(coefficients)
+trendline_y = trendline_function(t)
+
+fig1.add_trace(
+    go.Scatter(x=x,
+        y=trendline_y, 
+        name="Trendline",
+        hovertemplate =
+        'Value: %{y:.2e} km<sup>2</sup>'+
+        '<br>Date: %{x|%Y-%B}'+
+        f'<br>{coefficients[0]:.2e} * months + {coefficients[1]:.2e}',
+        line=dict(color='magenta', width=0.7))
+)
+
 fig1.update_layout(
     title_text=f"Graph 5: {selected_hemisphere} sea ice {selected_variable.lower()} with 12 month moving average",
     legend=dict(
