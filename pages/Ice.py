@@ -208,7 +208,7 @@ fig3.add_trace(
         orientation='v',
         name="Number of glaciers observed",
         hovertemplate =
-        'Value: %{y:.1f} m'+
+        'Value: %{y:.0f}'+
         '<br>Year: %{x:.0f}',
         marker=dict(
                 color='rgba(255,0,0,0.2)'
