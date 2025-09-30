@@ -11,7 +11,7 @@ from get_data import (
 
 # Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(
-    page_title='Climate Past and Future',
+    page_title='Climate Change in Graphs: Ice',
     page_icon='sun.svg',
     layout='wide',
     initial_sidebar_state='collapsed'
@@ -175,11 +175,11 @@ fig2.update_xaxes(title_text="Observation time")
 # Set y-axes titles
 fig2.update_yaxes(title_text="Cumulative mass change (tons)")
 st.plotly_chart(fig2, use_container_width=True)
-st.caption("""Graph 6: Cumulative Mass Balance of Greenland and Antarctica 1992 to present. 
+st.caption("""Graph 6: Cumulative Mass Balance of Greenland and Antarctica from 1992. 
     The dark lines show combined data that is based on more than 20 different studies where data has been combined 
     over multiple region. Shading shows the uncertainty estimates that is cumulated from uncertainties calculated for each study.
     The two thin lines show data from one commonly cited analysis where seasonal variations can be seen. 
     All estimates are centered at zero in 2002. A downward slope indicates a net loss of ice and snow. 
     For reference, 1,000 billion metric tons (one Teraton) is equal to about 260 cubic miles of ice which is enough to raise sea 
-    level by about 3 millimeters (IPCC, 2013). 
+    level by about 3 millimeters (IPCC, 2013 as cited in US EPA, 2021). 
     Data from [EPA](https://www.epa.gov/climate-indicators/climate-change-indicators-ice-sheets)""")

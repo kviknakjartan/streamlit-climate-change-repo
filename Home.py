@@ -479,7 +479,7 @@ def create_cmip6_section():
 
 # Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(
-    page_title='Climate Past and Future',
+    page_title='Climate Change in Graphs',
     page_icon='sun.svg',
     layout='wide',
     initial_sidebar_state='collapsed'
