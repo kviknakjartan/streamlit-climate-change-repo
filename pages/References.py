@@ -6,7 +6,7 @@ st.markdown("# References")
 st.sidebar.header("References")
 
 st.markdown(
-    """*Antarctic ice core data (Graphs 1,2 and 3)*  \n\nUnited States Environmental Protection Agency. (2010). 
+    """*Antarctic ice core data (Graphs 1,2 and 3)*  \nUnited States Environmental Protection Agency. (2010). 
     Climate Change Indicators: Atmospheric Concentrations of Greenhouse Gases (Updated June 2024) [Dataset]. 
     US EPA. https://www.epa.gov/climate-indicators/climate-change-indicators-atmospheric-concentrations-greenhouse-gases.  
     Accessed September 19, 2025."""

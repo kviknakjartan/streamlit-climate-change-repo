@@ -1,17 +1,22 @@
 import pandas as pd
 import requests
+from io import StringIO
 import xarray as xr
 import streamlit as st
 from pathlib import Path
 
 ICE_SHEET_URL = r'https://www.epa.gov/system/files/other-files/2024-05/ice_sheets_fig-1.csv'
+ICE_SHEET_BACKUP = Path("data/ice_sheets_fig-1.csv")
 SEA_ICE_N_URL = r'https://noaadata.apps.nsidc.org/NOAA/G02135/north/monthly/data/'
 SEA_ICE_S_URL = r'https://noaadata.apps.nsidc.org/NOAA/G02135/south/monthly/data/'
 BE_GLOBAL_URL = r'https://berkeley-earth-temperature.s3.us-west-1.amazonaws.com/Global/Land_and_Ocean_summary.txt'
 BE_ANTARCT_URL = r'https://berkeley-earth-temperature.s3.us-west-1.amazonaws.com/Regional/TAVG/antarctica-TAVG-Trend.txt'
-CO2_LATEST_PATH = Path("data/co2_annmean_gl.csv")
-CH4_LATEST_PATH = Path("data/ch4_annmean_gl.csv")
-N2O_LATEST_PATH = Path("data/n2o_annmean_gl.csv")
+CO2_LATEST_URL = r'https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_annmean_gl.csv'
+CO2_LATEST_BACKUP = Path("data/co2_annmean_gl.csv")
+CH4_LATEST_URL = r'https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_annmean_gl.csv'
+CH4_LATEST_BACKUP = Path("data/ch4_annmean_gl.csv")
+N2O_LATEST_URL = r'https://gml.noaa.gov/webdata/ccgg/trends/n2o/n2o_annmean_gl.csv'
+N2O_LATEST_BACKUP = Path("data/n2o_annmean_gl.csv")
 OSMAN_PATH = Path("data/LGMR_GMST_climo.nc")
 CO2_HIST_PATH = Path("data/ghg-concentrations_fig-1.csv")
 CH4_HIST_PATH = Path("data/ghg-concentrations_fig-2.csv")
@@ -26,9 +31,17 @@ def fractional_year_to_datetime(year_float):
     base_date = pd.to_datetime(f'{year}-01-01')
     return base_date + pd.DateOffset(days=days)
 
+def read_csv_from_url(csv_url, backup, timeout = 5, **kwargs):
+    try:
+        response = requests.get(csv_url, timeout = timeout)
+        response.raise_for_status() # Raise an exception for bad status codes
+        return pd.read_csv(StringIO(response.text), **kwargs)
+    except:
+        return pd.read_csv(backup, **kwargs)
+
 @st.cache_data()
 def get_ice_sheet_data():
-    df = pd.read_csv(ICE_SHEET_URL, skiprows = 6)
+    df = read_csv_from_url(ICE_SHEET_URL, ICE_SHEET_BACKUP, skiprows = 6)
     df['Date'] = df['Year'].apply(fractional_year_to_datetime)
     # Change into long format
     df_long = pd.melt(df,
@@ -125,7 +138,7 @@ def get_osman_data():
 @st.cache_data()
 def get_co2_latest_data():
 
-    df = pd.read_csv(CO2_LATEST_PATH, comment = '#')
+    df = read_csv_from_url(CO2_LATEST_URL, CO2_LATEST_BACKUP, comment = '#')
     df = df.rename(columns={'year' : 'Year', 'mean' : 'Value'})
     df = df[~df['Year'].isnull()]
     df['Name'] = 'CO2_latest'
@@ -134,7 +147,7 @@ def get_co2_latest_data():
 @st.cache_data()
 def get_ch4_latest_data():
 
-    df = pd.read_csv(CH4_LATEST_PATH, comment = '#')
+    df = read_csv_from_url(CH4_LATEST_URL, CH4_LATEST_BACKUP, comment = '#')
     df = df.rename(columns={'year' : 'Year', 'mean' : 'Value'})
     df = df[~df['Year'].isnull()]
     df['Name'] = 'CH4_latest'
@@ -143,7 +156,7 @@ def get_ch4_latest_data():
 @st.cache_data()
 def get_n2o_latest_data():
 
-    df = pd.read_csv(N2O_LATEST_PATH, comment = '#')
+    df = read_csv_from_url(N2O_LATEST_URL, N2O_LATEST_BACKUP, comment = '#')
     df = df.rename(columns={'year' : 'Year', 'mean' : 'Value'})
     df = df[~df['Year'].isnull()]
     df['Name'] = 'N2O_latest'
