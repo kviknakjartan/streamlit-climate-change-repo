@@ -475,7 +475,8 @@ def create_cmip6_section():
         parameters governed by assumptions about socioeconomic factors in the future as well as physical quantities.
         Each model also outputs estimation of historical global average temperatures based on physical quantities
         as well as data from past atmospheric records and proxies. The instrumental record is shown for comparison. 
-        CMIP6 data from [Copernicus Climate Change Service, Climate Data Store](https://cds.climate.copernicus.eu/datasets/projections-cmip6?tab=overview)""")
+        Graph adopted from [Copernicus Climate Change Service (C3S) Data Tutorials](https://ecmwf-projects.github.io/copernicus-training-c3s/intro.html).
+        CMIP6 data from [Copernicus Climate Change Service, Climate Data Store](https://cds.climate.copernicus.eu/datasets/projections-cmip6?tab=overview).""")
 
 # Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(

@@ -182,4 +182,5 @@ st.caption("""Graph 6: Cumulative Mass Balance of Greenland and Antarctica from 
     All estimates are centered at zero in 2002. A downward slope indicates a net loss of ice and snow. 
     For reference, 1,000 billion metric tons (one Teraton) is equal to about 260 cubic miles of ice which is enough to raise sea 
     level by about 3 millimeters (IPCC, 2013 as cited in US EPA, 2021). 
-    Data from [EPA](https://www.epa.gov/climate-indicators/climate-change-indicators-ice-sheets)""")
+    Graph adopted from [EPA](https://www.epa.gov/climate-indicators/climate-change-indicators-ice-sheets).
+    Data from [EPA](https://www.epa.gov/climate-indicators/climate-change-indicators-ice-sheets).""")

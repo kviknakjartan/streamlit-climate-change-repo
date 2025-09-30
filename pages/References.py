@@ -52,6 +52,12 @@ st.markdown(
     (Accessed on 24-09-2025)."""
 )
 st.markdown(
+    """*CMIP6 model output plot original work (Graph 4)*  \nCopernicus Climate Change Service (C3S) Data Tutorials: 
+    Plot an Ensemble of CMIP6 Climate Projections. (2022). Copernicus Climate Change Service (C3S). 
+    https://ecmwf-projects.github.io/copernicus-training-c3s/projections-cmip6.html
+    (Accessed on 24-09-2025)."""
+)
+st.markdown(
     f"""*Sea ice extent and area data (Graph 5)*  \nFetterer, F., Knowles, K., Meier, W. N., Savoie, M., Windnagel, 
     A. K. & Stafford, T. (2025). 
     Sea Ice Index. (G02135, Version 4). [Data Set]. Boulder, Colorado USA. National Snow and Ice Data Center. 
