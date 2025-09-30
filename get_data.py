@@ -5,6 +5,8 @@ import xarray as xr
 import streamlit as st
 from pathlib import Path
 
+GLACIERS_URL = r'https://www.epa.gov/system/files/other-files/2024-05/glaciers_fig-1.csv'
+GLACIERS_BACKUP = Path("data/glaciers_fig-1.csv")
 ICE_SHEET_URL = r'https://www.epa.gov/system/files/other-files/2024-05/ice_sheets_fig-1.csv'
 ICE_SHEET_BACKUP = Path("data/ice_sheets_fig-1.csv")
 SEA_ICE_N_URL = r'https://noaadata.apps.nsidc.org/NOAA/G02135/north/monthly/data/'
@@ -38,6 +40,11 @@ def read_csv_from_url(csv_url, backup, timeout = 5, **kwargs):
         return pd.read_csv(StringIO(response.text), **kwargs)
     except:
         return pd.read_csv(backup, **kwargs)
+
+@st.cache_data()
+def get_glaciers_data():
+    df = read_csv_from_url(GLACIERS_URL, GLACIERS_BACKUP, skiprows = 6)
+    return df
 
 @st.cache_data()
 def get_ice_sheet_data():

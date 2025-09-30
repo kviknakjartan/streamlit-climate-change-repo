@@ -68,3 +68,8 @@ st.markdown(
     Climate Change Indicators: Ice Sheets [Dataset]. US EPA. https://www.epa.gov/climate-indicators/climate-change-indicators-ice-sheets. 
     Date Accessed {date.today()}."""
 )
+st.markdown(
+    f"""*Cumulative mass balance for a set of observed glaciers (Graph 7)*  \nUnited States Environmental Protection Agency. (2010). 
+    Climate Change Indicators: Ice Sheets [Dataset]. US EPA. https://www.epa.gov/climate-indicators/climate-change-indicators-glaciers. 
+    Date Accessed {date.today()}."""
+)

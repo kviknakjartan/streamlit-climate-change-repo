@@ -6,7 +6,8 @@ from plotly.subplots import make_subplots
 
 from get_data import (
     get_sea_ice_data,
-    get_ice_sheet_data
+    get_ice_sheet_data,
+    get_glaciers_data
 )
 
 # Set the title and favicon that appear in the Browser's tab bar.
@@ -184,3 +185,56 @@ st.caption("""Graph 6: Cumulative Mass Balance of Greenland and Antarctica from 
     level by about 3 millimeters (IPCC, 2013 as cited in US EPA, 2021). 
     Graph adopted from [EPA](https://www.epa.gov/climate-indicators/climate-change-indicators-ice-sheets).
     Data from [EPA](https://www.epa.gov/climate-indicators/climate-change-indicators-ice-sheets).""")
+
+df = get_glaciers_data()
+
+# Create figure with secondary y-axis
+fig3 = make_subplots(specs=[[{"secondary_y": True}]])
+
+# Add traces
+fig3.add_trace(
+    go.Scatter(x=df['Year'],
+        y=df['Mean cumulative mass balance'],
+        name="Glaciers mass balance",
+        hovertemplate =
+        'Value: %{y:.1f} m'+
+        '<br>Year: %{x:.0f}',
+        line=dict(color='blue')),
+    secondary_y=False,
+)
+fig3.add_trace(
+    go.Bar(x=df['Year'],
+        y=df['Number of observations'],
+        orientation='v',
+        name="Number of glaciers observed",
+        hovertemplate =
+        'Value: %{y:.1f} m'+
+        '<br>Year: %{x:.0f}',
+        marker=dict(
+                color='rgba(255,0,0,0.2)'
+    )),
+    secondary_y=True,
+)
+fig3.update_layout(
+        title_text="Graph 7: Cumulative change in mass balance for observed glaciers around the world",
+        legend=dict(
+            x=0.1,  # x-position (0.1 is near left)
+            y=0.8,  # y-position (0.9 is near top)
+            xref="container",
+            yref="container",
+            orientation = 'h'
+        )
+)
+
+# Set x-axis title
+fig3.update_xaxes(title_text="Year")
+
+# Set y-axes titles
+fig3.update_yaxes(title_text="Cumulative mass balance (meters of water equivalent)", secondary_y=False)
+fig3.update_yaxes(title_text="Number of glaciers observed", secondary_y=True)
+st.plotly_chart(fig3, use_container_width=True)
+st.caption("""Graph 7: Cumulative change in mass balance for a world wide set of reference glaciers. 
+    The line on the graph shows the average mass balance of all the glaciers that were measured in a given year.
+    Negative values indicate a net loss of ice and snow since the base year of 1956. Measurements are in meters 
+    of water equivalent representing changes in the average thickness of the glaciers. The barplot shows how many 
+    glaciers were measured in a given year. Data from [EPA](https://www.epa.gov/climate-indicators/climate-change-indicators-glaciers).""")
