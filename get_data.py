@@ -4,6 +4,7 @@ from io import StringIO
 import xarray as xr
 import streamlit as st
 from pathlib import Path
+import numpy as np
 
 SNOW_URL = r'https://climate.rutgers.edu/snowcover/files/moncov.nhland.txt'
 SNOW_BACKUP = Path("data/moncov.nhland.txt")
@@ -48,8 +49,8 @@ def get_season(date):
     year = date.year
     if date.month in [12,1,2]:
         season = 'Winter'
-        if date.month == 12:
-            year += 1
+        if date.month in [1,2]:
+            year -= 1
     elif date.month in [3,4,5]:
         season = 'Spring'
     elif date.month in [6,7,8]:
@@ -73,23 +74,26 @@ def get_snow_data():
                                     freq='MS') # 'MS' for month start
     df = df.reindex(full_date_range)
     df = df.reset_index()
+    
     # get season and corresponding year
     df['season_year'] = df['index'].apply(get_season)
     df[['season','s_year']] = df['season_year'].str.split(' ', expand=True)
+    df.s_year = pd.to_numeric(df.s_year)
     df_seasons = df.groupby(['s_year','season'])['value'].mean()
+
     # do not want values for seasons where there are months missing
-    df_seasons.loc[("1966",'Autumn')] = float("NaN")
-    df_seasons.loc[("1968",'Summer')] = float("NaN")
-    df_seasons.loc[("1969",'Summer')] = float("NaN")
-    df_seasons.loc[("1969",'Autumn')] = float("NaN")
-    df_seasons.loc[("1971",'Summer')] = float("NaN")
-    df_seasons.loc[("1971",'Autumn')] = float("NaN")
+    df_seasons_count = df[~df.value.isna()].groupby(['s_year','season']).size()
+    missing_season_idx = df_seasons_count[df_seasons_count != 3].index
+    df_seasons.loc[missing_season_idx] = float("NaN")
     df_seasons = df_seasons.reset_index()
+
+    # get yearly average
     df_years = df.groupby(['year'])['value'].mean()
-    df_years.loc[1966] = float("NaN")
-    df_years.loc[1968] = float("NaN")
-    df_years.loc[1969] = float("NaN")
-    df_years.loc[1971] = float("NaN")
+
+    # do not want values for years with missing months
+    df_month_count = df[~df.value.isna()].groupby(['year']).size()
+    missing_month_idx = df_month_count[df_month_count != 12].index
+    df_years.loc[missing_month_idx] = float("NaN")
     return df_seasons, df_years
 
 @st.cache_data()

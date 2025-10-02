@@ -73,3 +73,9 @@ st.markdown(
     Climate Change Indicators: Ice Sheets [Dataset]. US EPA. https://www.epa.gov/climate-indicators/climate-change-indicators-glaciers. 
     Date Accessed {date.today()}."""
 )
+st.markdown(
+    f"""*Northern hemisphere snow cover extent (Graph 8)*  \nRobinson, David A., Estilow, Thomas W., and NOAA CDR Program (2012): 
+    NOAA Climate Data Record (CDR) of Northern Hemisphere (NH) Snow Cover Extent (SCE), Version 1. [dataset]. 
+    NOAA National Centers for Environmental Information. doi: 10.7289/V5N014G9.
+    Date Accessed {date.today()}."""
+)
