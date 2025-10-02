@@ -5,6 +5,8 @@ import xarray as xr
 import streamlit as st
 from pathlib import Path
 
+SNOW_URL = r'https://climate.rutgers.edu/snowcover/files/moncov.nhland.txt'
+SNOW_BACKUP = Path("data/moncov.nhland.txt")
 GLACIERS_URL = r'https://www.epa.gov/system/files/other-files/2024-05/glaciers_fig-1.csv'
 GLACIERS_BACKUP = Path("data/glaciers_fig-1.csv")
 ICE_SHEET_URL = r'https://www.epa.gov/system/files/other-files/2024-05/ice_sheets_fig-1.csv'
@@ -41,6 +43,55 @@ def read_csv_from_url(csv_url, backup, timeout = 5, **kwargs):
     except:
         return pd.read_csv(backup, **kwargs)
 
+def get_season(date):
+    # returns string with the season and correct year
+    year = date.year
+    if date.month in [12,1,2]:
+        season = 'Winter'
+        if date.month == 12:
+            year += 1
+    elif date.month in [3,4,5]:
+        season = 'Spring'
+    elif date.month in [6,7,8]:
+        season = 'Summer'
+    elif date.month in [9,10,11]:
+        season = 'Autumn'
+    return f'{season} {year}'
+
+@st.cache_data()
+def get_snow_data():
+    df = read_csv_from_url(SNOW_URL, SNOW_BACKUP, sep=r'\s+', names=['year','month','value'])
+    df.month = pd.to_numeric(df.month)
+    df['day'] = 1
+    df['date'] = pd.to_datetime(df[['year','month','day']])
+    df = df.set_index('date')
+    # find all missing months and insert nan values
+    min_date = df.index.min()
+    max_date = df.index.max()
+    full_date_range = pd.date_range(start=min_date.to_period('M').start_time,
+                                    end=max_date.to_period('M').end_time,
+                                    freq='MS') # 'MS' for month start
+    df = df.reindex(full_date_range)
+    df = df.reset_index()
+    # get season and corresponding year
+    df['season_year'] = df['index'].apply(get_season)
+    df[['season','s_year']] = df['season_year'].str.split(' ', expand=True)
+    df_seasons = df.groupby(['s_year','season'])['value'].mean()
+    # do not want values for seasons where there are months missing
+    df_seasons.loc[("1966",'Autumn')] = float("NaN")
+    df_seasons.loc[("1968",'Summer')] = float("NaN")
+    df_seasons.loc[("1969",'Summer')] = float("NaN")
+    df_seasons.loc[("1969",'Autumn')] = float("NaN")
+    df_seasons.loc[("1971",'Summer')] = float("NaN")
+    df_seasons.loc[("1971",'Autumn')] = float("NaN")
+    df_seasons = df_seasons.reset_index()
+    df_years = df.groupby(['year'])['value'].mean()
+    df_years.loc[1966] = float("NaN")
+    df_years.loc[1968] = float("NaN")
+    df_years.loc[1969] = float("NaN")
+    df_years.loc[1971] = float("NaN")
+    return df_seasons, df_years
+
 @st.cache_data()
 def get_glaciers_data():
     df = read_csv_from_url(GLACIERS_URL, GLACIERS_BACKUP, skiprows = 6)
@@ -70,10 +121,12 @@ def get_sea_ice_data():
     all_months_n_df = pd.DataFrame()
     all_months_s_df = pd.DataFrame()
     for month in range(1,13):
-        url_n = f"{SEA_ICE_N_URL}N_{month:02d}_extent_v4.0.csv"
-        url_s = f"{SEA_ICE_S_URL}S_{month:02d}_extent_v4.0.csv"
-        df_n = pd.read_csv(url_n, skipinitialspace=True)
-        df_s = pd.read_csv(url_s, skipinitialspace=True)
+        backup_n = f"N_{month:02d}_extent_v4.0.csv"
+        backup_s = f"S_{month:02d}_extent_v4.0.csv"
+        url_n = f"{SEA_ICE_N_URL}{backup_n}"
+        url_s = f"{SEA_ICE_S_URL}{backup_s}"
+        df_n = read_csv_from_url(url_n, Path(f"data/{backup_n}"), skipinitialspace=True)
+        df_s = read_csv_from_url(url_s, Path(f"data/{backup_s}"), skipinitialspace=True)
         all_months_n_df = pd.concat([all_months_n_df, df_n])
         all_months_s_df = pd.concat([all_months_s_df, df_s])
     df = pd.concat([all_months_n_df, all_months_s_df])
@@ -239,4 +292,4 @@ def get_co2_hist_data():
     return df[['Year', 'Name', 'Value']].sort_values(by='Year')
     
 if __name__ == "__main__":
-    get_ice_sheet_data()
+    get_snow_data()
