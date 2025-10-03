@@ -6,6 +6,8 @@ import streamlit as st
 from pathlib import Path
 import numpy as np
 
+SEA_LEVEL_URL = r'https://climate.copernicus.eu/sites/default/files/custom-uploads/indicators-2024/sea-level/fig1/fig1_sea_level_indicators_climate_global_area_averaged_anomalies_DT24_updated_towards_2024_07_29_DATA.csv'
+SEA_LEVEL_BACKUP = Path("data/fig1_sea_level_indicators_climate_global_area_averaged_anomalies_DT24_updated_towards_2024_07_29_DATA.csv")
 SNOW_URL = r'https://climate.rutgers.edu/snowcover/files/moncov.nhland.txt'
 SNOW_BACKUP = Path("data/moncov.nhland.txt")
 GLACIERS_URL = r'https://www.epa.gov/system/files/other-files/2024-05/glaciers_fig-1.csv'
@@ -303,6 +305,15 @@ def get_sea_level_hist_data():
     df.Year = df.Year - 0.5
     df.Year = df.Year.astype(int)
     return df
+
+@st.cache_data()
+def get_sea_level_latest_data():
+    df = read_csv_from_url(SEA_LEVEL_URL, SEA_LEVEL_BACKUP)
+    df['Date'] = df['Time (years)'].apply(fractional_year_to_datetime)
+    df = df.replace("nan", float("NaN"))
+    df["Trendslope"] = np.gradient(df["OLS fit"].to_numpy() * 10, df['Time (years)'].to_numpy())
+    df.to_excel('df.xlsx')
+    return df
     
 if __name__ == "__main__":
-    get_snow_data()
+    get_sea_level_latest_data()

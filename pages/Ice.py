@@ -9,7 +9,8 @@ from get_data import (
     get_ice_sheet_data,
     get_glaciers_data,
     get_snow_data,
-    get_sea_level_hist_data
+    get_sea_level_hist_data,
+    get_sea_level_latest_data
 )
 
 # Set the title and favicon that appear in the Browser's tab bar.
@@ -351,8 +352,71 @@ fig5.update_layout(
 fig5.update_xaxes(title_text="Year")
 
 # Set y-axes titles
-fig5.update_yaxes(title_text=f"Sea level (mm)")
+fig5.update_yaxes(title_text=f"Sea level anomaly (mm)")
 st.plotly_chart(fig5, use_container_width=True)
 st.caption(f"""Graph 9: Reconstructed global mean sea level anomaly relative to 1990. The reconstruction is based on 
     satellite data and tide gauge records. 
     Data from [CSIRO](https://www.cmar.csiro.au/sealevel/sl_data_cmar.html).""")
+
+
+fig6 = make_subplots()
+
+df = get_sea_level_latest_data()
+x=df.Date
+y=df["Mean Sea Level (cm)"] * 10
+
+# Add traces
+fig6.add_trace(
+    go.Scatter(x=x,
+        y=y, 
+        name='Global mean sea level anomaly',
+        hovertemplate =
+        'Value: %{y:.1f} mm'+
+        '<br>Date: %{x|%B %d, %Y}',
+        line=dict(color='blue'))
+)
+y_lower = y - df["90% C.L. uncertainty"] * 10
+y_upper = y + df["90% C.L. uncertainty"] * 10
+
+fig6.add_trace(
+    go.Scatter(x=pd.concat([x, x[::-1]]),
+        y=pd.concat([y_upper, y_lower[::-1]]), 
+        name='90% Confidence level',
+        fill='toself',
+        fillcolor='rgba(0,0,255,0.2)',
+        hoverinfo="skip",
+        line=dict(color='rgba(0,0,255,0.2)', width=0.1))
+)
+
+fig6.add_trace(
+    go.Scatter(x=x,
+        y=df["OLS fit"] * 10, 
+        name='Trendline',
+        customdata = df["Trendslope"],
+        hovertemplate =
+        'Slope: %{customdata:.2f} mm/yr'+
+        '<br>Date: %{x|%B %d, %Y}',
+        line=dict(color='black', width = 1, dash='dash'))
+)
+
+fig6.update_layout(
+    title_text=f"Graph 10: Latest global mean sea level anomaly",
+    legend=dict(
+            x=0.1,  # x-position (0.1 is near left)
+            y=0.7,  # y-position (0.9 is near top)
+            xref="container",
+            yref="container",
+            orientation = 'h'
+        )
+)
+# Set x-axis title
+fig6.update_xaxes(title_text="Observation time")
+
+# Set y-axes titles
+fig6.update_yaxes(title_text=f"Sea level anomaly (mm)")
+st.plotly_chart(fig6, use_container_width=True)
+st.caption(f"""Graph 10: Global mean sea level anomaly from satellite altimetry relative to 1990. 30% of the global mean sea 
+    level rise is due to thermal expansion in the ocean while remaining contribution mainly comes from the melting of 
+    glaciers and ice sheets. The rise in global mean sea level has increased by 46%, from a trend of 2.9 mm/year over 
+    1999–2009 to a trend of 4.2 mm/year over 2014–2024 (Copernicus Climate Change Service).
+    Data from [Copernicus Climate Change Service](https://climate.copernicus.eu/climate-indicators/sea-level).""")
