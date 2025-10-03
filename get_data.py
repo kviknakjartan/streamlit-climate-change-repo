@@ -28,6 +28,7 @@ CH4_HIST_PATH = Path("data/ghg-concentrations_fig-2.csv")
 N2O_HIST_PATH = Path("data/ghg-concentrations_fig-3.csv")
 PARRENIN_PATH = Path("data/ATS.tab")
 CMIP6_PATH = Path("data/global_mean_temp_data.xlsx")
+SEA_LEVEL_HIST_PATH = Path("data/CSIRO_Recons_gmsl_yr_2015.txt")
 
 def fractional_year_to_datetime(year_float):
     year = int(year_float)
@@ -74,7 +75,7 @@ def get_snow_data():
                                     freq='MS') # 'MS' for month start
     df = df.reindex(full_date_range)
     df = df.reset_index()
-    
+
     # get season and corresponding year
     df['season_year'] = df['index'].apply(get_season)
     df[['season','s_year']] = df['season_year'].str.split(' ', expand=True)
@@ -129,8 +130,8 @@ def get_sea_ice_data():
         backup_s = f"S_{month:02d}_extent_v4.0.csv"
         url_n = f"{SEA_ICE_N_URL}{backup_n}"
         url_s = f"{SEA_ICE_S_URL}{backup_s}"
-        df_n = read_csv_from_url(url_n, Path(f"data/{backup_n}"), skipinitialspace=True)
-        df_s = read_csv_from_url(url_s, Path(f"data/{backup_s}"), skipinitialspace=True)
+        df_n = read_csv_from_url(url_n, Path(f"data/{backup_n}"), timeout = 2, skipinitialspace=True)
+        df_s = read_csv_from_url(url_s, Path(f"data/{backup_s}"), timeout = 2, skipinitialspace=True)
         all_months_n_df = pd.concat([all_months_n_df, df_n])
         all_months_s_df = pd.concat([all_months_s_df, df_s])
     df = pd.concat([all_months_n_df, all_months_s_df])
@@ -294,6 +295,14 @@ def get_co2_hist_data():
         df.loc[len(df)] = [df.loc[i-1,'Year'] + 1000] + [float("NaN")] * (df.shape[1] - 1)
     df['Name'] = 'CO2_hist'
     return df[['Year', 'Name', 'Value']].sort_values(by='Year')
+
+@st.cache_data()
+def get_sea_level_hist_data():
+
+    df = pd.read_csv(SEA_LEVEL_HIST_PATH, sep=r'\s+', names = ['Year', 'Value', 'Unc'])
+    df.Year = df.Year - 0.5
+    df.Year = df.Year.astype(int)
+    return df
     
 if __name__ == "__main__":
     get_snow_data()

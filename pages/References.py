@@ -79,3 +79,7 @@ st.markdown(
     NOAA National Centers for Environmental Information. doi: 10.7289/V5N014G9.
     Date Accessed {date.today()}."""
 )
+st.markdown(
+    """*Global mean sea level reconstruction (Graph 9)*  \nChurch, J.A. and N.J. White (2011), Sea-level rise from the late 19th 
+    to the early 21st century. Surveys in Geophysics, 32, 585-602, doi:10.1007/s10712-011-9119-1."""
+)

@@ -8,7 +8,8 @@ from get_data import (
     get_sea_ice_data,
     get_ice_sheet_data,
     get_glaciers_data,
-    get_snow_data
+    get_snow_data,
+    get_sea_level_hist_data
 )
 
 # Set the title and favicon that appear in the Browser's tab bar.
@@ -306,3 +307,52 @@ st.caption(f"""Graph 8: Northern hemisphere seasonal and yearly average snow cov
     Snow cover extent is calculated at the Rutgers Global Snow Lab (GSL). The indicator is derived from maps
     produced daily by meteorologists at the US National Ice Center. Satellite images are used to construct the maps. 
     Data from [Rutgers University Global Snow Lab](https://climate.rutgers.edu/snowcover/table_area.php?ui_set=2&ui_sort=0).""")
+
+
+fig5 = make_subplots()
+
+df = get_sea_level_hist_data()
+
+# Add traces
+fig5.add_trace(
+    go.Scatter(x=df.Year,
+        y=df.Value, 
+        name='Global mean sea level anomaly',
+        hovertemplate =
+        'Value: %{y:.1f} mm'+
+        '<br>Year: %{x:.0f}',
+        line=dict(color='blue'))
+)
+x = df.Year
+y_lower = df.Value - df.Unc
+y_upper = df.Value + df.Unc
+
+fig5.add_trace(
+    go.Scatter(x=pd.concat([x, x[::-1]]),
+        y=pd.concat([y_upper, y_lower[::-1]]), 
+        name='Uncertainty',
+        fill='toself',
+        fillcolor='rgba(0,0,255,0.2)',
+        hoverinfo="skip",
+        line=dict(color='rgba(0,0,255,0.2)', width=0.1))
+)
+
+fig5.update_layout(
+    title_text=f"Graph 9: Reconstructed global mean sea level anomaly",
+    legend=dict(
+            x=0.1,  # x-position (0.1 is near left)
+            y=0.7,  # y-position (0.9 is near top)
+            xref="container",
+            yref="container",
+            orientation = 'h'
+        )
+)
+# Set x-axis title
+fig5.update_xaxes(title_text="Year")
+
+# Set y-axes titles
+fig5.update_yaxes(title_text=f"Sea level (mm)")
+st.plotly_chart(fig5, use_container_width=True)
+st.caption(f"""Graph 9: Reconstructed global mean sea level anomaly relative to 1990. The reconstruction is based on 
+    satellite data and tide gauge records. 
+    Data from [CSIRO](https://www.cmar.csiro.au/sealevel/sl_data_cmar.html).""")
