@@ -13,8 +13,8 @@ st.set_page_config(
 
 st.sidebar.header("Home")
 
-st.title("Global Average Temperature and Greenhouse Gas Concentration:")
-st.subheader("""Four interactive graphs showing past and future temperatures as well as atmospheric greenhouse gas concentrations based on paleoclimatic data and climate modeling.""")
+st.title("Climate Change in Graphs:")
+st.subheader("""Interactive graphs and maps showing past, present and future (?) climate and climatic indicators.""")
 
 st.write("---")
 

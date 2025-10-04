@@ -22,6 +22,8 @@ st.set_page_config(
 
 st.sidebar.header("Ice")
 
+st.markdown("# Ice and snowcover extent")
+
 col1, col2 = st.columns(2)
 
 with col1:
@@ -74,7 +76,7 @@ fig1.add_trace(
 )
 
 fig1.update_layout(
-    title_text=f"Graph 5: {selected_hemisphere} sea ice {selected_variable.lower()} with 12 month moving average",
+    title_text=f"Graph 1: {selected_hemisphere} sea ice {selected_variable.lower()} with 12 month moving average",
     legend=dict(
             x=0.1,  # x-position (0.1 is near left)
             y=0.7,  # y-position (0.9 is near top)
@@ -89,7 +91,7 @@ fig1.update_xaxes(title_text="Observation time")
 # Set y-axes titles
 fig1.update_yaxes(title_text=f"{selected_variable} (km<sup>2</sup>)")
 st.plotly_chart(fig1, use_container_width=True)
-st.caption(f"""Graph 5: {selected_hemisphere} monthly sea Ice {selected_variable.lower()} from satellite data. 
+st.caption(f"""Graph 1: {selected_hemisphere} monthly sea Ice {selected_variable.lower()} from satellite data. 
     Also shown are the 12 month moving average and a trendline.
     Sea ice extent is the total area of ocean with at least 15% sea ice concentration, while sea ice area is the actual 
     amount of ice present, accounting for the fractional coverage within each grid cell. Data from 
@@ -168,7 +170,7 @@ fig2.add_trace(
         line=dict(color='rgba(255,0,0,0.2)', width=0.1))
 )
 fig2.update_layout(
-        title_text="Graph 6: Cumulative Mass Balance of Greenland and Antarctica",
+        title_text="Graph 2: Cumulative Mass Balance of Greenland and Antarctica",
         legend=dict(
             x=0.1,  # x-position (0.1 is near left)
             y=0.1  # y-position (0.9 is near top)
@@ -181,7 +183,7 @@ fig2.update_xaxes(title_text="Observation time")
 # Set y-axes titles
 fig2.update_yaxes(title_text="Cumulative mass change (tons)")
 st.plotly_chart(fig2, use_container_width=True)
-st.caption("""Graph 6: Cumulative Mass Balance of Greenland and Antarctica from 1992. 
+st.caption("""Graph 2: Cumulative Mass Balance of Greenland and Antarctica from 1992. 
     The dark lines show combined data that is based on more than 20 different studies where data has been combined 
     over multiple region. Shading shows the uncertainty estimates that is cumulated from uncertainties calculated for each study.
     The two thin lines show data from one commonly cited analysis where seasonal variations can be seen. 
@@ -221,7 +223,7 @@ fig3.add_trace(
     secondary_y=True,
 )
 fig3.update_layout(
-        title_text="Graph 7: Cumulative change in mass balance for observed glaciers around the world",
+        title_text="Graph 3: Cumulative change in mass balance for observed glaciers around the world",
         legend=dict(
             x=0.1,  # x-position (0.1 is near left)
             y=0.8,  # y-position (0.9 is near top)
@@ -238,7 +240,7 @@ fig3.update_xaxes(title_text="Year")
 fig3.update_yaxes(title_text="Cumulative mass balance (meters of water equivalent)", secondary_y=False)
 fig3.update_yaxes(title_text="Number of glaciers observed", secondary_y=True)
 st.plotly_chart(fig3, use_container_width=True)
-st.caption("""Graph 7: Cumulative change in mass balance for a world wide set of reference glaciers. 
+st.caption("""Graph 3: Cumulative change in mass balance for a world wide set of reference glaciers. 
     The line on the graph shows the average mass balance of all the glaciers that were measured in a given year.
     Negative values indicate a net loss of ice and snow since the base year of 1956. Measurements are in meters 
     of water equivalent representing changes in the average thickness of the glaciers. The barplot shows how many 
@@ -291,7 +293,7 @@ fig4.add_trace(
 yearly_or_seasonal = "yearly" if selected_season == "Yearly average" else "seasonal"
 
 fig4.update_layout(
-    title_text=f"Graph 8: Northern hemisphere {yearly_or_seasonal} average snow cover extent",
+    title_text=f"Graph 4: Northern hemisphere {yearly_or_seasonal} average snow cover extent",
     legend=dict(
             x=0.1,  # x-position (0.1 is near left)
             y=0.7,  # y-position (0.9 is near top)
@@ -306,7 +308,7 @@ fig4.update_xaxes(title_text="Year")
 # Set y-axes titles
 fig4.update_yaxes(title_text=f"Snow cover extent (km<sup>2</sup>)")
 st.plotly_chart(fig4, use_container_width=True)
-st.caption(f"""Graph 8: Northern hemisphere seasonal and yearly average snow cover extent by year.
+st.caption(f"""Graph 4: Northern hemisphere seasonal and yearly average snow cover extent by year.
     Snow cover extent is calculated at the Rutgers Global Snow Lab (GSL). The indicator is derived from maps
     produced daily by meteorologists at the US National Ice Center. Satellite images are used to construct the maps. 
     Data from [Rutgers University Global Snow Lab](https://climate.rutgers.edu/snowcover/table_area.php?ui_set=2&ui_sort=0).""")
@@ -314,23 +316,23 @@ st.caption(f"""Graph 8: Northern hemisphere seasonal and yearly average snow cov
 st.markdown("# References")
 
 st.markdown(
-    f"""*Sea ice extent and area data (Graph 5)*  \nFetterer, F., Knowles, K., Meier, W. N., Savoie, M., Windnagel, 
+    f"""*Sea ice extent and area data (Graph 1)*  \nFetterer, F., Knowles, K., Meier, W. N., Savoie, M., Windnagel, 
     A. K. & Stafford, T. (2025). 
     Sea Ice Index. (G02135, Version 4). [Data Set]. Boulder, Colorado USA. National Snow and Ice Data Center. 
     [https://doi.org/10.7265/a98x-0f50](https://doi.org/10.7265/a98x-0f50). Date Accessed {date.today()}."""
 )
 st.markdown(
-    f"""*Cumulative Mass Balance of Greenland and Antarctica (Graph 6)*  \nUnited States Environmental Protection Agency. (2021). 
+    f"""*Cumulative Mass Balance of Greenland and Antarctica (Graph 2)*  \nUnited States Environmental Protection Agency. (2021). 
     Climate Change Indicators: Ice Sheets [Dataset]. US EPA. https://www.epa.gov/climate-indicators/climate-change-indicators-ice-sheets. 
     Date Accessed {date.today()}."""
 )
 st.markdown(
-    f"""*Cumulative mass balance for a set of observed glaciers (Graph 7)*  \nUnited States Environmental Protection Agency. (2010). 
+    f"""*Cumulative mass balance for a set of observed glaciers (Graph 3)*  \nUnited States Environmental Protection Agency. (2010). 
     Climate Change Indicators: Ice Sheets [Dataset]. US EPA. https://www.epa.gov/climate-indicators/climate-change-indicators-glaciers. 
     Date Accessed {date.today()}."""
 )
 st.markdown(
-    f"""*Northern hemisphere snow cover extent (Graph 8)*  \nRobinson, David A., Estilow, Thomas W., and NOAA CDR Program (2012): 
+    f"""*Northern hemisphere snow cover extent (Graph 4)*  \nRobinson, David A., Estilow, Thomas W., and NOAA CDR Program (2012): 
     NOAA Climate Data Record (CDR) of Northern Hemisphere (NH) Snow Cover Extent (SCE), Version 1. [dataset]. 
     NOAA National Centers for Environmental Information. doi: 10.7289/V5N014G9.
     Date Accessed {date.today()}."""

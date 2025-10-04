@@ -489,6 +489,8 @@ st.set_page_config(
 
 st.sidebar.header("Temperature")
 
+st.markdown("# Global Average Temperature and Greenhouse Gas Concentration")
+
 create_ghg_section()
 create_ghg_section2()
 create_cmip6_section()
