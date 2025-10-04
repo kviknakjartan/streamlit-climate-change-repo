@@ -479,14 +479,6 @@ def create_cmip6_section():
         Graph adopted from [Copernicus Climate Change Service (C3S) Data Tutorials](https://ecmwf-projects.github.io/copernicus-training-c3s/intro.html).
         CMIP6 data from [Copernicus Climate Change Service, Climate Data Store](https://cds.climate.copernicus.eu/datasets/projections-cmip6?tab=overview).""")
 
-# Set the title and favicon that appear in the Browser's tab bar.
-st.set_page_config(
-    page_title='Climate Change in Graphs',
-    page_icon='sun.svg',
-    layout='wide',
-    initial_sidebar_state='collapsed'
-)
-
 st.sidebar.header("Temperature")
 
 st.markdown("# Global Average Temperature and Greenhouse Gas Concentration")
