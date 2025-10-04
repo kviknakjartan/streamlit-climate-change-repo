@@ -6,6 +6,9 @@ import streamlit as st
 from pathlib import Path
 import numpy as np
 
+PH_ALOHA_URL = r'https://hahana.soest.hawaii.edu/hot/hotco2/HOT_surface_CO2.txt'
+PH_ALOHA_BACKUP = Path("data/df_aloha.csv")
+PH_HIST_PATH = Path("data/CSVExport.csv")
 SEA_LEVEL_URL = r'https://climate.copernicus.eu/sites/default/files/custom-uploads/indicators-2024/sea-level/fig1/fig1_sea_level_indicators_climate_global_area_averaged_anomalies_DT24_updated_towards_2024_07_29_DATA.csv'
 SEA_LEVEL_BACKUP = Path("data/fig1_sea_level_indicators_climate_global_area_averaged_anomalies_DT24_updated_towards_2024_07_29_DATA.csv")
 SNOW_URL = r'https://climate.rutgers.edu/snowcover/files/moncov.nhland.txt'
@@ -312,8 +315,18 @@ def get_sea_level_latest_data():
     df['Date'] = df['Time (years)'].apply(fractional_year_to_datetime)
     df = df.replace("nan", float("NaN"))
     df["Trendslope"] = np.gradient(df["OLS fit"].to_numpy() * 10, df['Time (years)'].to_numpy())
-    df.to_excel('df.xlsx')
     return df
+
+@st.cache_data()
+def get_ph_data():
+
+    df_global = pd.read_csv(PH_HIST_PATH, header=0, names=['date','value','uncertainty'])
+    df_global.date = pd.to_datetime(df_global.date)
+    df_aloha = read_csv_from_url(PH_ALOHA_URL, PH_ALOHA_BACKUP, sep=r'\s+', skiprows = 8)
+    df_aloha = df_aloha.replace(-999, float("NaN"))
+    df_aloha.date = pd.to_datetime(df_aloha.date)
+    return df_global, df_aloha
+
     
 if __name__ == "__main__":
-    get_sea_level_latest_data()
+    get_ph_data()
