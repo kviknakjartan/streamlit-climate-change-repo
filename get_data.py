@@ -5,7 +5,12 @@ import xarray as xr
 import streamlit as st
 from pathlib import Path
 import numpy as np
+from datetime import datetime
 
+OHC_300_PATH = Path("data/global_ohc300m_2024.csv")
+OHC_700_PATH = Path("data/global_ohc700m_2024.csv")
+OHC_2000_PATH = Path("data/global_ohc2km_2024.csv")
+OHC_700_2000_PATH = Path("data/global_ohc700-2km_2024.csv")
 PH_ALOHA_URL = r'https://hahana.soest.hawaii.edu/hot/hotco2/HOT_surface_CO2.txt'
 PH_ALOHA_BACKUP = Path("data/df_aloha.csv")
 PH_HIST_PATH = Path("data/CSVExport.csv")
@@ -34,6 +39,11 @@ N2O_HIST_PATH = Path("data/ghg-concentrations_fig-3.csv")
 PARRENIN_PATH = Path("data/ATS.tab")
 CMIP6_PATH = Path("data/global_mean_temp_data.xlsx")
 SEA_LEVEL_HIST_PATH = Path("data/CSIRO_Recons_gmsl_yr_2015.txt")
+
+def integer_to_datetime(int_date):
+    year, remainder = divmod(int_date, 10000)
+    month, day = divmod(remainder, 100)
+    return datetime(year, month + 1, day)
 
 def fractional_year_to_datetime(year_float):
     year = int(year_float)
@@ -326,6 +336,22 @@ def get_ph_data():
     df_aloha = df_aloha.replace(-999, float("NaN"))
     df_aloha.date = pd.to_datetime(df_aloha.date)
     return df_global, df_aloha
+
+@st.cache_data()
+def get_ohc_data():
+
+    df_300 = pd.read_csv(OHC_300_PATH)
+    df_700 = pd.read_csv(OHC_700_PATH)
+    df_2000 = pd.read_csv(OHC_2000_PATH)
+    df_700_2000 = pd.read_csv(OHC_700_2000_PATH)
+
+    df_300.time = df_300.time.apply(integer_to_datetime)
+    df_700.time = df_700.time.apply(integer_to_datetime)
+    df_2000.time = df_2000.time.apply(integer_to_datetime)
+    df_700_2000.time = df_700_2000.time.apply(integer_to_datetime)
+
+    return df_300, df_700, df_2000, df_700_2000
+
 
     
 if __name__ == "__main__":

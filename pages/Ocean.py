@@ -8,7 +8,8 @@ from datetime import date
 from get_data import (
     get_sea_level_hist_data,
     get_sea_level_latest_data,
-    get_ph_data
+    get_ph_data,
+    get_ohc_data
 )
 
 st.sidebar.header("Ocean")
@@ -192,6 +193,115 @@ st.caption("""Graph 3: Estimated global average and measured (Hawaii) ocean pH l
     Global average estimation data from [Copernicus](https://marine.copernicus.eu/ocean-climate-portal/ocean-acidification). 
     Measured pH data from [Hawaii Ocean Time-series (HOT)](https://hahana.soest.hawaii.edu/hot/hotco2/hotco2.html).""")
 
+
+df_300, df_700, df_2000, df_700_2000 = get_ohc_data()
+
+fig8 = make_subplots()
+
+# Add traces
+fig8.add_trace(
+    go.Scatter(x=df_300.time,
+        y=df_300.ohc_mean/10**21,
+        name="0-300 m",
+        hovertemplate =
+        'Value: %{y:.2f} ZJ'+
+        '<br>Date: %{x|%B %Y}',
+        line=dict(color='blue'))
+)
+
+fig8.add_trace(
+    go.Scatter(x=pd.concat([df_300.time, df_300.time[::-1]]),
+        y=pd.concat([df_300.ohc_max/10**21, df_300.ohc_min[::-1]/10**21]), 
+        name='0-300 m uncertainty',
+        fill='toself',
+        fillcolor='rgba(0,0,255,0.2)',
+        hoverinfo="skip",
+        line=dict(color='rgba(0,0,255,0.2)', width=0.1))
+)
+
+fig8.add_trace(
+    go.Scatter(x=df_700.time,
+        y=df_700.ohc_mean/10**21,
+        name="0-700 m",
+        hovertemplate =
+        'Value: %{y:.2f} ZJ'+
+        '<br>Date: %{x|%B %Y}',
+        line=dict(color='red'))
+)
+
+fig8.add_trace(
+    go.Scatter(x=pd.concat([df_700.time, df_700.time[::-1]]),
+        y=pd.concat([df_700.ohc_max/10**21, df_700.ohc_min[::-1]/10**21]), 
+        name='0-700 m uncertainty',
+        fill='toself',
+        fillcolor='rgba(255,0,0,0.2)',
+        hoverinfo="skip",
+        line=dict(color='rgba(255,0,0,0.2)', width=0.1))
+)
+
+fig8.add_trace(
+    go.Scatter(x=df_2000.time,
+        y=df_2000.ohc_mean/10**21,
+        name="0-2000 m",
+        hovertemplate =
+        'Value: %{y:.2f} ZJ'+
+        '<br>Date: %{x|%B %Y}',
+        line=dict(color='green'))
+)
+
+fig8.add_trace(
+    go.Scatter(x=pd.concat([df_2000.time, df_2000.time[::-1]]),
+        y=pd.concat([df_2000.ohc_max/10**21, df_2000.ohc_min[::-1]/10**21]), 
+        name='0-2000 m uncertainty',
+        fill='toself',
+        fillcolor='rgba(0,255,0,0.2)',
+        hoverinfo="skip",
+        line=dict(color='rgba(0,255,0,0.2)', width=0.1))
+)
+
+fig8.add_trace(
+    go.Scatter(x=df_700_2000.time,
+        y=df_700_2000.ohc_mean/10**21,
+        name="700-2000 m",
+        hovertemplate =
+        'Value: %{y:.2f} ZJ'+
+        '<br>Date: %{x|%B %Y}',
+        line=dict(color='gray', dash='dash'))
+)
+
+fig8.add_trace(
+    go.Scatter(x=pd.concat([df_700_2000.time, df_700_2000.time[::-1]]),
+        y=pd.concat([df_700_2000.ohc_max/10**21, df_700_2000.ohc_min[::-1]/10**21]), 
+        name='700-2000 m uncertainty',
+        fill='toself',
+        fillcolor='rgba(128,128,128,0.2)',
+        hoverinfo="skip",
+        line=dict(color='rgba(128,128,128,0.2)', width=0.1))
+)
+
+fig8.update_layout(
+    title_text="Graph 4: Ocean heat content anomalies of the ocean for various depth ranges",
+    legend=dict(
+        x=0.1,  # x-position (0.1 is near left)
+        y=0.7,  # y-position (0.9 is near top)
+        xref="container",
+        yref="container",
+        orientation = 'h'
+    )
+)
+
+# Set x-axis title
+fig8.update_xaxes(title_text="Observation time")
+
+# Set y-axes titles
+fig8.update_yaxes(title_text="Heat content (ZJ)")
+st.plotly_chart(fig8, use_container_width=True)
+st.caption("""Graph 4: Ocean heat content anomalies of the ocean for various depth ranges. The ocean absorbes and stores up to 
+    90% of the excess heat that is received by Earth and interned by the greenhouse effect. This heat is distributed by ocean 
+    circulation from low to mid and high latitudes, and from the surface to deeper layers (Copernicus). The heat content is 
+    measured in zettajoules (ZJ), which represents a factor of 10 to the power of 21.
+    Data and graph adopted from [Copernicus](https://climate.copernicus.eu/climate-indicators/ocean-heat-content).""")
+
 st.markdown("# References")
 
 st.markdown(
@@ -213,4 +323,9 @@ st.markdown(
     f"""*Measured pH levels from Aloha Station Hawaii (Graph 3)*  \nHawaii Ocean Time-series (HOT).  
     [Dataset]. https://hahana.soest.hawaii.edu/hot/hotco2/hotco2.html.
     Date Accessed {date.today()}."""
+)
+st.markdown(
+    """*Global ocean heat content anomalies (Graph 4)*  \nCopernicus Climate Change Service. 
+    CLIMATE INDICATORS - Ocean heat content. [Dataset]. https://climate.copernicus.eu/climate-indicators/ocean-heat-content.
+    Date Accessed 2025-10-04."""
 )
