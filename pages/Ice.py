@@ -3,6 +3,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import numpy as np
 from plotly.subplots import make_subplots
+from datetime import date
 
 from get_data import (
     get_sea_ice_data,
@@ -18,6 +19,9 @@ st.set_page_config(
     layout='wide',
     initial_sidebar_state='collapsed'
 )
+
+st.sidebar.header("Ice")
+
 col1, col2 = st.columns(2)
 
 with col1:
@@ -307,4 +311,27 @@ st.caption(f"""Graph 8: Northern hemisphere seasonal and yearly average snow cov
     produced daily by meteorologists at the US National Ice Center. Satellite images are used to construct the maps. 
     Data from [Rutgers University Global Snow Lab](https://climate.rutgers.edu/snowcover/table_area.php?ui_set=2&ui_sort=0).""")
 
+st.markdown("# References")
 
+st.markdown(
+    f"""*Sea ice extent and area data (Graph 5)*  \nFetterer, F., Knowles, K., Meier, W. N., Savoie, M., Windnagel, 
+    A. K. & Stafford, T. (2025). 
+    Sea Ice Index. (G02135, Version 4). [Data Set]. Boulder, Colorado USA. National Snow and Ice Data Center. 
+    [https://doi.org/10.7265/a98x-0f50](https://doi.org/10.7265/a98x-0f50). Date Accessed {date.today()}."""
+)
+st.markdown(
+    f"""*Cumulative Mass Balance of Greenland and Antarctica (Graph 6)*  \nUnited States Environmental Protection Agency. (2021). 
+    Climate Change Indicators: Ice Sheets [Dataset]. US EPA. https://www.epa.gov/climate-indicators/climate-change-indicators-ice-sheets. 
+    Date Accessed {date.today()}."""
+)
+st.markdown(
+    f"""*Cumulative mass balance for a set of observed glaciers (Graph 7)*  \nUnited States Environmental Protection Agency. (2010). 
+    Climate Change Indicators: Ice Sheets [Dataset]. US EPA. https://www.epa.gov/climate-indicators/climate-change-indicators-glaciers. 
+    Date Accessed {date.today()}."""
+)
+st.markdown(
+    f"""*Northern hemisphere snow cover extent (Graph 8)*  \nRobinson, David A., Estilow, Thomas W., and NOAA CDR Program (2012): 
+    NOAA Climate Data Record (CDR) of Northern Hemisphere (NH) Snow Cover Extent (SCE), Version 1. [dataset]. 
+    NOAA National Centers for Environmental Information. doi: 10.7289/V5N014G9.
+    Date Accessed {date.today()}."""
+)

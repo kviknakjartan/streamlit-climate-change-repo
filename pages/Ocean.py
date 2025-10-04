@@ -3,6 +3,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import numpy as np
 from plotly.subplots import make_subplots
+from datetime import date
 
 from get_data import (
     get_sea_level_hist_data,
@@ -17,6 +18,7 @@ st.set_page_config(
     initial_sidebar_state='collapsed'
 )
 
+st.sidebar.header("Ocean")
 
 fig5 = make_subplots()
 
@@ -128,3 +130,16 @@ st.caption(f"""Graph 10: Global mean sea level anomaly from satellite altimetry.
     glaciers and ice sheets. The rise in global mean sea level has increased by 46%, from a trend of 2.9 mm/year over 
     1999–2009 to a trend of 4.2 mm/year over 2014–2024 (Copernicus Climate Change Service).
     Data from [Copernicus Climate Change Service](https://climate.copernicus.eu/climate-indicators/sea-level).""")
+
+st.markdown("# References")
+
+st.markdown(
+    """*Global mean sea level reconstruction (Graph 9)*  \nChurch, J.A. and N.J. White (2011), Sea-level rise from the late 19th 
+    to the early 21st century. Surveys in Geophysics, 32, 585-602, doi:10.1007/s10712-011-9119-1."""
+)
+st.markdown(
+    f"""*Global mean sea level anomaly (Graph 10)*  \nCopernicus Climate Change Service. 
+    Climate indicators - Sea level: Figure 1. Daily change in global mean sea level 
+    [Dataset]. https://climate.copernicus.eu/climate-indicators/sea-level.
+    Date Accessed {date.today()}."""
+)
