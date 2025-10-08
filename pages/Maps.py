@@ -8,6 +8,8 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 from cartopy.util import add_cyclic_point
+import rasterio
+from rasterio.plot import show
 
 st.set_page_config(
     page_title='Climate Change in Graphs: Maps',
@@ -32,6 +34,8 @@ if 'be_1950to1993_temp' not in st.session_state:
     st.session_state.be_1950to1993_temp = None
 if 'be_1994to2024_temp' not in st.session_state:
     st.session_state.be_1994to2024_temp = None
+if '1983to2024_precip' not in st.session_state:
+    st.session_state['1983to2024_precip'] = None
 
 st.sidebar.header("Maps")
 
@@ -92,20 +96,17 @@ with col1:
 
 st.markdown(f"##### Graph 2: Change in daily precipitation for {selected_years}")
 
-#if selected_years == '1983-2024':
-#    plot_map(Path("data/df_wide_1983to2024_precip.csv"), 'Precipitation change (mm/day per decade)', -1, 1, 'RdBu')
-import rasterio
-from rasterio.plot import show
+if selected_years == '1983-2024':
+    plot_map(Path("data/df_wide_1983to2024_precip.csv"), 'Precipitation change (mm/day per decade)', -1.6, 1.6, 'RdBu',
+        '1983to2024_precip')
 
-with rasterio.open(Path("data/be_1950to1993_temp.tiff")) as src:
-            
-    fig, ax = plt.subplots(figsize=(20, 15))
-    ax.set_frame_on(False)
-    ax.set_axis_off()
-    show(src, ax=ax)
-    st.pyplot(fig, width = 'content')
+st.caption("""Graph 3: Recostruction of annual global average temperature for the past ~24,000 years based on climate modeling and geochemical proxy data,
+         estimation of past carbon dioxide levels based on Antarctic icecore data and modern measured temperature and 
+         carbon dioxide levels (instrumental record). Temperature reconstruction data from [NOAA](https://doi.org/10.25921/njxd-hg08).
+         Temperature instrumental record from [The Berkeley Earth Land/Ocean Temperature Record](https://doi.org/10.5194/essd-12-3469-2020).""")
 
 
+st.markdown(f"##### Graph 2: Change in daily precipitation for {selected_years}")
 
 with st.container(gap = None):
 
@@ -121,3 +122,9 @@ with st.container(gap = None):
 
     with col2:
         st.image(Path("data/Fig2_ScaleBarMagnitude.svg"))
+
+st.caption("""Graph 3: Recostruction of annual global average temperature for the past ~24,000 years based on climate modeling and geochemical proxy data,
+         estimation of past carbon dioxide levels based on Antarctic icecore data and modern measured temperature and 
+         carbon dioxide levels (instrumental record). Temperature reconstruction data from [NOAA](https://doi.org/10.25921/njxd-hg08).
+         Temperature instrumental record from [The Berkeley Earth Land/Ocean Temperature Record](https://doi.org/10.5194/essd-12-3469-2020).""")
+
