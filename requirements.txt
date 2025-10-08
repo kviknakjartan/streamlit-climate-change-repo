@@ -9,3 +9,5 @@ netcdf4
 openpyxl
 scipy
 numpy
+cartopy
+rasterio

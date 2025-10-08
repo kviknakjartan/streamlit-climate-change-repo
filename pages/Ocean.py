@@ -12,6 +12,13 @@ from get_data import (
     get_ohc_data
 )
 
+st.set_page_config(
+    page_title='Climate Change in Graphs: Ocean',
+    page_icon='sun.svg',
+    layout='wide',
+    initial_sidebar_state='collapsed'
+)
+
 st.sidebar.header("Ocean")
 
 st.markdown("# Global mean sea level anomaly and ocean acidification")

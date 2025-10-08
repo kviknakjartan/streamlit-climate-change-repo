@@ -12,6 +12,13 @@ from get_data import (
     get_snow_data
 )
 
+st.set_page_config(
+    page_title='Climate Change in Graphs: Ice',
+    page_icon='sun.svg',
+    layout='wide',
+    initial_sidebar_state='collapsed'
+)
+
 st.sidebar.header("Ice")
 
 st.markdown("# Ice and snowcover extent")
