@@ -469,7 +469,7 @@ def create_cmip6_section():
     fig1.update_yaxes(title_text="Temperature (°C)")
     st.plotly_chart(fig1, use_container_width=True)
     st.caption("""Graph 4: Climate model ensemble annual global average temperature quantiles for four different scenarios 
-        from year 1850 to year 2100. 
+        from year 1850 to year 2100. Shown are quantiles for the output of 37 models.
         For each of the three scenarios [SSP1-2.6](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways), 
         [SSP2-4.5](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways) and 
         [SSP5-8.5](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways) each model outputs forecast based on 

@@ -34,6 +34,8 @@ if 'be_1950to1993_temp' not in st.session_state:
     st.session_state.be_1950to1993_temp = None
 if 'be_1994to2024_temp' not in st.session_state:
     st.session_state.be_1994to2024_temp = None
+if 'cmip6_2025to2049_temp' not in st.session_state:
+    st.session_state.cmip6_2025to2049_temp = None
 if '1983to2024_precip' not in st.session_state:
     st.session_state['1983to2024_precip'] = None
 
@@ -73,16 +75,19 @@ def plot_map(filePath, label, vmin, vmax, cmap, session_state_label):
 col1, col2 = st.columns(2)
 
 with col1:
-    selected_years = st.selectbox("Select year range:", ['1950-1993', '1994-2024'])
+    selected_years = st.selectbox("Select year range:", ['1950-1993', '1994-2024', '2025-2049'])
 
 st.markdown(f"##### Graph 1: Change in surface temperature for {selected_years}")
 
 if selected_years == '1950-1993':
     plot_map(Path("data/df_be_wide_1950to1993_temp.csv"), 'Temperature change (°C per decade)', -2, 2, 'RdBu_r', 
         'be_1950to1993_temp')
-else:
+elif selected_years == '1994-2024':
     plot_map(Path("data/df_be_wide_1994to2024_temp.csv"), 'Temperature change (°C per decade)', -2, 2, 'RdBu_r', 
         'be_1994to2024_temp')
+elif selected_years == '2025-2049':
+    plot_map(Path("data/df_cmip6_wide_2025to2049_temp.csv"), 'Temperature change (°C per decade)', -2, 2, 'RdBu_r', 
+        'cmip6_2025to2049_temp')
 
 st.caption("""Graph 3: Recostruction of annual global average temperature for the past ~24,000 years based on climate modeling and geochemical proxy data,
          estimation of past carbon dioxide levels based on Antarctic icecore data and modern measured temperature and 
