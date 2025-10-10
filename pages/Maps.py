@@ -36,12 +36,16 @@ if 'be_1994to2024_temp' not in st.session_state:
     st.session_state.be_1994to2024_temp = None
 if 'cmip6_2025to2049_temp' not in st.session_state:
     st.session_state.cmip6_2025to2049_temp = None
+if 'cmip6_2050to2074_temp' not in st.session_state:
+    st.session_state.cmip6_2050to2074_temp = None
+if 'cmip6_2075to2099_temp' not in st.session_state:
+    st.session_state.cmip6_2075to2099_temp = None
 if '1983to2024_precip' not in st.session_state:
     st.session_state['1983to2024_precip'] = None
 
 st.sidebar.header("Maps")
 
-st.markdown("# Global mean sea level anomaly and ocean acidification")
+st.markdown("# Global spatial distributions of various climate indicators and projections")
 
 def plot_map(filePath, label, vmin, vmax, cmap, session_state_label):
 
@@ -75,7 +79,8 @@ def plot_map(filePath, label, vmin, vmax, cmap, session_state_label):
 col1, col2 = st.columns(2)
 
 with col1:
-    selected_years = st.selectbox("Select year range:", ['1950-1993', '1994-2024', '2025-2049'])
+    selected_years = st.selectbox("Select year range:", ['1950-1993', '1994-2024', '2025-2049 (projected)', 
+        '2050-2074 (projected)', '2075-2099 (projected)'])
 
 st.markdown(f"##### Graph 1: Change in surface temperature for {selected_years}")
 
@@ -85,14 +90,21 @@ if selected_years == '1950-1993':
 elif selected_years == '1994-2024':
     plot_map(Path("data/df_be_wide_1994to2024_temp.csv"), 'Temperature change (°C per decade)', -2, 2, 'RdBu_r', 
         'be_1994to2024_temp')
-elif selected_years == '2025-2049':
+elif selected_years == '2025-2049 (projected)':
     plot_map(Path("data/df_cmip6_wide_2025to2049_temp.csv"), 'Temperature change (°C per decade)', -2, 2, 'RdBu_r', 
         'cmip6_2025to2049_temp')
+elif selected_years == '2050-2074 (projected)':
+    plot_map(Path("data/df_cmip6_wide_2050to2074_temp.csv"), 'Temperature change (°C per decade)', -2, 2, 'RdBu_r', 
+        'cmip6_2050to2074_temp')
+else:
+    plot_map(Path("data/df_cmip6_wide_2075to2099_temp.csv"), 'Temperature change (°C per decade)', -2, 2, 'RdBu_r', 
+        'cmip6_2075to2099_temp')
 
-st.caption("""Graph 3: Recostruction of annual global average temperature for the past ~24,000 years based on climate modeling and geochemical proxy data,
-         estimation of past carbon dioxide levels based on Antarctic icecore data and modern measured temperature and 
-         carbon dioxide levels (instrumental record). Temperature reconstruction data from [NOAA](https://doi.org/10.25921/njxd-hg08).
-         Temperature instrumental record from [The Berkeley Earth Land/Ocean Temperature Record](https://doi.org/10.5194/essd-12-3469-2020).""")
+st.caption("""Graph 1: Global temperature trends in °C per decade in the past (instrumental record) and for future projections 
+    based on 23 CMIP6 model outputs. For CMIP6 projections the median trend for all model outputs is shown for 
+    scenario [SSP2-4.5](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways).
+    CMIP6 data from [Copernicus Climate Change Service, Climate Data Store](https://cds.climate.copernicus.eu/datasets/projections-cmip6?tab=overview).
+    Temperature instrumental record from [The Berkeley Earth Land/Ocean Temperature Record](https://doi.org/10.5194/essd-12-3469-2020).""")
 
 col1, col2 = st.columns(2)
 
@@ -133,3 +145,17 @@ st.caption("""Graph 3: Recostruction of annual global average temperature for th
          carbon dioxide levels (instrumental record). Temperature reconstruction data from [NOAA](https://doi.org/10.25921/njxd-hg08).
          Temperature instrumental record from [The Berkeley Earth Land/Ocean Temperature Record](https://doi.org/10.5194/essd-12-3469-2020).""")
 
+st.markdown("# References")
+
+st.markdown(
+    """*Instrumental temperature record (Graph 1)*  \nRohde, R. A. and Hausfather, Z.: 
+    The Berkeley Earth Land/Ocean Temperature Record, Earth Syst. Sci. Data, 12, 3469-3479, 
+    https://doi.org/10.5194/essd-12-3469-2020, 2020. 
+    (Accessed on 08-10-2025)."""
+)
+st.markdown(
+    """*CMIP6 model output data (Graph 1)*  \nCopernicus Climate Change Service, Climate Data Store, 
+    (2021): CMIP6 climate projections. Copernicus Climate Change Service (C3S) Climate Data Store (CDS). 
+    DOI: 10.24381/cds.c866074c. Accessed from https://cds.climate.copernicus.eu/datasets/projections-cmip6?tab=overview
+    (Accessed on 08-10-2025)."""
+)
