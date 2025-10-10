@@ -122,28 +122,47 @@ st.caption("""Graph 3: Recostruction of annual global average temperature for th
          carbon dioxide levels (instrumental record). Temperature reconstruction data from [NOAA](https://doi.org/10.25921/njxd-hg08).
          Temperature instrumental record from [The Berkeley Earth Land/Ocean Temperature Record](https://doi.org/10.5194/essd-12-3469-2020).""")
 
+col1, col2 = st.columns(2)
 
-st.markdown(f"##### Graph 2: Change in daily precipitation for {selected_years}")
+with col1:
+    selected_map = st.selectbox("Select indicator:", ['Magnitude', 'Abruptness', 'Timing'])
 
-with st.container(gap = None):
+def show_map(title, map_path, colorbar_path):
 
-    with rasterio.open(Path("data/MagnitudeEckertGGplot.tiff")) as src:
-            
-            fig, ax = plt.subplots(figsize=(20, 15))
-            ax.set_frame_on(False)
-            ax.set_axis_off()
-            show(src, ax=ax)
-            st.pyplot(fig)
+    st.markdown(title)
 
-    co1, col2, col3 = st.columns([2,1,2])
+    with st.container(gap = None):
 
-    with col2:
-        st.image(Path("data/Fig2_ScaleBarMagnitude.svg"))
+        with rasterio.open(map_path) as src:
+                
+                fig, ax = plt.subplots(figsize=(20, 15))
+                ax.set_frame_on(False)
+                ax.set_axis_off()
+                show(src, ax=ax)
+                st.pyplot(fig)
 
-st.caption("""Graph 3: Recostruction of annual global average temperature for the past ~24,000 years based on climate modeling and geochemical proxy data,
-         estimation of past carbon dioxide levels based on Antarctic icecore data and modern measured temperature and 
-         carbon dioxide levels (instrumental record). Temperature reconstruction data from [NOAA](https://doi.org/10.25921/njxd-hg08).
-         Temperature instrumental record from [The Berkeley Earth Land/Ocean Temperature Record](https://doi.org/10.5194/essd-12-3469-2020).""")
+        co1, col2, col3 = st.columns([1.5,1,1.5])
+
+        with col2:
+            st.image(colorbar_path)
+
+if selected_map == "Magnitude":
+    show_map("##### Graph 3: Percentage of species exposed to potentially dangerous climate by 2100",
+        Path("data/MagnitudeEckertGGplot.tiff"), Path("data/Fig2_ScaleBarMagnitude.svg"))
+elif selected_map == "Abruptness":
+    show_map("##### Graph 3: Percentage of species exposed to potentially dangerous climate at a time of maximum exposure",
+        Path("data/AbruptnessEckertGGplot.tiff"), Path("data/Fig2_ScaleBarAbruptness.svg"))
+else:
+    show_map("##### Graph 3: Median year of species exposed to potentially dangerous climate",
+        Path("data/TimingEckertGGplot.tiff"), Path("data/Fig2_ScaleBarTiming.svg"))
+
+st.caption("""Graph 3: Three different indicators quantifying potential loss of biodiversity in the future based on 
+    scenario [SSP2-4.5](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways) and data on over 30,000 marine and 
+    terrestrial species. *Magnitude* indicates what percentage of
+    local species will be subjected to climate conditions threatening to their survival by the year 2100. *Abruptness* indicates 
+    what percentage of local species will be subjected to these conditions at the same time interval (a decade), the interval at 
+    which most of the species in question will be exposed. *Timing* then indicates the median year of exposure for all local species
+    that will be exposed by the year 2100. Data and plots from [Nature](https://doi.org/10.1038/s41586-020-2189-9).""")
 
 st.markdown("# References")
 
@@ -158,4 +177,9 @@ st.markdown(
     (2021): CMIP6 climate projections. Copernicus Climate Change Service (C3S) Climate Data Store (CDS). 
     DOI: 10.24381/cds.c866074c. Accessed from https://cds.climate.copernicus.eu/datasets/projections-cmip6?tab=overview
     (Accessed on 08-10-2025)."""
+)
+st.markdown(
+    """*Indicators quantifying potential loss of biodiversity (Graph 3)*  \nTrisos, C.H., Merow, C. & Pigot, A.L. 
+    The projected timing of abrupt ecological disruption from climate change. 
+    Nature 580, 496–501 (2020). https://doi.org/10.1038/s41586-020-2189-9"""
 )
