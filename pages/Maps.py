@@ -2,10 +2,9 @@ import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
 import numpy as np
-from plotly.subplots import make_subplots
-from datetime import date
 from pathlib import Path
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 import cartopy.crs as ccrs
 from cartopy.util import add_cyclic_point
 import rasterio
@@ -42,11 +41,12 @@ if 'cmip6_2075to2099_temp' not in st.session_state:
     st.session_state.cmip6_2075to2099_temp = None
 if '1983to2024_precip' not in st.session_state:
     st.session_state['1983to2024_precip'] = None
+if 'mid_century_tws' not in st.session_state:
+    st.session_state.mid_century_tws = None
+if 'late_century_tws' not in st.session_state:
+    st.session_state.late_century_tws = None
 
 
-st.sidebar.header("Maps")
-
-st.markdown("# Global spatial distributions of various climate indicators and projections")
 
 def plot_map(filePath, label, vmin, vmax, cmap, session_state_label):
 
@@ -76,6 +76,54 @@ def plot_map(filePath, label, vmin, vmax, cmap, session_state_label):
     st.pyplot(fig, width='stretch')
     
     st.session_state[session_state_label] = fig
+
+def plot_tws_map(filePath, label, session_state_label):
+
+    if st.session_state[session_state_label] is not None:
+        st.pyplot(st.session_state[session_state_label], width='stretch')
+        return
+
+    df = pd.read_csv(filePath)
+
+    lats = df.latitude
+    df = df.drop(columns=['latitude'])
+    lons = df.columns
+    data = df.values
+
+    data_cyclic, lon_cyclic = add_cyclic_point(data, coord=pd.to_numeric(lons))
+
+    fig = plt.figure(figsize=(16, 12))
+    ax = plt.axes(projection=ccrs.Mollweide(central_longitude=0, globe=None))
+
+    custom_levels = [-300, -200, -100, -50, -10, 10, 50, 100, 200, 300]
+
+    # Define a list of colors
+    custom_colors = ['darkred', 'red', 'orange', 'yellow', 'lightgray', 'cyan', 'blue', 'darkblue', 'purple']
+
+    # Create a ListedColormap
+    custom_cmap = mcolors.ListedColormap(custom_colors)
+
+    # Create a BoundaryNorm instance
+    # cmap.N should match the number of colors in custom_cmap
+    norm = mcolors.BoundaryNorm(custom_levels, custom_cmap.N)
+
+    mappable = ax.contourf(lon_cyclic, lats, np.clip(data_cyclic, -299.9, 299.9), 60, vmin = -300, vmax = 300, cmap=custom_cmap,
+                 transform=ccrs.PlateCarree(), levels=custom_levels, norm=norm)
+
+    ax.coastlines()
+
+    fig.colorbar(mappable, label='label', orientation='horizontal', pad=0.01, shrink=0.6) # Add a colorbar
+
+    st.pyplot(fig, width='stretch')
+    
+    st.session_state[session_state_label] = fig
+
+st.sidebar.header("Maps")
+
+st.markdown("# Global spatial distributions of various climate indicators and projections")
+
+#################### Change in surface temperature #############################
+st.write("")
 
 col1, col2 = st.columns(2)
 
@@ -107,12 +155,15 @@ st.caption("""Graph 1: Global temperature trends in °C per decade in the past (
     CMIP6 data from [Copernicus Climate Change Service, Climate Data Store](https://cds.climate.copernicus.eu/datasets/projections-cmip6?tab=overview).
     Temperature instrumental record from [The Berkeley Earth Land/Ocean Temperature Record](https://doi.org/10.5194/essd-12-3469-2020).""")
 
+#################### Change in monthly average precipitation #############################
+st.write("")
+
 col1, col2 = st.columns(2)
 
 with col1:
     selected_years = st.selectbox("Select year range:", ['1983-2024'])
 
-st.markdown(f"##### Graph 2: Change in daily precipitation for {selected_years}")
+st.markdown(f"##### Graph 2: Change in monthly average precipitation for {selected_years}")
 
 if selected_years == '1983-2024':
     plot_map(Path("data/df_wide_1983to2024_precip.csv"), 'Precipitation change (mm/day per decade)', -1.6, 1.6, 'RdBu',
@@ -124,10 +175,35 @@ if selected_years == '1983-2024':
 #     plot_map(Path("data/df_cmip6_wide_2050to2099_precip.csv"), 'Precipitation change (mm/day per decade)', -1.6, 1.6, 'RdBu',
 #         '2050to2099_precip')
 
-st.caption("""Graph Graph 2: Trend in daily precipitation for 1983-2024. Units are (mm/day)/decade.
+st.caption("""Graph Graph 2: Trend in monthly average precipitation for 1983-2024. Units are (mm/day)/decade.
          Monthly average precipitation data derived from satellite measurements 
          from [Copernicus Climate Change Service, Climate Data Store](https://cds.climate.copernicus.eu/datasets/satellite-precipitation?tab=download).""")
 
+#################### TWS and drought #############################
+st.write("")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    selected_indicator = st.selectbox("Select indicator:", ['Changes in terrestrial water storage 2030-2059', 
+        'Changes in terrestrial water storage 2070-2099'])
+
+st.markdown(f"##### Graph 3: {selected_indicator}")
+
+if selected_indicator == 'Changes in terrestrial water storage 2030-2059':
+    plot_tws_map(Path("data/df_wide_mid_century_tws.csv"), 'TWS (mm)', 'mid_century_tws')
+elif selected_indicator == 'Changes in terrestrial water storage 2070-2099':
+    plot_tws_map(Path("data/df_wide_late_century_tws.csv"), 'TWS (mm)', 'late_century_tws')
+
+st.caption("""Graph 3:  The changes (multi-model weighted mean) in terrestrial water storage (TWS), averaged for the 
+    mid- (2030–2059) and the late (2070–2099) twenty-first century under future 
+    scenario [RCP6.0](https://en.wikipedia.org/wiki/Representative_Concentration_Pathway). The changes are relative to the 
+    average for the historical baseline period (1976–2005). Terrestrial water storage is the sum of continental water 
+    stored in canopies, snow and ice, rivers, lakes and reservoirs, wetlands, soil and groundwater. It plays a key role in
+    determining water resource availability. Changes in TWS are linked to droughts, floods and global sea level change. 
+    Graph adopted from and data from [Nature Climate Change](https://doi.org/10.1038/s41558-020-00972-w).""")
+
+#################### Loss in biodiversity #############################
 st.write("")
 
 col1, col2 = st.columns(2)
@@ -172,6 +248,7 @@ st.caption("""Graph 3: Three different indicators quantifying potential loss of 
     which most of the species in question will be exposed. *Timing* then indicates the median year of exposure for all local species
     that will be exposed by the year 2100. Data and plots from [Nature](https://doi.org/10.1038/s41586-020-2189-9).""")
 
+#################### References #############################
 st.markdown("# References")
 
 st.markdown(
@@ -198,7 +275,14 @@ st.markdown(
     Information Services Center (GES DISC), Accessed: [2025-10-07], 10.5067/MEASURES/GPCP/DATA304."""
 )
 st.markdown(
+    """*Changes in TWS and drought severity (Graph 3)*  \nPokhrel, Y., Felfelani, F., Satoh, Y. et al. Global terrestrial 
+    water storage and drought severity under climate change. Nat. Clim. Chang. 11, 226–233 
+    (2021). https://doi.org/10.1038/s41558-020-00972-w.
+    (Accessed on 2025-10-06)"""
+)
+st.markdown(
     """*Indicators quantifying potential loss of biodiversity (Graph 3)*  \nTrisos, C.H., Merow, C. & Pigot, A.L. 
     The projected timing of abrupt ecological disruption from climate change. 
-    Nature 580, 496–501 (2020). https://doi.org/10.1038/s41586-020-2189-9"""
+    Nature 580, 496–501 (2020). https://doi.org/10.1038/s41586-020-2189-9.
+    (Accessed on 2025-10-06)"""
 )
