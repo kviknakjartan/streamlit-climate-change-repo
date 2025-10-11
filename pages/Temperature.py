@@ -541,13 +541,13 @@ st.markdown(
     """*CMIP6 model output data (Graph 4)*  \nCopernicus Climate Change Service, Climate Data Store, 
     (2021): CMIP6 climate projections. Copernicus Climate Change Service (C3S) Climate Data Store (CDS). 
     DOI: 10.24381/cds.c866074c. Accessed from https://cds.climate.copernicus.eu/datasets/projections-cmip6?tab=overview
-    (Accessed on 24-09-2025)."""
+    (Accessed on 2025-09-24)."""
 )
 st.markdown(
     """*CMIP6 model output plot original work (Graph 4)*  \nCopernicus Climate Change Service (C3S) Data Tutorials: 
     Plot an Ensemble of CMIP6 Climate Projections. (2022). Copernicus Climate Change Service (C3S). 
     https://ecmwf-projects.github.io/copernicus-training-c3s/projections-cmip6.html
-    (Accessed on 24-09-2025)."""
+    (Accessed on 2025-09-24)."""
 )
 
 

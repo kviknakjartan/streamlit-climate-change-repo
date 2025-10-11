@@ -43,6 +43,7 @@ if 'cmip6_2075to2099_temp' not in st.session_state:
 if '1983to2024_precip' not in st.session_state:
     st.session_state['1983to2024_precip'] = None
 
+
 st.sidebar.header("Maps")
 
 st.markdown("# Global spatial distributions of various climate indicators and projections")
@@ -116,11 +117,18 @@ st.markdown(f"##### Graph 2: Change in daily precipitation for {selected_years}"
 if selected_years == '1983-2024':
     plot_map(Path("data/df_wide_1983to2024_precip.csv"), 'Precipitation change (mm/day per decade)', -1.6, 1.6, 'RdBu',
         '1983to2024_precip')
+# elif selected_years == '2025-2049':
+#     plot_map(Path("data/df_cmip6_wide_2025to2049_precip.csv"), 'Precipitation change (mm/day per decade)', -1.6, 1.6, 'RdBu',
+#         '2025to2049_precip')
+# else:
+#     plot_map(Path("data/df_cmip6_wide_2050to2099_precip.csv"), 'Precipitation change (mm/day per decade)', -1.6, 1.6, 'RdBu',
+#         '2050to2099_precip')
 
-st.caption("""Graph 3: Recostruction of annual global average temperature for the past ~24,000 years based on climate modeling and geochemical proxy data,
-         estimation of past carbon dioxide levels based on Antarctic icecore data and modern measured temperature and 
-         carbon dioxide levels (instrumental record). Temperature reconstruction data from [NOAA](https://doi.org/10.25921/njxd-hg08).
-         Temperature instrumental record from [The Berkeley Earth Land/Ocean Temperature Record](https://doi.org/10.5194/essd-12-3469-2020).""")
+st.caption("""Graph Graph 2: Trend in daily precipitation for 1983-2024. Units are (mm/day)/decade.
+         Monthly average precipitation data derived from satellite measurements 
+         from [Copernicus Climate Change Service, Climate Data Store](https://cds.climate.copernicus.eu/datasets/satellite-precipitation?tab=download).""")
+
+st.write("")
 
 col1, col2 = st.columns(2)
 
@@ -170,13 +178,24 @@ st.markdown(
     """*Instrumental temperature record (Graph 1)*  \nRohde, R. A. and Hausfather, Z.: 
     The Berkeley Earth Land/Ocean Temperature Record, Earth Syst. Sci. Data, 12, 3469-3479, 
     https://doi.org/10.5194/essd-12-3469-2020, 2020. 
-    (Accessed on 08-10-2025)."""
+    (Accessed on 2025-10-08)."""
 )
 st.markdown(
     """*CMIP6 model output data (Graph 1)*  \nCopernicus Climate Change Service, Climate Data Store, 
     (2021): CMIP6 climate projections. Copernicus Climate Change Service (C3S) Climate Data Store (CDS). 
-    DOI: 10.24381/cds.c866074c. Accessed from https://cds.climate.copernicus.eu/datasets/projections-cmip6?tab=overview
-    (Accessed on 08-10-2025)."""
+    DOI: 10.24381/cds.c866074c. (Accessed on 2025-10-08)."""
+)
+st.markdown(
+    """*Precipitation data 1983-2024 (Graph 2)*  \nCopernicus Climate Change Service (2021): Precipitation monthly and daily 
+    gridded data from 1979 to present derived from satellite measurement. Copernicus Climate Change Service (C3S) Climate 
+    Data Store (CDS). DOI: 10.24381/cds.c14d9324.
+    (Accessed on 2025-10-07)."""
+)
+st.markdown(
+    """*GPCP Version 3.2 Satellite-Gauge (SG) Combined Precipitation Data Set (Graph 2)*  \nHuffman, G.J., A. Behrangi, 
+    D.T. Bolvin, E.J. Nelkin (2022), GPCP Version 3.2 Satellite-Gauge (SG) Combined Precipitation Data Set, Edited by 
+    Huffman, G.J., A. Behrangi, D.T. Bolvin, E.J. Nelkin, Greenbelt, Maryland, USA, Goddard Earth Sciences Data and 
+    Information Services Center (GES DISC), Accessed: [2025-10-07], 10.5067/MEASURES/GPCP/DATA304."""
 )
 st.markdown(
     """*Indicators quantifying potential loss of biodiversity (Graph 3)*  \nTrisos, C.H., Merow, C. & Pigot, A.L. 
