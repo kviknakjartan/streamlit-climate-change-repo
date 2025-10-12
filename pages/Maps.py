@@ -234,7 +234,8 @@ else:
 
 st.caption("""Graph 2: Trend in monthly average precipitation for 1983-2024 and projected long-term relative changes in 
         seasonal mean precipitation for indicated months. For the projected (modeled) changes hatched lines indicate low model 
-        agreement (<80%). Monthly average precipitation data derived from satellite measurements (GPCP) 
+        agreement (<80%). All changes are estimated for 2081–2100 relative to the 1995–2014 base period. 
+        Monthly average precipitation data derived from satellite measurements (GPCP) 
         from [Copernicus Climate Change Service, Climate Data Store](https://cds.climate.copernicus.eu/datasets/satellite-precipitation?tab=download). 
         Model data and plot adoptation from [IPCC Sixth Assessment Report](https://dx.doi.org/10.5285/bbf5ae3b78c44bf28ccb17b487d58a94)""")
 
