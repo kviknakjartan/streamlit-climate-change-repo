@@ -45,10 +45,22 @@ if 'mid_century_tws' not in st.session_state:
     st.session_state.mid_century_tws = None
 if 'late_century_tws' not in st.session_state:
     st.session_state.late_century_tws = None
+if 'mod_drought' not in st.session_state:
+    st.session_state.mod_drought = None
+if 'ext_drought' not in st.session_state:
+    st.session_state.ext_drought = None
+if 'djf_precip' not in st.session_state:
+    st.session_state.djf_precip = None
+if 'mam_precip' not in st.session_state:
+    st.session_state.mam_precip = None
+if 'jja_precip' not in st.session_state:
+    st.session_state.jja_precip = None
+if 'son_precip' not in st.session_state:
+    st.session_state.son_precip = None
 
 
 
-def plot_map(filePath, label, vmin, vmax, cmap, session_state_label):
+def plot_map(filePath, label, vmin, vmax, cmap, session_state_label, nlevels = 60, scaling = 1):
 
     if st.session_state[session_state_label] is not None:
         st.pyplot(st.session_state[session_state_label], width='stretch')
@@ -66,7 +78,7 @@ def plot_map(filePath, label, vmin, vmax, cmap, session_state_label):
     fig = plt.figure(figsize=(16, 12))
     ax = plt.axes(projection=ccrs.Mollweide(central_longitude=0, globe=None))
 
-    mappable = ax.contourf(lon_cyclic, lats, data_cyclic * 120, 60, vmin = vmin, vmax = vmax, cmap=cmap,
+    mappable = ax.contourf(lon_cyclic, lats, data_cyclic * scaling, nlevels, vmin = vmin, vmax = vmax, cmap=cmap,
                  transform=ccrs.PlateCarree())
 
     ax.coastlines()
@@ -118,6 +130,48 @@ def plot_tws_map(filePath, label, session_state_label):
     
     st.session_state[session_state_label] = fig
 
+def plot_hatched_map(mainFilePath, hatchFilePath, session_state_label):
+
+    if st.session_state[session_state_label] is not None:
+        st.pyplot(st.session_state[session_state_label], width='stretch')
+        return
+
+    df = pd.read_csv(mainFilePath)
+
+    lats = df.latitude
+    df = df.drop(columns=['latitude'])
+    lons = df.columns
+    data = df.values
+
+    data_cyclic, lon_cyclic = add_cyclic_point(data, coord=pd.to_numeric(lons))
+
+    fig = plt.figure(figsize=(16, 12))
+    ax = plt.axes(projection=ccrs.Mollweide(central_longitude=0, globe=None))
+
+    mappable = ax.contourf(lon_cyclic, lats, np.clip(data_cyclic, -50, 50), 10, vmin = -50, vmax = 50, cmap='RdBu',
+             transform=ccrs.PlateCarree())
+
+    ax.coastlines()
+
+    fig.colorbar(mappable, label=r'% change', orientation='horizontal', pad=0.01, shrink=0.6) # Add a colorbar
+
+    df = pd.read_csv(hatchFilePath)
+
+    lats = df.latitude
+    df = df.drop(columns=['latitude'])
+    lons = df.columns
+    data = df.values
+
+    data_cyclic, lon_cyclic = add_cyclic_point(data, coord=pd.to_numeric(lons))
+
+    ax.contourf(lon_cyclic, lats, data_cyclic, 2, colors='none',
+                  hatches=['/', None],
+             transform=ccrs.PlateCarree(), levels=[0, 0.8, 1])
+
+    st.pyplot(fig, width='stretch')
+    
+    st.session_state[session_state_label] = fig
+
 st.sidebar.header("Maps")
 
 st.markdown("# Global spatial distributions of various climate indicators and projections")
@@ -135,19 +189,19 @@ st.markdown(f"##### Graph 1: Change in surface temperature for {selected_years}"
 
 if selected_years == '1950-1993':
     plot_map(Path("data/df_be_wide_1950to1993_temp.csv"), 'Temperature change (°C per decade)', -2, 2, 'RdBu_r', 
-        'be_1950to1993_temp')
+        'be_1950to1993_temp', scaling = 120)
 elif selected_years == '1994-2024':
     plot_map(Path("data/df_be_wide_1994to2024_temp.csv"), 'Temperature change (°C per decade)', -2, 2, 'RdBu_r', 
-        'be_1994to2024_temp')
+        'be_1994to2024_temp', scaling = 120)
 elif selected_years == '2025-2049 (projected)':
     plot_map(Path("data/df_cmip6_wide_2025to2049_temp.csv"), 'Temperature change (°C per decade)', -2, 2, 'RdBu_r', 
-        'cmip6_2025to2049_temp')
+        'cmip6_2025to2049_temp', scaling = 120)
 elif selected_years == '2050-2074 (projected)':
     plot_map(Path("data/df_cmip6_wide_2050to2074_temp.csv"), 'Temperature change (°C per decade)', -2, 2, 'RdBu_r', 
-        'cmip6_2050to2074_temp')
+        'cmip6_2050to2074_temp', scaling = 120)
 else:
     plot_map(Path("data/df_cmip6_wide_2075to2099_temp.csv"), 'Temperature change (°C per decade)', -2, 2, 'RdBu_r', 
-        'cmip6_2075to2099_temp')
+        'cmip6_2075to2099_temp', scaling = 120)
 
 st.caption("""Graph 1: Global temperature trends in °C per decade in the past (instrumental record) and for future projections 
     based on 23 CMIP6 model outputs. For CMIP6 projections the median trend for all model outputs is shown for 
@@ -158,28 +212,33 @@ st.caption("""Graph 1: Global temperature trends in °C per decade in the past (
 #################### Change in monthly average precipitation #############################
 st.write("")
 
-col1, col2 = st.columns(2)
+selected_indicator = st.selectbox("Select year range:", ['Change in mean precipitation 1983-2024', 
+        'Projected changes in seasonal mean precipitation (DJF)', 
+        'Projected changes in seasonal mean precipitation (MAM)',
+        'Projected changes in seasonal mean precipitation (JJA)',
+        'Projected changes in seasonal mean precipitation (SON)'])
 
-with col1:
-    selected_years = st.selectbox("Select year range:", ['1983-2024'])
+st.markdown(f"##### Graph 2: {selected_indicator}")
 
-st.markdown(f"##### Graph 2: Change in monthly average precipitation for {selected_years}")
-
-if selected_years == '1983-2024':
+if selected_indicator == 'Change in mean precipitation 1983-2024':
     plot_map(Path("data/df_wide_1983to2024_precip.csv"), 'Precipitation change (mm/day per decade)', -1.6, 1.6, 'RdBu',
-        '1983to2024_precip')
-# elif selected_years == '2025-2049':
-#     plot_map(Path("data/df_cmip6_wide_2025to2049_precip.csv"), 'Precipitation change (mm/day per decade)', -1.6, 1.6, 'RdBu',
-#         '2025to2049_precip')
-# else:
-#     plot_map(Path("data/df_cmip6_wide_2050to2099_precip.csv"), 'Precipitation change (mm/day per decade)', -1.6, 1.6, 'RdBu',
-#         '2050to2099_precip')
+        '1983to2024_precip', scaling = 120)
+elif selected_indicator == 'Projected changes in seasonal mean precipitation (DJF)':
+    plot_hatched_map(Path("data/df_djf_precip.csv"), Path("data/df_djf_precip_sign.csv"), 'djf_precip')
+elif selected_indicator == 'Projected changes in seasonal mean precipitation (MAM)':
+    plot_hatched_map(Path("data/df_mam_precip.csv"), Path("data/df_mam_precip_sign.csv"), 'mam_precip')
+elif selected_indicator == 'Projected changes in seasonal mean precipitation (JJA)':
+    plot_hatched_map(Path("data/df_jja_precip.csv"), Path("data/df_jja_precip_sign.csv"), 'jja_precip')
+else:
+    plot_hatched_map(Path("data/df_son_precip.csv"), Path("data/df_son_precip_sign.csv"), 'son_precip')
 
-st.caption("""Graph Graph 2: Trend in monthly average precipitation for 1983-2024. Units are (mm/day)/decade.
-         Monthly average precipitation data derived from satellite measurements 
-         from [Copernicus Climate Change Service, Climate Data Store](https://cds.climate.copernicus.eu/datasets/satellite-precipitation?tab=download).""")
+st.caption("""Graph 2: Trend in monthly average precipitation for 1983-2024 and projected long-term relative changes in 
+        seasonal mean precipitation for indicated months. For the projected (modeled) changes hatched lines indicate low model 
+        agreement (<80%). Monthly average precipitation data derived from satellite measurements (GPCP) 
+        from [Copernicus Climate Change Service, Climate Data Store](https://cds.climate.copernicus.eu/datasets/satellite-precipitation?tab=download). 
+        Model data and plot adoptation from [IPCC Sixth Assessment Report](https://dx.doi.org/10.5285/bbf5ae3b78c44bf28ccb17b487d58a94)""")
 
-#################### TWS and drought #############################
+#################### TWS #############################
 st.write("")
 
 col1, col2 = st.columns(2)
@@ -202,6 +261,27 @@ st.caption("""Graph 3:  The changes (multi-model weighted mean) in terrestrial w
     stored in canopies, snow and ice, rivers, lakes and reservoirs, wetlands, soil and groundwater. It plays a key role in
     determining water resource availability. Changes in TWS are linked to droughts, floods and global sea level change. 
     Graph adopted from and data from [Nature Climate Change](https://doi.org/10.1038/s41558-020-00972-w).""")
+
+#################### Drought #############################
+st.write("")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    selected_indicator = st.selectbox("Select indicator:", ['Moderate-to-severe droughts 2006-2099 (change)', 
+        'Extreme-to-exceptional droughts 2006-2099 (change)'])
+
+st.markdown(f"##### Graph 4: {selected_indicator}")
+
+if selected_indicator == 'Moderate-to-severe droughts 2006-2099 (change)':
+    plot_map(Path("data/df_wide_mod_drought.csv"), 'Frequency change (days per year)', -3.3, 3.3, 'RdBu_r', 
+        'mod_drought', nlevels = 13)
+else:
+    plot_map(Path("data/df_wide_ext_drought.csv"), 'Frequency change (days per year)', -3.3, 3.3, 'RdBu_r', 
+        'ext_drought', nlevels = 13)
+
+st.caption("""Graph 4: Change (days per year) in the frequency of moderate-to-severe and extreme-to-exceptional droughts for the
+        years 2006–2099. Graph adopted from and data from [Nature Climate Change](https://doi.org/10.1038/s41558-020-00972-w).""")
 
 #################### Loss in biodiversity #############################
 st.write("")
@@ -275,7 +355,22 @@ st.markdown(
     Information Services Center (GES DISC), Accessed: [2025-10-07], 10.5067/MEASURES/GPCP/DATA304."""
 )
 st.markdown(
-    """*Changes in TWS and drought severity (Graph 3)*  \nPokhrel, Y., Felfelani, F., Satoh, Y. et al. Global terrestrial 
+    """*Projected data (Graph 2)*  \nSénési, S., 2023, Chapter 8 of the Working Group I Contribution to the IPCC Sixth 
+    Assessment Report - data for Figure 8.14 (v20220718), NERC EDS Centre for Environmental Data 
+    Analysis, https://dx.doi.org/10.5285/bbf5ae3b78c44bf28ccb17b487d58a94 
+    (Accessed on 2025-10-12)"""
+)
+st.markdown(
+    """*Projected data (Graph 2)*  \nDouville, H., K. Raghavan, J. Renwick, R.P. Allan, P.A. Arias, M. Barlow, R. Cerezo-Mota, 
+    A. Cherchi, T.Y. Gan, J. Gergis, D. Jiang, A. Khan, W. Pokam Mba, D. Rosenfeld, J. Tierney, and O. Zolina, 2021: 
+    Water Cycle Changes. In Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth 
+    Assessment Report of the Intergovernmental Panel on Climate Change [Masson-Delmotte, V., P. Zhai, A. Pirani, S.L. Connors, 
+    C. PeÃÅan, S. Berger, N. Caud, Y. Chen, L. Goldfarb, M.I. Gomis, M. Huang, K. Leitzell, E. Lonnoy, J.B.R. Matthews, 
+    T.K. Maycock, T. Waterfield, O. YelekcÃßi, R. Yu, and B. Zhou (eds.)]. Cambridge University Press, Cambridge, United Kingdom
+     and New York, NY, USA, pp. 1055‚Äì1210, doi:10.1017/9781009157896.010."""
+)
+st.markdown(
+    """*Changes in TWS and drought severity (Graphs 3 and 4)*  \nPokhrel, Y., Felfelani, F., Satoh, Y. et al. Global terrestrial 
     water storage and drought severity under climate change. Nat. Clim. Chang. 11, 226–233 
     (2021). https://doi.org/10.1038/s41558-020-00972-w.
     (Accessed on 2025-10-06)"""
