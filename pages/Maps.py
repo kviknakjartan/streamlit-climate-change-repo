@@ -394,13 +394,20 @@ def show_map(title, map_path, colorbar_path):
 
     with st.container(gap = None):
 
-        with rasterio.open(map_path) as src:
+        from PIL import Image
+
+
+        
+        image = Image.open(map_path)
+        st.image(image)
+
+        # with rasterio.open(map_path) as src:
                 
-                fig, ax = plt.subplots(figsize=(20, 15))
-                ax.set_frame_on(False)
-                ax.set_axis_off()
-                show(src, ax=ax)
-                st.pyplot(fig)
+        #         fig, ax = plt.subplots(figsize=(20, 15))
+        #         ax.set_frame_on(False)
+        #         ax.set_axis_off()
+        #         show(src, ax=ax)
+        #         st.pyplot(fig)
 
         co1, col2, col3 = st.columns([1.5,1,1.5])
 
