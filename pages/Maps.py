@@ -39,8 +39,6 @@ if 'cmip6_2050to2074_temp' not in st.session_state:
     st.session_state.cmip6_2050to2074_temp = None
 if 'cmip6_2075to2099_temp' not in st.session_state:
     st.session_state.cmip6_2075to2099_temp = None
-if '1983to2024_precip' not in st.session_state:
-    st.session_state['1983to2024_precip'] = None
 if 'mid_century_tws' not in st.session_state:
     st.session_state.mid_century_tws = None
 if 'late_century_tws' not in st.session_state:
@@ -57,6 +55,16 @@ if 'jja_precip' not in st.session_state:
     st.session_state.jja_precip = None
 if 'son_precip' not in st.session_state:
     st.session_state.son_precip = None
+if 'historic_precip' not in st.session_state:
+    st.session_state.historic_precip = None
+if 'historic_djf_precip' not in st.session_state:
+    st.session_state.historic_djf_precip = None
+if 'historic_mam_precip' not in st.session_state:
+    st.session_state.historic_mam_precip = None
+if 'historic_jja_precip' not in st.session_state:
+    st.session_state.historic_jja_precip = None
+if 'historic_son_precip' not in st.session_state:
+    st.session_state.historic_son_precip = None
 
 
 
@@ -105,7 +113,7 @@ def plot_tws_map(filePath, label, session_state_label):
     data_cyclic, lon_cyclic = add_cyclic_point(data, coord=pd.to_numeric(lons))
 
     fig = plt.figure(figsize=(16, 12))
-    ax = plt.axes(projection=ccrs.Mollweide(central_longitude=0, globe=None))
+    ax = plt.axes(projection=ccrs.Robinson(central_longitude=0, globe=None))
 
     custom_levels = [-300, -200, -100, -50, -10, 10, 50, 100, 200, 300]
 
@@ -119,7 +127,7 @@ def plot_tws_map(filePath, label, session_state_label):
     # cmap.N should match the number of colors in custom_cmap
     norm = mcolors.BoundaryNorm(custom_levels, custom_cmap.N)
 
-    mappable = ax.contourf(lon_cyclic, lats, np.clip(data_cyclic, -299.9, 299.9), 60, vmin = -300, vmax = 300, cmap=custom_cmap,
+    mappable = ax.contourf(lon_cyclic, lats, data_cyclic, 60, extend='both', vmin = -300, vmax = 300, cmap=custom_cmap,
                  transform=ccrs.PlateCarree(), levels=custom_levels, norm=norm)
 
     ax.coastlines()
@@ -146,9 +154,9 @@ def plot_hatched_map(mainFilePath, hatchFilePath, session_state_label):
     data_cyclic, lon_cyclic = add_cyclic_point(data, coord=pd.to_numeric(lons))
 
     fig = plt.figure(figsize=(16, 12))
-    ax = plt.axes(projection=ccrs.Mollweide(central_longitude=0, globe=None))
+    ax = plt.axes(projection=ccrs.Robinson(central_longitude=0, globe=None))
 
-    mappable = ax.contourf(lon_cyclic, lats, np.clip(data_cyclic, -50, 50), 10, vmin = -50, vmax = 50, cmap='RdBu',
+    mappable = ax.contourf(lon_cyclic, lats, data_cyclic, 10, extend='both', vmin = -50, vmax = 50, cmap='RdBu',
              transform=ccrs.PlateCarree())
 
     ax.coastlines()
@@ -171,6 +179,65 @@ def plot_hatched_map(mainFilePath, hatchFilePath, session_state_label):
     st.pyplot(fig, width='stretch')
     
     st.session_state[session_state_label] = fig
+
+
+def plot_precip_hatched_map(mainFilePath, hatchFilePath, session_state_label):
+
+    if st.session_state[session_state_label] is not None:
+        st.pyplot(st.session_state[session_state_label], width='stretch')
+        return
+
+    df = pd.read_csv(mainFilePath)
+
+    lats = df.latitude
+    df = df.drop(columns=['latitude'])
+    lons = df.columns
+    data = df.values
+
+    data_cyclic, lon_cyclic = add_cyclic_point(data, coord=pd.to_numeric(lons))
+
+    fig = plt.figure(figsize=(16, 12))
+    ax = plt.axes(projection=ccrs.Robinson(central_longitude=0, globe=None))
+
+    custom_levels = [-0.64, -0.32, -0.16, -0.08, -0.04, -0.02, -0.01, 0, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64]
+
+    cmap = plt.cm.get_cmap('RdBu') # Or: cmap = matplotlib.colormaps['viridis']
+
+    sample_points = np.linspace(0, 1, len(custom_levels) - 1)
+    sampled_colors = cmap(sample_points)
+
+    # Create a ListedColormap
+    custom_cmap = mcolors.ListedColormap(sampled_colors)
+
+    # Create a BoundaryNorm instance
+    # cmap.N should match the number of colors in custom_cmap
+    norm = mcolors.BoundaryNorm(custom_levels, custom_cmap.N)
+
+    mappable = ax.contourf(lon_cyclic, lats, data_cyclic, extend='both',
+        cmap=custom_cmap, transform=ccrs.PlateCarree(), levels=custom_levels, norm=norm)
+
+    ax.coastlines()
+
+    fig.colorbar(mappable, label='mm/day per decade', orientation='horizontal', pad=0.01, shrink=0.6) # Add a colorbar
+
+    df = pd.read_csv(hatchFilePath)
+
+    lats = df.latitude
+    df = df.drop(columns=['latitude'])
+    lons = df.columns
+    data = df.values * 1.0
+
+    data_cyclic, lon_cyclic = add_cyclic_point(data, coord=pd.to_numeric(lons))
+
+    ax.contourf(lon_cyclic, lats, data_cyclic, 2, colors='none',
+                  hatches=[None, '/'],
+             transform=ccrs.PlateCarree(), levels=[0, 0.1, 1])
+
+    st.pyplot(fig, width='stretch')
+    
+    st.session_state[session_state_label] = fig
+
+################################################################################
 
 st.sidebar.header("Maps")
 
@@ -209,35 +276,64 @@ st.caption("""Graph 1: Global temperature trends in °C per decade in the past (
     CMIP6 data from [Copernicus Climate Change Service, Climate Data Store](https://cds.climate.copernicus.eu/datasets/projections-cmip6?tab=overview).
     Temperature instrumental record from [The Berkeley Earth Land/Ocean Temperature Record](https://doi.org/10.5194/essd-12-3469-2020).""")
 
-#################### Change in monthly average precipitation #############################
+#################### Historic change in monthly average precipitation #############################
 st.write("")
 
-selected_indicator = st.selectbox("Select year range:", ['Change in mean precipitation 1983-2024', 
-        'Projected changes in seasonal mean precipitation (DJF)', 
-        'Projected changes in seasonal mean precipitation (MAM)',
-        'Projected changes in seasonal mean precipitation (JJA)',
-        'Projected changes in seasonal mean precipitation (SON)'])
+selected_indicator = st.selectbox("Select year range:", [
+        'Change in monthly mean precipitation 1983-2024', 
+        'Change in seasonal mean precipitation 1983-2024 (DJF)', 
+        'Change in seasonal mean precipitation 1983-2024 (MAM)',
+        'Change in seasonal mean precipitation 1983-2024 (JJA)',
+        'Change in seasonal mean precipitation 1983-2024 (SON)'])
 
 st.markdown(f"##### Graph 2: {selected_indicator}")
 
-if selected_indicator == 'Change in mean precipitation 1983-2024':
-    plot_map(Path("data/df_wide_1983to2024_precip.csv"), 'Precipitation change (mm/day per decade)', -1.6, 1.6, 'RdBu',
-        '1983to2024_precip', scaling = 120)
-elif selected_indicator == 'Projected changes in seasonal mean precipitation (DJF)':
+if selected_indicator == 'Change in monthly mean precipitation 1983-2024':
+    plot_precip_hatched_map(Path("data/df_wide_all_seasons_precip.csv"), Path("data/df_wide_all_seasons_precip_sign.csv"), 
+        'historic_precip')
+elif selected_indicator == 'Change in seasonal mean precipitation 1983-2024 (DJF)':
+    plot_precip_hatched_map(Path("data/df_wide_DJF_precip.csv"), Path("data/df_wide_DJF_precip_sign.csv"), 
+        'historic_djf_precip')
+elif selected_indicator == 'Change in seasonal mean precipitation 1983-2024 (MAM)':
+    plot_precip_hatched_map(Path("data/df_wide_MAM_precip.csv"), Path("data/df_wide_MAM_precip_sign.csv"), 
+        'historic_mam_precip')
+elif selected_indicator == 'Change in seasonal mean precipitation 1983-2024 (JJA)':
+    plot_precip_hatched_map(Path("data/df_wide_JJA_precip.csv"), Path("data/df_wide_JJA_precip_sign.csv"), 
+        'historic_jja_precip')
+elif selected_indicator == 'Change in seasonal mean precipitation 1983-2024 (SON)':
+    plot_precip_hatched_map(Path("data/df_wide_SON_precip.csv"), Path("data/df_wide_SON_precip_sign.csv"), 
+        'historic_son_precip')
+
+
+st.caption("""Graph 2: Trend in 1983-2024 monthly average precipitation and seasonal average precipitation for the indicated 
+        months. Hatched lines indicate statistical non-significance of trend. Monthly average precipitation data derived from satellite measurements (GPCP) 
+        from [Copernicus Climate Change Service, Climate Data Store](https://cds.climate.copernicus.eu/datasets/satellite-precipitation?tab=download). 
+        Model data and plot adoptation from [IPCC Sixth Assessment Report](https://dx.doi.org/10.5285/bbf5ae3b78c44bf28ccb17b487d58a94)""")
+
+#################### Projected change in monthly average precipitation #############################
+st.write("")
+
+selected_indicator = st.selectbox("Select year range:", [ 
+        'Projected change in seasonal mean precipitation (DJF)', 
+        'Projected change in seasonal mean precipitation (MAM)',
+        'Projected change in seasonal mean precipitation (JJA)',
+        'Projected change in seasonal mean precipitation (SON)'])
+
+st.markdown(f"##### Graph 3: {selected_indicator}")
+
+if selected_indicator == 'Projected change in seasonal mean precipitation (DJF)':
     plot_hatched_map(Path("data/df_djf_precip.csv"), Path("data/df_djf_precip_sign.csv"), 'djf_precip')
-elif selected_indicator == 'Projected changes in seasonal mean precipitation (MAM)':
+elif selected_indicator == 'Projected change in seasonal mean precipitation (MAM)':
     plot_hatched_map(Path("data/df_mam_precip.csv"), Path("data/df_mam_precip_sign.csv"), 'mam_precip')
-elif selected_indicator == 'Projected changes in seasonal mean precipitation (JJA)':
+elif selected_indicator == 'Projected change in seasonal mean precipitation (JJA)':
     plot_hatched_map(Path("data/df_jja_precip.csv"), Path("data/df_jja_precip_sign.csv"), 'jja_precip')
 else:
     plot_hatched_map(Path("data/df_son_precip.csv"), Path("data/df_son_precip_sign.csv"), 'son_precip')
 
-st.caption("""Graph 2: Trend in monthly average precipitation for 1983-2024 and projected long-term relative changes in 
-        seasonal mean precipitation for indicated months. For the projected (modeled) changes hatched lines indicate low model 
+st.caption("""Graph 3: Projected long-term relative changes in 
+        seasonal mean precipitation for indicated months. Hatched lines indicate low model 
         agreement (<80%). All changes are estimated for 2081–2100 relative to the 1995–2014 base period. 
-        Monthly average precipitation data derived from satellite measurements (GPCP) 
-        from [Copernicus Climate Change Service, Climate Data Store](https://cds.climate.copernicus.eu/datasets/satellite-precipitation?tab=download). 
-        Model data and plot adoptation from [IPCC Sixth Assessment Report](https://dx.doi.org/10.5285/bbf5ae3b78c44bf28ccb17b487d58a94)""")
+        Data and plot adoptation from [IPCC Sixth Assessment Report](https://dx.doi.org/10.5285/bbf5ae3b78c44bf28ccb17b487d58a94)""")
 
 #################### TWS #############################
 st.write("")
@@ -248,14 +344,14 @@ with col1:
     selected_indicator = st.selectbox("Select indicator:", ['Changes in terrestrial water storage 2030-2059', 
         'Changes in terrestrial water storage 2070-2099'])
 
-st.markdown(f"##### Graph 3: {selected_indicator}")
+st.markdown(f"##### Graph 4: {selected_indicator}")
 
 if selected_indicator == 'Changes in terrestrial water storage 2030-2059':
     plot_tws_map(Path("data/df_wide_mid_century_tws.csv"), 'TWS (mm)', 'mid_century_tws')
 elif selected_indicator == 'Changes in terrestrial water storage 2070-2099':
     plot_tws_map(Path("data/df_wide_late_century_tws.csv"), 'TWS (mm)', 'late_century_tws')
 
-st.caption("""Graph 3:  The changes (multi-model weighted mean) in terrestrial water storage (TWS), averaged for the 
+st.caption("""Graph 4:  The changes (multi-model weighted mean) in terrestrial water storage (TWS), averaged for the 
     mid- (2030–2059) and the late (2070–2099) twenty-first century under future 
     scenario [RCP6.0](https://en.wikipedia.org/wiki/Representative_Concentration_Pathway). The changes are relative to the 
     average for the historical baseline period (1976–2005). Terrestrial water storage is the sum of continental water 
@@ -272,7 +368,7 @@ with col1:
     selected_indicator = st.selectbox("Select indicator:", ['Moderate-to-severe droughts 2006-2099 (change)', 
         'Extreme-to-exceptional droughts 2006-2099 (change)'])
 
-st.markdown(f"##### Graph 4: {selected_indicator}")
+st.markdown(f"##### Graph 5: {selected_indicator}")
 
 if selected_indicator == 'Moderate-to-severe droughts 2006-2099 (change)':
     plot_map(Path("data/df_wide_mod_drought.csv"), 'Frequency change (days per year)', -3.3, 3.3, 'RdBu_r', 
@@ -281,7 +377,7 @@ else:
     plot_map(Path("data/df_wide_ext_drought.csv"), 'Frequency change (days per year)', -3.3, 3.3, 'RdBu_r', 
         'ext_drought', nlevels = 13)
 
-st.caption("""Graph 4: Change (days per year) in the frequency of moderate-to-severe and extreme-to-exceptional droughts for the
+st.caption("""Graph 5: Change (days per year) in the frequency of moderate-to-severe and extreme-to-exceptional droughts for the
         years 2006–2099. Graph adopted from and data from [Nature Climate Change](https://doi.org/10.1038/s41558-020-00972-w).""")
 
 #################### Loss in biodiversity #############################
@@ -312,16 +408,16 @@ def show_map(title, map_path, colorbar_path):
             st.image(colorbar_path)
 
 if selected_map == "Magnitude":
-    show_map("##### Graph 3: Percentage of species exposed to potentially dangerous climate by 2100",
+    show_map("##### Graph 6: Percentage of species exposed to potentially dangerous climate by 2100",
         Path("data/MagnitudeEckertGGplot.tiff"), Path("data/Fig2_ScaleBarMagnitude.svg"))
 elif selected_map == "Abruptness":
-    show_map("##### Graph 3: Percentage of species exposed to potentially dangerous climate at a time of maximum exposure",
+    show_map("##### Graph 6: Percentage of species exposed to potentially dangerous climate at a time of maximum exposure",
         Path("data/AbruptnessEckertGGplot.tiff"), Path("data/Fig2_ScaleBarAbruptness.svg"))
 else:
-    show_map("##### Graph 3: Median year of species exposed to potentially dangerous climate",
+    show_map("##### Graph 6: Median year of species exposed to potentially dangerous climate",
         Path("data/TimingEckertGGplot.tiff"), Path("data/Fig2_ScaleBarTiming.svg"))
 
-st.caption("""Graph 3: Three different indicators quantifying potential loss of biodiversity in the future based on 
+st.caption("""Graph 6: Three different indicators quantifying potential loss of biodiversity in the future based on 
     scenario [SSP2-4.5](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways) and data on over 30,000 marine and 
     terrestrial species. *Magnitude* indicates what percentage of
     local species will be subjected to climate conditions threatening to their survival by the year 2100. *Abruptness* indicates 
@@ -356,13 +452,13 @@ st.markdown(
     Information Services Center (GES DISC), Accessed: [2025-10-07], 10.5067/MEASURES/GPCP/DATA304."""
 )
 st.markdown(
-    """*Projected data (Graph 2)*  \nSénési, S., 2023, Chapter 8 of the Working Group I Contribution to the IPCC Sixth 
+    """*Projected precipitation data (Graph 3)*  \nSénési, S., 2023, Chapter 8 of the Working Group I Contribution to the IPCC Sixth 
     Assessment Report - data for Figure 8.14 (v20220718), NERC EDS Centre for Environmental Data 
     Analysis, https://dx.doi.org/10.5285/bbf5ae3b78c44bf28ccb17b487d58a94 
     (Accessed on 2025-10-12)"""
 )
 st.markdown(
-    """*Projected data (Graph 2)*  \nDouville, H., K. Raghavan, J. Renwick, R.P. Allan, P.A. Arias, M. Barlow, R. Cerezo-Mota, 
+    """*Projected precipitation data (Graph 3)*  \nDouville, H., K. Raghavan, J. Renwick, R.P. Allan, P.A. Arias, M. Barlow, R. Cerezo-Mota, 
     A. Cherchi, T.Y. Gan, J. Gergis, D. Jiang, A. Khan, W. Pokam Mba, D. Rosenfeld, J. Tierney, and O. Zolina, 2021: 
     Water Cycle Changes. In Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to the Sixth 
     Assessment Report of the Intergovernmental Panel on Climate Change [Masson-Delmotte, V., P. Zhai, A. Pirani, S.L. Connors, 
@@ -371,13 +467,13 @@ st.markdown(
      and New York, NY, USA, pp. 1055‚Äì1210, doi:10.1017/9781009157896.010."""
 )
 st.markdown(
-    """*Changes in TWS and drought severity (Graphs 3 and 4)*  \nPokhrel, Y., Felfelani, F., Satoh, Y. et al. Global terrestrial 
+    """*Changes in TWS and drought severity (Graphs 4 and 5)*  \nPokhrel, Y., Felfelani, F., Satoh, Y. et al. Global terrestrial 
     water storage and drought severity under climate change. Nat. Clim. Chang. 11, 226–233 
     (2021). https://doi.org/10.1038/s41558-020-00972-w.
     (Accessed on 2025-10-06)"""
 )
 st.markdown(
-    """*Indicators quantifying potential loss of biodiversity (Graph 3)*  \nTrisos, C.H., Merow, C. & Pigot, A.L. 
+    """*Indicators quantifying potential loss of biodiversity (Graph 6)*  \nTrisos, C.H., Merow, C. & Pigot, A.L. 
     The projected timing of abrupt ecological disruption from climate change. 
     Nature 580, 496–501 (2020). https://doi.org/10.1038/s41586-020-2189-9.
     (Accessed on 2025-10-06)"""
