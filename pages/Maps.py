@@ -341,17 +341,17 @@ st.write("")
 col1, col2 = st.columns(2)
 
 with col1:
-    selected_indicator = st.selectbox("Select indicator:", ['Changes in terrestrial water storage 2030-2059', 
-        'Changes in terrestrial water storage 2070-2099'])
+    selected_indicator = st.selectbox("Select indicator:", ['Projected changes in terrestrial water storage 2030-2059', 
+        'Projected changes in terrestrial water storage 2070-2099'])
 
 st.markdown(f"##### Graph 4: {selected_indicator}")
 
-if selected_indicator == 'Changes in terrestrial water storage 2030-2059':
+if selected_indicator == 'Projected changes in terrestrial water storage 2030-2059':
     plot_tws_map(Path("data/df_wide_mid_century_tws.csv"), 'TWS (mm)', 'mid_century_tws')
-elif selected_indicator == 'Changes in terrestrial water storage 2070-2099':
+elif selected_indicator == 'Projected changes in terrestrial water storage 2070-2099':
     plot_tws_map(Path("data/df_wide_late_century_tws.csv"), 'TWS (mm)', 'late_century_tws')
 
-st.caption("""Graph 4:  The changes (multi-model weighted mean) in terrestrial water storage (TWS), averaged for the 
+st.caption("""Graph 4:  The projected changes (multi-model weighted mean) in terrestrial water storage (TWS), averaged for the 
     mid- (2030–2059) and the late (2070–2099) twenty-first century under future 
     scenario [RCP6.0](https://en.wikipedia.org/wiki/Representative_Concentration_Pathway). The changes are relative to the 
     average for the historical baseline period (1976–2005). Terrestrial water storage is the sum of continental water 
@@ -399,7 +399,7 @@ def show_map(title, map_path, colorbar_path):
 
         
         image = Image.open(map_path)
-        st.image(image)
+        st.image(image, width = "stretch")
 
         # with rasterio.open(map_path) as src:
                 
