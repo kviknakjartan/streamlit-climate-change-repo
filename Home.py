@@ -23,6 +23,9 @@ col1, col2 = st.columns([1,4])
 with col1:
     if st.button("Ice", icon=":material/ac_unit:", width = "stretch", help = "Ice and snowcover extent"):
         st.switch_page("pages/Ice.py")
+    if st.button("Maps", icon=":material/map:", width = "stretch", 
+        help = "Global spatial distributions of various climate indicators and projections"):
+        st.switch_page("pages/Maps.py")
     if st.button("Ocean", icon=":material/water:", width = "stretch", 
         help = "Global mean sea level anomaly and ocean acidification"):
         st.switch_page("pages/Ocean.py")
