@@ -399,7 +399,7 @@ def show_map(title, map_path, colorbar_path):
 
         
         #image = Image.open(map_path)
-        st.image(map_path, width = "stretch")
+        st.image(map_path)
 
         # with rasterio.open(map_path) as src:
                 
