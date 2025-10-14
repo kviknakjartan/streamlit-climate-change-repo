@@ -39,6 +39,7 @@ N2O_HIST_PATH = Path("data/ghg-concentrations_fig-3.csv")
 PARRENIN_PATH = Path("data/ATS.tab")
 CMIP6_PATH = Path("data/global_mean_temp_data.xlsx")
 SEA_LEVEL_HIST_PATH = Path("data/CSIRO_Recons_gmsl_yr_2015.txt")
+SEA_LEVEL_PROJ_PATH = Path("data/ipcc_ar6_sea_level_projection_global.xlsx")
 
 def integer_to_datetime(int_date):
     year, remainder = divmod(int_date, 10000)
@@ -320,6 +321,20 @@ def get_sea_level_hist_data():
     return df
 
 @st.cache_data()
+def get_sea_level_proj_data():
+
+    df = pd.read_excel(SEA_LEVEL_PROJ_PATH, sheet_name = "Total")
+    df = df[df.confidence == 'medium']
+    df = df[df.scenario.isin(['ssp126','ssp245','ssp585'])]
+    df = pd.melt(df,
+                  id_vars=['scenario', 'quantile'],
+                  value_vars=range(2020, 2160, 10),
+                  var_name='year',
+                  value_name='level')
+    print(df.head())
+    return df
+
+@st.cache_data()
 def get_sea_level_latest_data():
     df = read_csv_from_url(SEA_LEVEL_URL, SEA_LEVEL_BACKUP)
     df['Date'] = df['Time (years)'].apply(fractional_year_to_datetime)
@@ -355,4 +370,4 @@ def get_ohc_data():
 
     
 if __name__ == "__main__":
-    get_ph_data()
+    get_sea_level_proj_data()

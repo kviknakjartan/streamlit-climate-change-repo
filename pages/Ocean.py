@@ -9,7 +9,8 @@ from get_data import (
     get_sea_level_hist_data,
     get_sea_level_latest_data,
     get_ph_data,
-    get_ohc_data
+    get_ohc_data,
+    get_sea_level_proj_data
 )
 
 st.set_page_config(
@@ -133,6 +134,116 @@ st.caption(f"""Graph 2: Global mean sea level anomaly from satellite altimetry. 
     glaciers and ice sheets. The rise in global mean sea level has increased by 46%, from a trend of 2.9 mm/year over 
     1999–2009 to a trend of 4.2 mm/year over 2014–2024 (Copernicus Climate Change Service).
     Data from [Copernicus Climate Change Service](https://climate.copernicus.eu/climate-indicators/sea-level).""")
+
+
+fig6 = make_subplots()
+
+df = get_sea_level_proj_data()
+
+df_ssp126 = df[df.scenario == 'ssp126']
+
+x=df_ssp126.loc[df_ssp126['quantile'] == 50, 'year']
+
+# Add traces
+fig6.add_trace(
+    go.Scatter(x=x,
+        y=df_ssp126.loc[df_ssp126['quantile'] == 50, 'level'], 
+        name='SSP1-2.6 median',
+        hovertemplate =
+        'Value: %{y:.3f} m'+
+        '<br>Year: %{x:.0f}',
+        line=dict(color='blue'))
+)
+y_lower = df_ssp126.loc[df_ssp126['quantile'] == 17, 'level']
+y_upper = df_ssp126.loc[df_ssp126['quantile'] == 83, 'level']
+
+fig6.add_trace(
+    go.Scatter(x=pd.concat([x, x[::-1]]),
+        y=pd.concat([y_upper, y_lower[::-1]]), 
+        name='SSP1-2.6 17th/83rd quantiles',
+        fill='toself',
+        fillcolor='rgba(0,0,255,0.2)',
+        hoverinfo="skip",
+        line=dict(color='rgba(0,0,255,0.2)', width=0.1))
+)
+
+df_ssp245 = df[df.scenario == 'ssp245']
+
+x=df_ssp245.loc[df_ssp245['quantile'] == 50, 'year']
+
+# Add traces
+fig6.add_trace(
+    go.Scatter(x=x,
+        y=df_ssp245.loc[df_ssp245['quantile'] == 50, 'level'], 
+        name='SSP2-4.5 median',
+        hovertemplate =
+        'Value: %{y:.3f} m'+
+        '<br>Year: %{x:.0f}',
+        line=dict(color='green'))
+)
+y_lower = df_ssp245.loc[df_ssp245['quantile'] == 17, 'level']
+y_upper = df_ssp245.loc[df_ssp245['quantile'] == 83, 'level']
+
+fig6.add_trace(
+    go.Scatter(x=pd.concat([x, x[::-1]]),
+        y=pd.concat([y_upper, y_lower[::-1]]), 
+        name='SSP2-4.5 17th/83rd quantiles',
+        fill='toself',
+        fillcolor='rgba(0,255,0,0.2)',
+        hoverinfo="skip",
+        line=dict(color='rgba(0,255,0,0.2)', width=0.1))
+)
+
+df_ssp585 = df[df.scenario == 'ssp585']
+
+x=df_ssp585.loc[df_ssp585['quantile'] == 50, 'year']
+
+# Add traces
+fig6.add_trace(
+    go.Scatter(x=x,
+        y=df_ssp585.loc[df_ssp585['quantile'] == 50, 'level'], 
+        name='SSP5-8.5 median',
+        hovertemplate =
+        'Value: %{y:.3f} m'+
+        '<br>Year: %{x:.0f}',
+        line=dict(color='red'))
+)
+y_lower = df_ssp585.loc[df_ssp585['quantile'] == 17, 'level']
+y_upper = df_ssp585.loc[df_ssp585['quantile'] == 83, 'level']
+
+fig6.add_trace(
+    go.Scatter(x=pd.concat([x, x[::-1]]),
+        y=pd.concat([y_upper, y_lower[::-1]]), 
+        name='SSP5-8.5 17th/83rd quantiles',
+        fill='toself',
+        fillcolor='rgba(255,0,0,0.2)',
+        hoverinfo="skip",
+        line=dict(color='rgba(255,0,0,0.2)', width=0.1))
+)
+
+fig6.update_layout(
+    title_text=f"Graph 3: Projected global mean sea level anomaly",
+    legend=dict(
+            x=0.1,  # x-position (0.1 is near left)
+            y=0.7,  # y-position (0.9 is near top)
+            xref="container",
+            yref="container",
+            orientation = 'h'
+        )
+)
+# Set x-axis title
+fig6.update_xaxes(title_text="Year")
+
+# Set y-axes titles
+fig6.update_yaxes(title_text=f"Sea level anomaly (m)")
+st.plotly_chart(fig6, use_container_width=True)
+st.caption(f"""Graph 3: Projected global mean sea level anomaly from CMIP6 modeling. For each of the three 
+    scenarios [SSP1-2.6](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways), 
+    [SSP2-4.5](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways) and 
+    [SSP5-8.5](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways); solid lines show the median value from
+    all model output while the shaded regions show the 17th/83rd inter-quantile range.
+    Data from [NASA](https://sealevel.nasa.gov/ipcc-ar6-sea-level-projection-tool?type=global).""")
+
 
 df_global, df_aloha = get_ph_data()
 
@@ -320,6 +431,27 @@ st.markdown(
     Climate indicators - Sea level: Figure 1. Daily change in global mean sea level 
     [Dataset]. https://climate.copernicus.eu/climate-indicators/sea-level.
     Date Accessed {date.today()}."""
+)
+st.markdown(
+    """*Projected global mean sea level anomaly (Graph 3)*  \nFox-Kemper, B., H. T. Hewitt, C. Xiao, G. Aðalgeirsdóttir, 
+    S. S. Drijfhout, T. L. Edwards, N. R. Golledge, M. Hemer, R. E. Kopp, G. Krinner, A. Mix, D. Notz, S. Nowicki, I. S. 
+    Nurhati, L. Ruiz, J-B. Sallée, A. B. A. Slangen, Y. Yu, 2021, Ocean, Cryosphere and Sea Level Change. In: Climate Change 
+    2021: The Physical Science Basis. Contribution of Working Group I to the Sixth Assessment Report of the Intergovernmental 
+    Panel on Climate Change [Masson-Delmotte, V., P. Zhai, A. Pirani, S. L. Connors, C. Péan, S. Berger, N. Caud, Y. Chen, L. 
+    Goldfarb, M. I. Gomis, M. Huang, K. Leitzell, E. Lonnoy, J. B. R. Matthews, T. K. Maycock, T. Waterfield, O. Yelekçi, R. Y
+    u and B. Zhou (eds.)]. Cambridge University Press. In press."""
+)
+st.markdown(
+    """*Projected global mean sea level anomaly (Graph 3)*  \nGarner, G. G., R. E. Kopp, T. Hermans, A. B. A. Slangen, G. 
+    Koubbe, M. Turilli, S. Jha, T. L. Edwards, A. Levermann, S. Nowikci, M. D. Palmer, C. Smith, in prep. Framework for 
+    Assessing Changes To Sea-level (FACTS). Geoscientific Model Development."""
+)
+st.markdown(
+    f"""*Projected global mean sea level anomaly (Graph 3)*  \nGarner, G. G., T. Hermans, R. E. Kopp, A. B. A. Slangen, 
+    T. L. Edwards, A. Levermann, S. Nowikci, M. D. Palmer, C. Smith, B. Fox-Kemper, H. T. Hewitt, C. Xiao, G. Aðalgeirsdóttir, 
+    S. S. Drijfhout, T. L. Edwards, N. R. Golledge, M. Hemer, R. E. Kopp, G. Krinner, A. Mix, D. Notz, S. Nowicki, I. S. 
+    Nurhati, L. Ruiz, J-B. Sallée, Y. Yu, L. Hua, T. Palmer, B. Pearson, 2021. IPCC AR6 Sea-Level Rise Projections. 
+    Version 20210809. PO.DAAC, CA, USA. Dataset accessed [2025-10-14] at [https://sealevel.nasa.gov/ipcc-ar6-sea-level-projection-tool?type=global]."""
 )
 st.markdown(
     """*Global average pH estimation (Graph 3)*  \nCopernicus Marine Service. 
