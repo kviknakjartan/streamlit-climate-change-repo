@@ -416,7 +416,7 @@ def show_map(title, map_path, colorbar_path):
 
 if selected_map == "Magnitude":
     show_map("##### Graph 6: Percentage of species exposed to potentially dangerous climate by 2100",
-        Path("data/MagnitudeEckertGGplot.svg"), Path("data/Fig2_ScaleBarMagnitude.svg"))
+        Path("data/MagnitudeEckertGGplot.png"), Path("data/Fig2_ScaleBarMagnitude.svg"))
 elif selected_map == "Abruptness":
     show_map("##### Graph 6: Percentage of species exposed to potentially dangerous climate at a time of maximum exposure",
         Path("data/AbruptnessEckertGGplot.tiff"), Path("data/Fig2_ScaleBarAbruptness.svg"))
