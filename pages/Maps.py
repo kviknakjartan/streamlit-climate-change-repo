@@ -394,20 +394,7 @@ def show_map(title, map_path, colorbar_path):
 
     with st.container(gap = None):
 
-        #from PIL import Image
-
-
-        
-        #image = Image.open(map_path)
         st.image(map_path)
-
-        # with rasterio.open(map_path) as src:
-                
-        #         fig, ax = plt.subplots(figsize=(20, 15))
-        #         ax.set_frame_on(False)
-        #         ax.set_axis_off()
-        #         show(src, ax=ax)
-        #         st.pyplot(fig)
 
         co1, col2, col3 = st.columns([1.5,1,1.5])
 
@@ -419,10 +406,10 @@ if selected_map == "Magnitude":
         Path("data/MagnitudeEckertGGplot.svg"), Path("data/Fig2_ScaleBarMagnitude.svg"))
 elif selected_map == "Abruptness":
     show_map("##### Graph 6: Percentage of species exposed to potentially dangerous climate at a time of maximum exposure",
-        Path("data/AbruptnessEckertGGplot.tiff"), Path("data/Fig2_ScaleBarAbruptness.svg"))
+        Path("data/AbruptnessEckertGGplot.svg"), Path("data/Fig2_ScaleBarAbruptness.svg"))
 else:
     show_map("##### Graph 6: Median year of species exposed to potentially dangerous climate",
-        Path("data/TimingEckertGGplot.tiff"), Path("data/Fig2_ScaleBarTiming.svg"))
+        Path("data/TimingEckertGGplot.svg"), Path("data/Fig2_ScaleBarTiming.svg"))
 
 st.caption("""Graph 6: Three different indicators quantifying potential loss of biodiversity in the future based on 
     scenario [SSP2-4.5](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways) and data on over 30,000 marine and 
