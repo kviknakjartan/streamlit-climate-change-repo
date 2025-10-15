@@ -40,6 +40,9 @@ PARRENIN_PATH = Path("data/ATS.tab")
 CMIP6_PATH = Path("data/global_mean_temp_data.xlsx")
 SEA_LEVEL_HIST_PATH = Path("data/CSIRO_Recons_gmsl_yr_2015.txt")
 SEA_LEVEL_PROJ_PATH = Path("data/ipcc_ar6_sea_level_projection_global.xlsx")
+ERF_HISTORIC_PATH = Path("data/AR6_ERF_1750-2019.csv")
+ERF_HISTORIC_PC05_PATH = Path("data/AR6_ERF_1750-2019_pc05.csv")
+ERF_HISTORIC_PC95_PATH = Path("data/AR6_ERF_1750-2019_pc95.csv")
 
 def integer_to_datetime(int_date):
     year, remainder = divmod(int_date, 10000)
@@ -366,6 +369,15 @@ def get_ohc_data():
     df_700_2000.time = df_700_2000.time.apply(integer_to_datetime)
 
     return df_300, df_700, df_2000, df_700_2000
+
+@st.cache_data()
+def get_erf_historic_data():
+
+    df = pd.read_csv(ERF_HISTORIC_PATH)
+    df_05 = pd.read_csv(ERF_HISTORIC_PC05_PATH)
+    df_95 = pd.read_csv(ERF_HISTORIC_PC95_PATH)
+
+    return df, df_05, df_95
 
 
     
