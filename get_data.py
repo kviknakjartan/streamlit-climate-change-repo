@@ -43,6 +43,7 @@ SEA_LEVEL_PROJ_PATH = Path("data/ipcc_ar6_sea_level_projection_global.xlsx")
 ERF_HISTORIC_PATH = Path("data/AR6_ERF_1750-2019.csv")
 ERF_HISTORIC_PC05_PATH = Path("data/AR6_ERF_1750-2019_pc05.csv")
 ERF_HISTORIC_PC95_PATH = Path("data/AR6_ERF_1750-2019_pc95.csv")
+WARMING_HISTORIC_PATH = Path("data/fig7.8.csv")
 
 def integer_to_datetime(int_date):
     year, remainder = divmod(int_date, 10000)
@@ -378,6 +379,13 @@ def get_erf_historic_data():
     df_95 = pd.read_csv(ERF_HISTORIC_PC95_PATH)
 
     return df, df_05, df_95
+
+@st.cache_data()
+def get_warming_historic_data():
+
+    df = pd.read_csv(WARMING_HISTORIC_PATH)
+
+    return df
 
 
     

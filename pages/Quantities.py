@@ -6,7 +6,8 @@ from plotly.subplots import make_subplots
 from datetime import date
 
 from get_data import (
-    get_erf_historic_data
+    get_erf_historic_data,
+    get_warming_historic_data
 )
 
 st.set_page_config(
@@ -68,46 +69,41 @@ st.sidebar.header("Quantities")
 st.markdown("# Physical quantities")
 
 #################### Evolution of ERF #############################
-st.write("")
 
-selected_graph = st.selectbox("Select graph:", ['Evolution of effective radiative forcing (ERF) 1750-2019'])
+df, df_05, df_95 = get_erf_historic_data()
 
-if selected_graph == 'Evolution of effective radiative forcing (ERF) 1750-2019':
+fig1 = make_subplots()
 
-    df, df_05, df_95 = get_erf_historic_data()
+names = ['co2', 'ch4', 'n2o', 'other_wmghg', 'o3', 'volcanic', 'solar', 'aerosol','land_use']
+labels = ['Carbon dioxide (CO<sub>2</sub>)','Methane (CH<sub>4</sub>)','Nitrous oxide (N<sub>2</sub>O)',
+    'Other well-mixed GHG','Ozone (O<sub>3</sub>)', 'Volcanic','Solar','Aerosol','Land use (albedo)']
+colors = [(52, 91, 235),(59, 156, 23),(209, 109, 197),(205, 209, 75),(55, 179, 204),(99, 90, 43),(217, 188, 28),
+    (105, 90, 98),(145, 207, 207)]
 
-    fig1 = make_subplots()
+for var_name, label, color in zip(names, labels, colors):
+    fig1 = plot_quantity_with_uncertainty_by_year(fig1, df.year, df[var_name], df_05[var_name], df_95[var_name], 
+        label, 'W m<sup>-2</sup>', color)
 
-    names = ['co2', 'ch4', 'n2o', 'other_wmghg', 'o3', 'volcanic', 'solar', 'aerosol','land_use']
-    labels = ['Carbon dioxide (CO<sub>2</sub>)','Methane (CH<sub>4</sub>)','Nitrous oxide (N<sub>2</sub>O)',
-        'Other well-mixed GHG','Ozone (O<sub>3</sub>)', 'Volcanic','Solar','Aerosol','Land use (albedo)']
-    colors = [(52, 91, 235),(59, 156, 23),(209, 109, 197),(205, 209, 75),(55, 179, 204),(99, 90, 43),(217, 188, 28),
-        (105, 90, 98),(145, 207, 207)]
+fig1.add_trace(
+    go.Scatter(x=df.year,
+        y=df['total'], 
+        name='Total',
+        hovertemplate =
+        'Value: %{y:.3f} W m<sup>-2</sup>' + 
+        '<br>Year: %{x:.0f}',
+        line=dict(color='black', width=0.7))
+)
 
-    for var_name, label, color in zip(names, labels, colors):
-        fig1 = plot_quantity_with_uncertainty_by_year(fig1, df.year, df[var_name], df_05[var_name], df_95[var_name], 
-            label, 'W m<sup>-2</sup>', color)
+fig1.update_layout(
+    title_text=f"Graph 1: Evolution of effective radiative forcing (ERF) 1750-2019",
+    
+)
+# Set x-axis title
+fig1.update_xaxes(title_text="Year")
 
-    fig1.add_trace(
-        go.Scatter(x=df.year,
-            y=df['total'], 
-            name='Total',
-            hovertemplate =
-            'Value: %{y:.3f} W m<sup>-2</sup>' + 
-            '<br>Year: %{x:.0f}',
-            line=dict(color='black', width=0.7))
-    )
-
-    fig1.update_layout(
-        title_text=f"Graph 1: Evolution of effective radiative forcing (ERF) 1750-2019",
-        
-    )
-    # Set x-axis title
-    fig1.update_xaxes(title_text="Year")
-
-    # Set y-axes titles
-    fig1.update_yaxes(title_text="Effective radiative forcing (W m<sup>-2</sup>)")
-    st.plotly_chart(fig1, use_container_width=True)
+# Set y-axes titles
+fig1.update_yaxes(title_text="Effective radiative forcing (W m<sup>-2</sup>)")
+st.plotly_chart(fig1, use_container_width=True)
 
 st.caption(f"""Graph 1: Evolution of effective radiative forcing (ERF) 1750-2019. Effective radiative forcing is the energy 
     gained or lost by the Earth that results from an event or activity, such as the addition of greenhouse gases or aerosols. 
@@ -115,12 +111,56 @@ st.caption(f"""Graph 1: Evolution of effective radiative forcing (ERF) 1750-2019
     Shaded regions show the "very likely" (5-95%) ranges. 
     Data from [IPCC](https://ipcc-browser.ipcc-data.org/browser/dataset/7506/0).""")
 
+#################### Evolution of warming #############################
+
+df = get_warming_historic_data()
+
+fig1 = make_subplots()
+
+names = ['CO2', 'CH4', 'N2O', 'otherGHG', 'O3', 'volcanic', 'solar', 'aerosol']
+labels = ['Carbon dioxide (CO<sub>2</sub>)','Methane (CH<sub>4</sub>)','Nitrous oxide (N<sub>2</sub>O)',
+    'Other well-mixed GHG','Ozone (O<sub>3</sub>)', 'Volcanic','Solar','Aerosol']
+colors = [(52, 91, 235),(59, 156, 23),(209, 109, 197),(205, 209, 75),(55, 179, 204),(99, 90, 43),(217, 188, 28),
+    (105, 90, 98)]
+
+for var_name, label, color in zip(names, labels, colors):
+    fig1 = plot_quantity_with_uncertainty_by_year(fig1, df.year, df[var_name + '_best'], df[var_name + '_p05'], 
+        df[var_name + '_p95'], label, '°C', color)
+
+fig1.add_trace(
+    go.Scatter(x=df.year,
+        y=df['total_best'], 
+        name='Total',
+        hovertemplate =
+        'Value: %{y:.3f} °C' + 
+        '<br>Year: %{x:.0f}',
+        line=dict(color='black', width=0.7))
+)
+
+fig1.update_layout(
+    title_text=f"Graph 3: Evolution of attributed warming due to ERF 1750-2019",
+    
+)
+# Set x-axis title
+fig1.update_xaxes(title_text="Year")
+
+# Set y-axes titles
+fig1.update_yaxes(title_text="Attributed warming (°C)")
+st.plotly_chart(fig1, use_container_width=True)
+
+
+st.caption(f"""Graph 3: Evolution of attributed warming due to ERF 1750-2019. The degree of warming resulting from ERF is 
+    produced using emulation. The results shown are the medians from a 2237-member ensemble (Forster et. al, 2021). 
+    Shaded regions show the "very likely" (5-95%) ranges. 
+    Data and figure adoption from [IPCC](https://ipcc-browser.ipcc-data.org/browser/dataset/7512).""")
+
 
 
 st.markdown("# References")
 
 st.markdown(
-    """*Evolution of effective radiative forcing (Graph 1)*  \nForster, P., T. Storelvmo, K. Armour, W. Collins, J.-L. Dufresne, 
+    """*Effective radiative forcing and attributed warming (Graphs 1 through 4)*  \nForster, P., T. Storelvmo, K. Armour, W. 
+    Collins, J.-L. Dufresne, 
     D. Frame, D.J. Lunt, T. Mauritsen, M.D. Palmer, M. Watanabe, M. Wild, and H. Zhang, 2021: The Earth’s Energy Budget, Climate 
     Feedbacks, and Climate Sensitivity. In Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to 
     the Sixth Assessment Report of the Intergovernmental Panel on Climate Change [Masson-Delmotte, V., P. Zhai, A. Pirani, S.L. 
@@ -133,4 +173,10 @@ st.markdown(
      to the IPCC Sixth Assessment Report - data for Figure 7.6 (v20220721). NERC EDS Centre for Environmental Data Analysis, 
      06 July 2023. doi:10.5285/0dd364e74c254b64bb5fddb5dceed364. https://dx.doi.org/10.5285/0dd364e74c254b64bb5fddb5dceed364.
      Date Accessed 2025-10-10."""
+)
+st.markdown(
+    """*Evolution of attributed warming due to ERF (Graph 3)*  \nSmith, C. (2023): Chapter 7 of the Working Group I Contribution 
+    to the IPCC Sixth Assessment Report - data for Figure 7.8 (v20220721). NERC EDS Centre for Environmental Data Analysis, 
+    06 July 2023. doi:10.5285/5ef11ad195844a59b83393870a5860e1. https://dx.doi.org/10.5285/5ef11ad195844a59b83393870a5860e1. 
+    Date Accessed 2025-10-15."""
 )
