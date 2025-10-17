@@ -29,6 +29,9 @@ with col1:
     if st.button("Ocean", icon=":material/water:", width = "stretch", 
         help = "Global mean sea level anomaly and ocean acidification"):
         st.switch_page("pages/Ocean.py")
+    if st.button("Quantities", icon=":material/special_character:", width = "stretch", 
+        help = "Physical quantities"):
+        st.switch_page("pages/Ocean.py")
     if st.button("Temperature", icon=":material/device_thermostat:", width = "stretch", 
         help = "Global average temperature and greenhouse gas concentration"):
         st.switch_page("pages/Temperature.py")

@@ -6,7 +6,9 @@ import streamlit as st
 from pathlib import Path
 import numpy as np
 from datetime import datetime
+import json
 
+CFB_PATH = Path("data/cmip56_feedbacks_AR6.json")
 OHC_300_PATH = Path("data/global_ohc300m_2024.csv")
 OHC_700_PATH = Path("data/global_ohc700m_2024.csv")
 OHC_2000_PATH = Path("data/global_ohc2km_2024.csv")
@@ -335,7 +337,7 @@ def get_sea_level_proj_data():
                   value_vars=range(2020, 2160, 10),
                   var_name='year',
                   value_name='level')
-    print(df.head())
+    #print(df.head())
     return df
 
 @st.cache_data()
@@ -387,7 +389,62 @@ def get_warming_historic_data():
 
     return df
 
+@st.cache_data()
+def get_climate_feedback_data():
 
+    with open(CFB_PATH, 'r') as file:
+        data = json.load(file)
+
+    df_cmip5 = pd.DataFrame(data['cmip5'])
+    df_cmip5 = df_cmip5.drop(columns = ['models', 'resid_fbk'])
+    df_cmip5['generation'] = 'cmip5'
+    df_cmip5 = pd.melt(df_cmip5,
+                  id_vars=['generation'],
+                  value_vars=[c for c in df_cmip5.columns if c != 'generation'],
+                  var_name='feedback',
+                  value_name='value')
+
+    df_cmip6 = pd.DataFrame(data['cmip6'])
+    df_cmip6 = df_cmip6.drop(columns = ['models', 'resid_fbk'])
+    df_cmip6['generation'] = 'cmip6' ###########
+    df_cmip6 = pd.melt(df_cmip6,
+                  id_vars=['generation'],
+                  value_vars=[c for c in df_cmip6.columns if c != 'generation'],
+                  var_name='feedback',
+                  value_name='value')
+
+    ########################## code adopted from https://github.com/mzelinka/AR6_figure/blob/v1.0.0/AR6_fbk_violin_plot.py ###########
+
+    # AR6 expert-assessed values provided by Masa on 1/27/21:
+    Masa_names =      ['Net',       'Planck',   'WV+LR','Albedo','Cloud','Other']
+    AR6 =    np.array([-1.16081,    -3.22,      1.30,    0.35,    0.42,  -0.01081]) 
+    AR6p5 =  np.array([-1.81313204, -3.39,      1.13,    0.18,   -0.10,  -0.27159185]) 
+    AR6p95 = np.array([-0.50848796, -3.05,      1.47,    0.52,    0.94,   0.24997185])  
+    AR6p17 = np.array([-1.539513677,-3.32,      1.20,    0.25,    0.12,  -0.16411])  
+    AR6p83 = np.array([-0.782106323,-3.12,      1.40,    0.45,    0.72,   0.14248]) 
+
+    X=np.ma.zeros((10000,6))
+    for i,name in enumerate(Masa_names):
+        mean = AR6[i]
+        p5,p17,p83,p95 = AR6p5[i],AR6p17[i],AR6p83[i],AR6p95[i]
+        CI90 = p95-p5
+        # 90% confidence interval corresponds to +/- 1.64485 times the standard deviation 
+        std = CI90/2/1.64485
+        print('Inferred AR6 '+name+' standard deviation = '+str(np.round(std,2)))
+        this = sorted(np.random.normal(mean, std, 10000))
+        # Clip the tails
+        p2p5,p97p5 = np.percentile(this,[2.5,97.5])
+        X[:,i] = np.ma.masked_outside(this, p2p5,p97p5)
+    ############################################################################################################################
+    df_ar6 = pd.DataFrame(X, columns=['NET_fbk','PL_fbk','WVLR_fbk','ALB_fbk','CLD_fbk','resid_fbk'])
+    df_ar6 = df_ar6.drop(columns = ['resid_fbk'])
+    df_ar6['generation'] = 'ar6' ###########
+    df_ar6 = pd.melt(df_ar6,
+                  id_vars=['generation'],
+                  value_vars=[c for c in df_ar6.columns if c != 'generation'],
+                  var_name='feedback',
+                  value_name='value')
+    return df_mip5, df_mip6, df_ar6
     
 if __name__ == "__main__":
-    get_sea_level_proj_data()
+    get_climate_feedback_data()
