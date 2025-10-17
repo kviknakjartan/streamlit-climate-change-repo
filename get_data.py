@@ -438,13 +438,13 @@ def get_climate_feedback_data():
     ############################################################################################################################
     df_ar6 = pd.DataFrame(X, columns=['NET_fbk','PL_fbk','WVLR_fbk','ALB_fbk','CLD_fbk','resid_fbk'])
     df_ar6 = df_ar6.drop(columns = ['resid_fbk'])
-    df_ar6['generation'] = 'ar6' ###########
+    df_ar6['generation'] = 'ar6'
     df_ar6 = pd.melt(df_ar6,
                   id_vars=['generation'],
                   value_vars=[c for c in df_ar6.columns if c != 'generation'],
                   var_name='feedback',
                   value_name='value')
-    return df_mip5, df_mip6, df_ar6
+    return df_cmip5, df_cmip6, df_ar6
     
 if __name__ == "__main__":
     get_climate_feedback_data()
