@@ -7,7 +7,8 @@ from datetime import date
 
 from get_data import (
     get_erf_historic_data,
-    get_warming_historic_data
+    get_warming_historic_data,
+    get_climate_feedback_data
 )
 
 st.set_page_config(
@@ -325,10 +326,62 @@ st.caption("""Graph 4: Change in attributed warming due to ERF 1750-2019 by forc
     of [ECS](https://en.wikipedia.org/wiki/Climate_sensitivity) and [TCR](https://en.wikipedia.org/wiki/Climate_sensitivity), 
     and the distribution of calibrated model parameters from 44 CMIP6 models. Plot adopted from Forster et. al. (2021)""")
 
+########################################### climate feedback ##############################################################
+
+df_cmip5, df_cmip6, df_ar6 = get_climate_feedback_data()
+
+fig5 = go.Figure()
+
+fig5.add_trace(go.Box(x=df_cmip5['feedback'],
+                        y=df_cmip5['value'],
+                        name='CMIP5',
+                        marker_color='mediumturquoise',
+                        boxpoints=False)
+             )
+fig5.add_trace(go.Box(x=df_cmip6['feedback'],
+                        y=df_cmip6['value'],
+                        name='CMIP6',
+                        marker_color='orange',
+                        boxpoints=False)
+             )
+fig5.add_trace(go.Box(x=df_ar6['feedback'],
+                        y=df_ar6['value'],
+                        name='AR6',
+                        marker_color='red',
+                        boxpoints=False)
+             )
+
+# Define the desired order
+desired_order = ['Net','Planck','Water Vapour + Lapse Rate','Surface Albedo','Cloud']
+
+#fig5.update_traces(box_visible=True, meanline_visible=True)
+fig5.update_layout(boxmode='group', 
+                    title='Graph 5: Global mean climate feedbacks estimation',
+                    xaxis={'categoryorder': 'array', 'categoryarray': desired_order})
+
+fig5.update_yaxes(title_text="Climate feedback (W m<sup>-2</sup> °C<sup>-1</sup>)")
+
+st.plotly_chart(fig5, use_container_width=True)
+
+st.caption("""Graph 5: Global mean climate feedbacks estimated in "abrupt 4xCO2" simulations. Estimations from simulation of 
+    29 CMIP5 models (light blue) and 49 CMIP6 models (orange), compared with those assessed in 
+    the [IPCC Sixth Assessment Report](https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-7/) (red). The box lower and upper 
+    edges show the location of the lower and upper quartiles of each data distribution while the line in the middle shows the 
+    location of the median. The whiskers show the location of maxima and minima excluding any 
+    outliers. [Climate feedback](https://en.wikipedia.org/wiki/Climate_change_feedbacks) is 
+    a process that can either amplify or dampen the effects of a climate forcing, such as global warming (Forster et. al., 2021). 
+    A positive feedback accelerates the initial change while a negative feedback diminishes the initial change. On the x-axis 
+    there are four separate responses shown as well as the net response which is negative. The "Planck" response (negative feedback) 
+    is the increase in thermal radiation of the earth due to warming of the planet. "Water Vapour + Lapse Rate" is the sum of
+    the effects of increase of water vapour (which is a greenhouse gas) in the warmer atmosphere (positive feedback) and the effects of 
+    changing profile of temperature as a function of altitude (positive feedback). The "Surface Albedo" (positive feedback)
+    is the effect of changing reflectivity mostly due to changes in ice and snow cover extent. Lastly "Cloud" is the change in
+    cloud cover composition which has a net positive effect. Data from [IPCC](https://ipcc-browser.ipcc-data.org/browser/dataset/7516/0).""")
+###########################################################################################################################
 st.markdown("# References")
 
 st.markdown(
-    """*Effective radiative forcing and attributed warming (Graphs 1 through 4)*  \nForster, P., T. Storelvmo, K. Armour, W. 
+    """*Effective radiative forcing and attributed warming (Graphs 1 through 5)*  \nForster, P., T. Storelvmo, K. Armour, W. 
     Collins, J.-L. Dufresne, 
     D. Frame, D.J. Lunt, T. Mauritsen, M.D. Palmer, M. Watanabe, M. Wild, and H. Zhang, 2021: The Earth’s Energy Budget, Climate 
     Feedbacks, and Climate Sensitivity. In Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to 

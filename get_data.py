@@ -398,6 +398,8 @@ def get_climate_feedback_data():
     df_cmip5 = pd.DataFrame(data['cmip5'])
     df_cmip5 = df_cmip5.drop(columns = ['models', 'resid_fbk'])
     df_cmip5['generation'] = 'cmip5'
+    df_cmip5 = df_cmip5.rename(columns = {'ALB_fbk' : 'Surface Albedo', 'NET_fbk' : 'Net', 'CLD_fbk' : 'Cloud',
+        'WVLR_fbk' : 'Water Vapour + Lapse Rate', 'PL_fbk' : 'Planck'})
     df_cmip5 = pd.melt(df_cmip5,
                   id_vars=['generation'],
                   value_vars=[c for c in df_cmip5.columns if c != 'generation'],
@@ -406,7 +408,9 @@ def get_climate_feedback_data():
 
     df_cmip6 = pd.DataFrame(data['cmip6'])
     df_cmip6 = df_cmip6.drop(columns = ['models', 'resid_fbk'])
-    df_cmip6['generation'] = 'cmip6' ###########
+    df_cmip6['generation'] = 'cmip6'
+    df_cmip6 = df_cmip6.rename(columns = {'ALB_fbk' : 'Surface Albedo', 'NET_fbk' : 'Net', 'CLD_fbk' : 'Cloud',
+        'WVLR_fbk' : 'Water Vapour + Lapse Rate', 'PL_fbk' : 'Planck'})
     df_cmip6 = pd.melt(df_cmip6,
                   id_vars=['generation'],
                   value_vars=[c for c in df_cmip6.columns if c != 'generation'],
@@ -436,7 +440,7 @@ def get_climate_feedback_data():
         p2p5,p97p5 = np.percentile(this,[2.5,97.5])
         X[:,i] = np.ma.masked_outside(this, p2p5,p97p5)
     ############################################################################################################################
-    df_ar6 = pd.DataFrame(X, columns=['NET_fbk','PL_fbk','WVLR_fbk','ALB_fbk','CLD_fbk','resid_fbk'])
+    df_ar6 = pd.DataFrame(X, columns=['Net','Planck','Water Vapour + Lapse Rate','Surface Albedo','Cloud','resid_fbk'])
     df_ar6 = df_ar6.drop(columns = ['resid_fbk'])
     df_ar6['generation'] = 'ar6'
     df_ar6 = pd.melt(df_ar6,
