@@ -350,6 +350,7 @@ fig5.add_trace(go.Box(x=df_ar6['feedback'],
                         marker_color='red',
                         boxpoints=False)
              )
+fig5.add_hline(y=0, line_color='black', line_width=0.5)
 
 # Define the desired order
 desired_order = ['Net','Planck','Water Vapour + Lapse Rate','Surface Albedo','Cloud']
