@@ -420,7 +420,7 @@ st.caption("""Graph 6: Three different indicators quantifying potential loss of 
     that will be exposed by the year 2100. Data and plots from [Nature](https://doi.org/10.1038/s41586-020-2189-9).""")
 
 #################### References #############################
-st.markdown("# References")
+st.markdown("### References")
 
 st.markdown(
     """*Instrumental temperature record (Graph 1)*  \nRohde, R. A. and Hausfather, Z.: 

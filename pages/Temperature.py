@@ -495,7 +495,7 @@ create_ghg_section2()
 create_cmip6_section()
 
 
-st.markdown("# References")
+st.markdown("### References")
 
 st.markdown(
     """*Antarctic ice core data (Graphs 1,2 and 3)*  \nUnited States Environmental Protection Agency. (2010). 

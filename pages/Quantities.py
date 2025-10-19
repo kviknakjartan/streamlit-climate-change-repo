@@ -8,7 +8,9 @@ from datetime import date
 from get_data import (
     get_erf_historic_data,
     get_warming_historic_data,
-    get_climate_feedback_data
+    get_climate_feedback_data,
+    get_ecs_data,
+    get_tcr_data
 )
 
 st.set_page_config(
@@ -378,11 +380,151 @@ st.caption("""Graph 5: Global mean climate feedbacks estimated in "abrupt 4xCO2"
     changing profile of temperature as a function of altitude (positive feedback). The "Surface Albedo" (positive feedback)
     is the effect of changing reflectivity mostly due to changes in ice and snow cover extent. Lastly "Cloud" is the change in
     cloud cover composition which has a net positive effect. Data from [IPCC](https://ipcc-browser.ipcc-data.org/browser/dataset/7516/0).""")
+
+#################### ECS/TCS Estimation #############################
+
+labels = ['Process understanding', 'Instrumental record','Paleoclimates', 'Emergent constraints', 
+    'Combined assessment', 'CMIP6 ESMs']
+
+
+col1, col2 = st.columns(2)
+
+with col1:
+    selected_assessment = st.selectbox("Select assessment:", ['Equilibrium climate sensitivity','Transient climate response'])
+
+if selected_assessment == 'Equilibrium climate sensitivity':
+    df = get_ecs_data()
+
+    fig6 = go.Figure()
+
+    fig6.add_trace(go.Bar(
+            name='Extremely likely range',
+            x=labels,
+            y=[0, 0.2, 6.5, 0, 0, 0],
+            hovertemplate =
+                'Range: [%{customdata[0]:.1f} to %{customdata[1]:.1f}] °C',
+            customdata = np.array([[0,0],[1.6,3.5],[1.5,8],[0,0],[0,0],[0,0]]),
+            base=[0, 1.6, 1.5, 0, 0, 0],
+            showlegend=True,
+            marker_color='rgba(70, 51, 245, 0.3)'
+    ))
+    fig6.add_trace(go.Bar(
+            name='Very likely range',
+            x=labels,
+            y=[5.6, 0.4, 1.8, 3.5, 3, 0],
+            hovertemplate =
+                'Range: [%{customdata[0]:.1f} to %{customdata[1]:.1f}] °C',
+            customdata = np.array([[2.1,7.7],[1.8,3.5],[1.5,3.4],[1.5,5],[2,5],[0,0]]),
+            base=[2.1, 1.8, 1.5, 1.5, 2, 0],
+            showlegend=True,
+            marker_color='rgba(56, 41, 196, 0.5)'
+    ))
+    fig6.add_trace(go.Bar(
+            name='Likely range',
+            x=labels,
+            y=[2.6, 0.3, 1.2, 0, 1.5, 0],
+            hovertemplate =
+                'Range: [%{customdata[0]:.1f} to %{customdata[1]:.1f}] °C',
+            customdata = np.array([[2.5,5.1],[2.2,3.5],[3.3,4.5],[0,0],[2.5,4],[0,0]]),
+            base=[2.5, 2.2, 3.3, 0, 2.5, 0],
+            showlegend=True,
+            marker_color='rgba(42, 31, 148, 0.7)'
+    ))
+    fig6.add_trace(go.Bar(
+            name='Central value range',
+            x=labels,
+            y=[0, 1, 0.1, 0.9, 0, 0],
+            hovertemplate =
+                'Range: [%{customdata[0]:.1f} to %{customdata[1]:.1f}] °C',
+            customdata = np.array([[0,0],[2.5,3.5],[3.3,3.4],[2.4,3.3],[0,0],[0,0]]),
+            base=[0, 2.5, 3.3, 2.4, 0, 0],
+            showlegend=True,
+            marker_color='rgba(30, 22, 105, 0.9)'
+    ))
+    fig6.add_trace(go.Scatter(
+            name='Central value',
+            x=['Process understanding','Combined assessment'],
+            y=[3.4,3],
+            hovertemplate =
+                'Value: %{y:.1f} °C',
+            showlegend=True,
+            mode='markers',
+            marker_color='black',
+            marker_symbol='cross',
+            marker_size=15
+    ))
+    fig6.add_trace(go.Box(
+            name='CMIP6 emulation values',
+            x=['CMIP6 ESMs'] * len(df),
+            y=df['ECS'],
+            showlegend=True,
+            marker_color='blue'
+    ))
+else:
+    df = get_tcr_data()
+
+    fig6 = go.Figure()
+
+    fig6.add_trace(go.Bar(
+            name='Very likely range',
+            x=labels,
+            y=[1.8, 1.4, 0, 1.2, 1.2, 0],
+            hovertemplate =
+                'Range: [%{customdata[0]:.1f} to %{customdata[1]:.1f}] °C',
+            customdata = np.array([[1.3,3.1],[1.3,2.7],[0,0],[1.1,2.3],[1.2,2.4],[0,0]]),
+            base=[1.3, 1.3, 0, 1.1, 1.2, 0],
+            showlegend=True,
+            marker_color='rgba(56, 41, 196, 0.5)'
+    ))
+    fig6.add_trace(go.Bar(
+            name='Likely range',
+            x=labels,
+            y=[1.1, 0.8, 0, 0, 0.8, 0],
+            hovertemplate =
+                'Range: [%{customdata[0]:.1f} to %{customdata[1]:.1f}] °C',
+            customdata = np.array([[1.6,2.7],[1.5,2.3],[0,0],[0,0],[1.4,2.2],[0,0]]),
+            base=[1.6, 1.5, 0, 0, 1.4, 0],
+            showlegend=True,
+            marker_color='rgba(42, 31, 148, 0.7)'
+    ))
+    fig6.add_trace(go.Scatter(
+            name='Central value',
+            x=['Process understanding', 'Instrumental record', 'Emergent constraints', 'Combined assessment'],
+            y=[2,1.9,1.7,1.8],
+            hovertemplate =
+                'Value: %{y:.1f} °C',
+            showlegend=True,
+            mode='markers',
+            marker_color='black',
+            marker_symbol='cross',
+            marker_size=15
+    ))
+    fig6.add_trace(go.Box(
+            name='CMIP6 emulation values',
+            x=['CMIP6 ESMs'] * len(df),
+            y=df['TCR'],
+            showlegend=True,
+            marker_color='blue'
+    ))
+fig6.update_layout(
+    barmode='overlay', 
+    title=f'Graph 6: Summary of the {selected_assessment.lower()} assessments using different lines of evidence'
+    )
+fig6.update_yaxes(title_text=f"{selected_assessment} estimates (°C)")
+
+st.plotly_chart(fig6, use_container_width=True)
+
+st.caption("""Graph 6: Summary of the Equilibrium climate sensitivity (TCS) and Transient climate response (TCR) using different
+    lines of evidence. TCS is the long-term warming from a doubling of atmospheric CO₂ once the climate system 
+    reaches a new equilibrium state (Forster et. al., 2021). This process can take centuries or even millennia as it includes slow feedbacks like deep 
+    ocean heating, which is why ECS is higher than the TCR which represents the "transient" or temporary warming experienced 
+    while the climate system is still adjusting to a new state. Plot adopted from Forster et. al. (2021). Data 
+    from [IPCC](https://ipcc-browser.ipcc-data.org/browser/dataset/7507/0).""")
 ###########################################################################################################################
-st.markdown("# References")
+st.markdown("### References")
 
 st.markdown(
-    """*Effective radiative forcing and attributed warming (Graphs 1 through 5)*  \nForster, P., T. Storelvmo, K. Armour, W. 
+    """*Effective radiative forcing and attributed warming (Graphs 1 through 6)*  \nForster, P., T. Storelvmo, K. Armour, W. 
     Collins, J.-L. Dufresne, 
     D. Frame, D.J. Lunt, T. Mauritsen, M.D. Palmer, M. Watanabe, M. Wild, and H. Zhang, 2021: The Earth’s Energy Budget, Climate 
     Feedbacks, and Climate Sensitivity. In Climate Change 2021: The Physical Science Basis. Contribution of Working Group I to 
@@ -402,4 +544,10 @@ st.markdown(
     to the IPCC Sixth Assessment Report - data for Figure 7.8 (v20220721). NERC EDS Centre for Environmental Data Analysis, 
     06 July 2023. doi:10.5285/5ef11ad195844a59b83393870a5860e1. https://dx.doi.org/10.5285/5ef11ad195844a59b83393870a5860e1. 
     Date Accessed 2025-10-15."""
+)
+st.markdown(
+    """*Assessment of ECS/TCR (Graph 6)*  \nForster, P.; Smith, C. (2023): Chapter 7 of the Working Group I Contribution to the 
+    IPCC Sixth Assessment Report - Input data for Figure 7.18 (v20220721). NERC EDS Centre for Environmental Data Analysis, 
+    10 July 2023. doi:10.5285/399a75d2538a471cb529d1f0fa01410e. https://dx.doi.org/10.5285/399a75d2538a471cb529d1f0fa01410e 
+    Date Accessed 2025-10-10."""
 )

@@ -420,7 +420,7 @@ st.caption("""Graph 6: Ocean heat content anomalies of the ocean for various dep
     measured in zettajoules (ZJ), which represents a factor of 10 to the power of 21.
     Data and graph adopted from [Copernicus](https://climate.copernicus.eu/climate-indicators/ocean-heat-content).""")
 
-st.markdown("# References")
+st.markdown("### References")
 
 st.markdown(
     """*Global mean sea level reconstruction (Graph 1)*  \nChurch, J.A. and N.J. White (2011), Sea-level rise from the late 19th 

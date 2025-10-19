@@ -312,7 +312,7 @@ st.caption(f"""Graph 4: Northern hemisphere seasonal and yearly average snow cov
     produced daily by meteorologists at the US National Ice Center. Satellite images are used to construct the maps. 
     Data from [Rutgers University Global Snow Lab](https://climate.rutgers.edu/snowcover/table_area.php?ui_set=2&ui_sort=0).""")
 
-st.markdown("# References")
+st.markdown("### References")
 
 st.markdown(
     f"""*Sea ice extent and area data (Graph 1)*  \nFetterer, F., Knowles, K., Meier, W. N., Savoie, M., Windnagel, 
