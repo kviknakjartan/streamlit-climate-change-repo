@@ -8,6 +8,7 @@ from get_data import (
     get_cmip6_data,
     get_be_global_data,
     get_be_global_data2,
+    get_gistemp_global_data,
     get_osman_data,
     get_parrenin_data,
     get_co2_latest_data,
@@ -112,56 +113,81 @@ def create_instrumental_temperature_section():
     # Instrumental temperature plot
     fig0 = make_subplots()
 
-    # Add traces
-    fig0.add_trace(
-        go.Scatter(x=df['Year'], \
-            y=df['Five-year Anomaly'] + 14.102, 
-            name="Five-year moving average",
-            hovertemplate =
-            'Value: %{y:.1f} °C'+
-            '<br>Year: %{x:.0f}',
-            line=dict(color='blue'))
-    )
-    y_max = df['Five-year Anomaly'] + df['Five-year Unc.'] + 14.102
-    y_min = df['Five-year Anomaly'] - df['Five-year Unc.'] + 14.102
-    fig0.add_trace(
-        go.Scatter(x=df['Year'], \
-            y=y_max, 
-            name="Five-year uncertainty",
-            hoverinfo = 'skip',
-            line=dict(color='blue', width=0.1),
-            showlegend=False)
-    )
-    fig0.add_trace(
-        go.Scatter(x=df['Year'], \
-            y=y_min, 
-            name="Five-year uncertainty",
-            hoverinfo = 'skip',
-            line=dict(color='blue', width=0.1),
-            fill='tonexty',
-            fillcolor = 'rgba(0, 0, 255, 0.2)')
-    )
-    fig0.add_trace(
-        go.Scatter(x=df['Year'], \
-            y=df['Annual Anomaly'] + 14.102, 
-            name="Annual average",
-            hovertemplate =
-            'Value: %{y:.1f} °C'+
-            '<br>Year: %{x:.0f}',
-            line=dict(color='magenta', width=1))
-    )
-    fig0.update_layout(
-        title_text="Graph 1: Global average temperature (instrumental record)",
-        xaxis=dict(range=[from_year, to_year]),
-        legend=dict(
-            x=0.1,  # x-position (0.1 is near left)
-            y=0.7,  # y-position (0.9 is near top)
-            xref="container",
-            yref="container",
-            orientation = 'h'
-        )
-    )
+    selected_graph = st.selectbox("Select graph:", ['Global mean temperature with uncertainty 1850 to present', 
+            'Global mean temperature anomaly for four different datasets 1850 to present'])
 
+    if selected_graph == 'Global mean temperature with uncertainty 1850 to present':
+
+        # Add traces
+        fig0.add_trace(
+            go.Scatter(x=df['Year'], \
+                y=df['Five-year Anomaly'] + 14.102, 
+                name="Five-year moving average",
+                hovertemplate =
+                'Value: %{y:.1f} °C'+
+                '<br>Year: %{x:.0f}',
+                line=dict(color='blue'))
+        )
+        y_max = df['Five-year Anomaly'] + df['Five-year Unc.'] + 14.102
+        y_min = df['Five-year Anomaly'] - df['Five-year Unc.'] + 14.102
+        fig0.add_trace(
+            go.Scatter(x=df['Year'], \
+                y=y_max, 
+                name="Five-year uncertainty",
+                hoverinfo = 'skip',
+                line=dict(color='blue', width=0.1),
+                showlegend=False)
+        )
+        fig0.add_trace(
+            go.Scatter(x=df['Year'], \
+                y=y_min, 
+                name="Five-year uncertainty",
+                hoverinfo = 'skip',
+                line=dict(color='blue', width=0.1),
+                fill='tonexty',
+                fillcolor = 'rgba(0, 0, 255, 0.2)')
+        )
+        fig0.add_trace(
+            go.Scatter(x=df['Year'], \
+                y=df['Annual Anomaly'] + 14.102, 
+                name="Annual average",
+                hovertemplate =
+                'Value: %{y:.1f} °C'+
+                '<br>Year: %{x:.0f}',
+                line=dict(color='magenta', width=1))
+        )
+        fig0.update_layout(
+            title_text="Graph 1: Global average temperature (instrumental record)",
+            xaxis=dict(range=[from_year, to_year]),
+            legend=dict(
+                x=0.1,  # x-position (0.1 is near left)
+                y=0.7,  # y-position (0.9 is near top)
+                xref="container",
+                yref="container",
+                orientation = 'h'
+            )
+        )
+    else:
+        df_gistemp = get_gistemp_global_data()
+        # Add traces
+        fig0.add_trace(
+            go.Scatter(x=df['Year'],
+                y=df['Five-year Anomaly'], 
+                name="Berkeley Earth",
+                hovertemplate =
+                'Value: %{y:.1f} °C'+
+                '<br>Year: %{x:.0f}',
+                line=dict(color='blue'))
+        )
+        fig0.add_trace(
+            go.Scatter(x=df_gistemp['Year'],
+                y=df_gistemp['Five-year Anomaly'], 
+                name="GISTEMPv4",
+                hovertemplate =
+                'Value: %{y:.1f} °C'+
+                '<br>Year: %{x:.0f}',
+                line=dict(color='red'))
+        )
     # Set x-axis title
     fig0.update_xaxes(title_text="Year")
 

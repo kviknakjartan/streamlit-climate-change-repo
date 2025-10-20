@@ -223,7 +223,7 @@ def get_gistemp_global_data():
     df = read_csv_from_url(GISTEMP_GLOBAL_URL, GISTEMP_GLOBAL_BACKUP, skiprows = 1)
     df = df[~df['Year'].isna()]
     df = df.replace('***', float("NaN"))
-    df['Five-year Anomaly'] = df['J-D'].rolling(5, center = True)
+    df['Five-year Anomaly'] = df['J-D'].rolling(5, center = True).mean()
 
     return df
 
