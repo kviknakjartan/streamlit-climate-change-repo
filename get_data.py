@@ -31,6 +31,8 @@ BE_GLOBAL_BACKUP = Path("data/Land_and_Ocean_summary.txt")
 BE_ANTARCT_URL = r'https://berkeley-earth-temperature.s3.us-west-1.amazonaws.com/Regional/TAVG/antarctica-TAVG-Trend.txt'
 GISTEMP_GLOBAL_URL = r'https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts+dSST.csv'
 GISTEMP_GLOBAL_BACKUP = Path("data/GLB.Ts+dSST.csv")
+HADCRUT_GLOBAL_URL = r'https://www.metoffice.gov.uk/hadobs/hadcrut5/data/HadCRUT.5.1.0.0/analysis/diagnostics/HadCRUT.5.1.0.0.analysis.summary_series.global.annual.csv'
+HADCRUT_GLOBAL_BACKUP = Path("data/HadCRUT.5.1.0.0.analysis.summary_series.global.annual.csv")
 CO2_LATEST_URL = r'https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_annmean_gl.csv'
 CO2_LATEST_BACKUP = Path("data/co2_annmean_gl.csv")
 CH4_LATEST_URL = r'https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_annmean_gl.csv'
@@ -218,11 +220,22 @@ def get_be_antarct_data():
     df['Name'] = 'Temp_antarct_latest'
     return df[['Year', 'Name', 'Value']]
 
+@st.cache_data()
 def get_gistemp_global_data():
 
     df = read_csv_from_url(GISTEMP_GLOBAL_URL, GISTEMP_GLOBAL_BACKUP, skiprows = 1)
     df = df[~df['Year'].isna()]
-    df = df.replace('***', float("NaN"))
+    t1951_1980mean = df.loc[(df.Time < 1981) & (df.Time > 1950), 'Anomaly (deg C)'].mean()
+    df['Anomaly (deg C)'] -= t1951_1980mean
+    df['Five-year Anomaly'] = df['J-D'].rolling(5, center = True).mean()
+
+    return df
+
+@st.cache_data()
+def get_hadcrut_global_data():
+
+    df = read_csv_from_url(HADCRUT_GLOBAL_URL, HADCRUT_GLOBAL_BACKUP)
+    df = df[~df['Time'].isna()]
     df['Five-year Anomaly'] = df['J-D'].rolling(5, center = True).mean()
 
     return df
