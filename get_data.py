@@ -33,6 +33,8 @@ GISTEMP_GLOBAL_URL = r'https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts+dS
 GISTEMP_GLOBAL_BACKUP = Path("data/GLB.Ts+dSST.csv")
 HADCRUT_GLOBAL_URL = r'https://www.metoffice.gov.uk/hadobs/hadcrut5/data/HadCRUT.5.1.0.0/analysis/diagnostics/HadCRUT.5.1.0.0.analysis.summary_series.global.annual.csv'
 HADCRUT_GLOBAL_BACKUP = Path("data/HadCRUT.5.1.0.0.analysis.summary_series.global.annual.csv")
+NOAA_GLOBAL_URL = r'https://www.ncei.noaa.gov/data/noaa-global-surface-temperature/v6/access/timeseries/aravg.ann.land_ocean.90S.90N.v6.0.0.202508.asc'
+NOAA_GLOBAL_BACKUP = Path("data/aravg.ann.land_ocean.90S.90N.v6.0.0.202508.asc")
 CO2_LATEST_URL = r'https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_annmean_gl.csv'
 CO2_LATEST_BACKUP = Path("data/co2_annmean_gl.csv")
 CH4_LATEST_URL = r'https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_annmean_gl.csv'
@@ -238,6 +240,17 @@ def get_hadcrut_global_data():
     t1951_1980mean = df.loc[(df.Time < 1981) & (df.Time > 1950), 'Anomaly (deg C)'].mean()
     df['Anomaly (deg C)'] -= t1951_1980mean
     df['Five-year Anomaly'] = df['Anomaly (deg C)'].rolling(5, center = True).mean()
+
+    return df
+
+@st.cache_data()
+def get_noaa_global_data():
+
+    df = read_csv_from_url(NOAA_GLOBAL_URL, NOAA_GLOBAL_BACKUP, names = ['Year', 'Anomaly'])
+    df = df[~df['Year'].isna()]
+    t1951_1980mean = df.loc[(df.Year < 1981) & (df.Year > 1950), 'Anomaly'].mean()
+    df['Anomaly'] -= t1951_1980mean
+    df['Five-year Anomaly'] = df['Anomaly'].rolling(5, center = True).mean()
 
     return df
 
