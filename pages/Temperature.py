@@ -7,6 +7,7 @@ from datetime import date
 from get_data import (
     get_cmip6_data,
     get_be_global_data,
+    get_be_global_data2,
     get_osman_data,
     get_parrenin_data,
     get_co2_latest_data,
@@ -98,6 +99,79 @@ def get_and_combine_temp_data():
     df = pd.concat([get_osman_data(), get_be_global_data(), get_co2_hist_data(), get_co2_latest_data()])
     return df
 
+def create_instrumental_temperature_section():
+    df = get_be_global_data2()
+
+    min_value = df['Year'].min()
+    max_value = df['Year'].max()
+
+    from_year, to_year = range_slider_with_inputs("What timescale are you interested in?", \
+        'instrumental', min_value*1.0, max_value*1.0, (min_value*1.0, max_value*1.0))
+
+
+    # Instrumental temperature plot
+    fig0 = make_subplots()
+
+    # Add traces
+    fig0.add_trace(
+        go.Scatter(x=df['Year'], \
+            y=df['Five-year Anomaly'] + 14.102, 
+            name="Five-year moving average",
+            hovertemplate =
+            'Value: %{y:.1f} °C'+
+            '<br>Year: %{x:.0f}',
+            line=dict(color='blue'))
+    )
+    y_max = df['Five-year Anomaly'] + df['Five-year Unc.'] + 14.102
+    y_min = df['Five-year Anomaly'] - df['Five-year Unc.'] + 14.102
+    fig0.add_trace(
+        go.Scatter(x=df['Year'], \
+            y=y_max, 
+            name="Five-year uncertainty",
+            hoverinfo = 'skip',
+            line=dict(color='blue', width=0.1),
+            showlegend=False)
+    )
+    fig0.add_trace(
+        go.Scatter(x=df['Year'], \
+            y=y_min, 
+            name="Five-year uncertainty",
+            hoverinfo = 'skip',
+            line=dict(color='blue', width=0.1),
+            fill='tonexty',
+            fillcolor = 'rgba(0, 0, 255, 0.2)')
+    )
+    fig0.add_trace(
+        go.Scatter(x=df['Year'], \
+            y=df['Annual Anomaly'] + 14.102, 
+            name="Annual average",
+            hovertemplate =
+            'Value: %{y:.1f} °C'+
+            '<br>Year: %{x:.0f}',
+            line=dict(color='magenta', width=1))
+    )
+    fig0.update_layout(
+        title_text="Graph 1: Global average temperature (instrumental record)",
+        xaxis=dict(range=[from_year, to_year]),
+        legend=dict(
+            x=0.1,  # x-position (0.1 is near left)
+            y=0.7,  # y-position (0.9 is near top)
+            xref="container",
+            yref="container",
+            orientation = 'h'
+        )
+    )
+
+    # Set x-axis title
+    fig0.update_xaxes(title_text="Year")
+
+    # Set y-axes titles
+    fig0.update_yaxes(title_text="Global mean temperature (°C)")
+    st.plotly_chart(fig0, use_container_width=True)
+    st.caption("""Graph 1: Estimated atmospheric concentration levels of three greenhouse gases for the past ~800,000 years.
+        Based on Antarctic icecore data. Also shown are modern measured annual average levels (instrumental record).
+        See references for data access.""")
+
 def create_ghg_section():
     df = get_and_combine_ghg_data()
 
@@ -173,7 +247,7 @@ def create_ghg_section():
     )
 
     fig1.update_layout(
-        title_text="Graph 1: Atmospheric concentrations for selected greenhouse gases",
+        title_text="Graph 2: Atmospheric concentrations for selected greenhouse gases",
         xaxis=dict(range=[from_year, to_year]),
         legend=dict(
             x=0.1,  # x-position (0.1 is near left)
@@ -191,7 +265,7 @@ def create_ghg_section():
     fig1.update_yaxes(title_text="CO<sub>2</sub> (ppm)", secondary_y=False)
     fig1.update_yaxes(title_text="CH<sub>4</sub> (ppb) / N<sub>2</sub>O (ppb)", secondary_y=True)
     st.plotly_chart(fig1, use_container_width=True)
-    st.caption("""Graph 1: Estimated atmospheric concentration levels of three greenhouse gases for the past ~800,000 years.
+    st.caption("""Graph 2: Estimated atmospheric concentration levels of three greenhouse gases for the past ~800,000 years.
         Based on Antarctic icecore data. Also shown are modern measured annual average levels (instrumental record).
         See references for data access.""")
 
@@ -222,7 +296,7 @@ def create_ghg_section():
 
     # Add figure title
     fig2.update_layout(
-        title_text="Graph 2: Antarctic average air temperature change and global CO<sub>2</sub> concentration",
+        title_text="Graph 3: Antarctic average air temperature change and global CO<sub>2</sub> concentration",
         xaxis=dict(range=[from_year, to_year]),
         legend=dict(
             x=0.1,  # x-position (0.1 is near left)
@@ -239,7 +313,7 @@ def create_ghg_section():
     fig2.update_yaxes(title_text="CO<sub>2</sub> (ppm)", secondary_y=False)
     fig2.update_yaxes(title_text="Temperature change (°C)", secondary_y=True)
     st.plotly_chart(fig2, use_container_width=True)
-    st.caption("""Graph 2: Recostruction of Antarctic temperature change for the past ~800,000 years, based on Antarctic 
+    st.caption("""Graph 3: Recostruction of Antarctic temperature change for the past ~800,000 years, based on Antarctic 
         icecore data and estimation of past carbon dioxide levels based on Antarctic icecore data. Temperature data from
         [PANGAEA](https://doi.org/10.1594/PANGAEA.810188).""")
     st.write("")
@@ -301,7 +375,7 @@ def create_ghg_section2():
     )
 
     fig1.update_layout(
-        title_text="Graph 3: Annual global average surface temperature and CO<sub>2</sub> concentration",
+        title_text="Graph 4: Annual global average surface temperature and CO<sub>2</sub> concentration",
         xaxis=dict(range=[from_year, to_year]),
         legend=dict(
             x=0.1,  # x-position (0.1 is near left)
@@ -319,7 +393,7 @@ def create_ghg_section2():
     fig1.update_yaxes(title_text="CO<sub>2</sub> (ppm)", secondary_y=False)
     fig1.update_yaxes(title_text="Temperature (°C)", secondary_y=True)
     st.plotly_chart(fig1, use_container_width=True)
-    st.caption("""Graph 3: Recostruction of annual global average temperature for the past ~24,000 years based on climate modeling and geochemical proxy data,
+    st.caption("""Graph 4: Recostruction of annual global average temperature for the past ~24,000 years based on climate modeling and geochemical proxy data,
          estimation of past carbon dioxide levels based on Antarctic icecore data and modern measured temperature and 
          carbon dioxide levels (instrumental record). Temperature reconstruction data from [NOAA](https://doi.org/10.25921/njxd-hg08).
          Temperature instrumental record from [The Berkeley Earth Land/Ocean Temperature Record](https://doi.org/10.5194/essd-12-3469-2020).""")
@@ -453,7 +527,7 @@ def create_cmip6_section():
             line=dict(color='magenta', width=0.5))
     )
     fig1.update_layout(
-        title_text="Graph 4: CMIP6 model ensemble annual global average temperature quantiles and instrumental record",
+        title_text="Graph 5: CMIP6 model ensemble annual global average temperature quantiles and instrumental record",
         legend=dict(
             x=0.1,  # x-position (0.1 is near left)
             y=0.7,  # y-position (0.9 is near top)
@@ -468,7 +542,7 @@ def create_cmip6_section():
     # Set y-axes titles
     fig1.update_yaxes(title_text="Temperature (°C)")
     st.plotly_chart(fig1, use_container_width=True)
-    st.caption("""Graph 4: Climate model ensemble annual global average temperature quantiles for four different scenarios 
+    st.caption("""Graph 5: Climate model ensemble annual global average temperature quantiles for four different scenarios 
         from year 1850 to year 2100. Shown are quantiles for the output of 37 models.
         For each of the three scenarios [SSP1-2.6](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways), 
         [SSP2-4.5](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways) and 
@@ -490,6 +564,7 @@ st.sidebar.header("Temperature")
 
 st.markdown("# Global Average Temperature and Greenhouse Gas Concentration")
 
+create_instrumental_temperature_section()
 create_ghg_section()
 create_ghg_section2()
 create_cmip6_section()
@@ -498,26 +573,32 @@ create_cmip6_section()
 st.markdown("### References")
 
 st.markdown(
-    """*Antarctic ice core data (Graphs 1,2 and 3)*  \nUnited States Environmental Protection Agency. (2010). 
+    f"""*Estimated global average surface temperature (Graphs 1, 4 and 5)*  \nRohde, R. A. and Hausfather, Z.: 
+    The Berkeley Earth Land/Ocean Temperature Record, Earth Syst. Sci. Data, 12, 3469-3479, 
+    https://doi.org/10.5194/essd-12-3469-2020, 2020. 
+    Accessed {date.today()}."""
+)
+st.markdown(
+    """*Antarctic ice core data (Graphs 2,3 and 4)*  \nUnited States Environmental Protection Agency. (2010). 
     Climate Change Indicators: Atmospheric Concentrations of Greenhouse Gases (Updated June 2024) [Dataset]. 
     US EPA. https://www.epa.gov/climate-indicators/climate-change-indicators-atmospheric-concentrations-greenhouse-gases.  
     Accessed September 19, 2025."""
 )
 st.markdown(
-    """*Latest Atmospheric Carbon Dioxide (CO<sub>2</sub>) concentration (Graphs 1,2 and 3)*  \nLan, X., Tans, P. and K.W. Thoning: 
+    """*Latest Atmospheric Carbon Dioxide (CO<sub>2</sub>) concentration (Graphs 2,3 and 4)*  \nLan, X., Tans, P. and K.W. Thoning: 
     Trends in globally-averaged CO2 determined from NOAA Global Monitoring Laboratory measurements. 
     Version 2025-09 https://doi.org/10.15138/9N0H-ZH07. 
     Accessed September 21, 2025.""", unsafe_allow_html=True
 )
 st.markdown(
-    """*Latest Atmospheric Methane (CH<sub>4</sub>) and Nitrous Oxide (N<sub>2</sub>O) concentrations (Graph 1)*  \nLan, X., 
+    """*Latest Atmospheric Methane (CH<sub>4</sub>) and Nitrous Oxide (N<sub>2</sub>O) concentrations (Graph 2)*  \nLan, X., 
     K.W. Thoning, and E.J. Dlugokencky: 
     Trends in globally-averaged CH4, N2O, and SF6 determined from NOAA Global Monitoring Laboratory measurements. 
     Version 2025-09, https://doi.org/10.15138/P8XG-AA10. 
     Accessed September 21, 2025.""", unsafe_allow_html=True
 )
 st.markdown(
-    """*Antarctic temperature data (Graph 2)*  \nParrenin, Frédéric; Masson-Delmotte, Valerie; 
+    """*Antarctic temperature data (Graph 3)*  \nParrenin, Frédéric; Masson-Delmotte, Valerie; 
     Köhler, Peter; Raynaud, Dominique; Paillard, Didier; Schwander, Jakob; Barbante, Carlo; Landais, Amaëlle; Wegner, Anna; 
     Jouzel, Jean (2013): Antarctic Temperature Stack (ATS) from five different ice cores (EDC, Vostok, Dome Fuji, TALDICE, 
     and EDML) [dataset]. PANGAEA, https://doi.org/10.1594/PANGAEA.810188,  \nIn supplement to: Parrenin, F et al. (2013): 
@@ -525,26 +606,20 @@ st.markdown(
     339(6123), 1060-1063, https://doi.org/10.1126/science.1226368.  \nAccessed September 23, 2025.""", unsafe_allow_html=True
 )
 st.markdown(
-    """*Global surface temperatures since the last glacial maximum (Graph 3)*  \nMatthew B. Osman, Jessica E. Tierney, 
+    """*Global surface temperatures since the last glacial maximum (Graph 4)*  \nMatthew B. Osman, Jessica E. Tierney, 
     Jiang Zhu, Robert Tardif, Gregory J. Hakim, Jonathan King, Christopher J. Poulsen. 2021. 
     Globally resolved surface temperatures since the Last Glacial Maximum. Nature, 599, 239-244. 
     doi: 10.1038/s41586-021-03984-4. 
     Accessed from https://doi.org/10.25921/njxd-hg08, September 19, 2025."""
 )
 st.markdown(
-    f"""*Estimated global average surface temperature (Graphs 3 and 4)*  \nRohde, R. A. and Hausfather, Z.: 
-    The Berkeley Earth Land/Ocean Temperature Record, Earth Syst. Sci. Data, 12, 3469-3479, 
-    https://doi.org/10.5194/essd-12-3469-2020, 2020. 
-    Accessed {date.today()}."""
-)
-st.markdown(
-    """*CMIP6 model output data (Graph 4)*  \nCopernicus Climate Change Service, Climate Data Store, 
+    """*CMIP6 model output data (Graph 5)*  \nCopernicus Climate Change Service, Climate Data Store, 
     (2021): CMIP6 climate projections. Copernicus Climate Change Service (C3S) Climate Data Store (CDS). 
     DOI: 10.24381/cds.c866074c. Accessed from https://cds.climate.copernicus.eu/datasets/projections-cmip6?tab=overview
     (Accessed on 2025-09-24)."""
 )
 st.markdown(
-    """*CMIP6 model output plot original work (Graph 4)*  \nCopernicus Climate Change Service (C3S) Data Tutorials: 
+    """*CMIP6 model output plot original work (Graph 5)*  \nCopernicus Climate Change Service (C3S) Data Tutorials: 
     Plot an Ensemble of CMIP6 Climate Projections. (2022). Copernicus Climate Change Service (C3S). 
     https://ecmwf-projects.github.io/copernicus-training-c3s/projections-cmip6.html
     (Accessed on 2025-09-24)."""

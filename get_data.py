@@ -193,6 +193,15 @@ def get_be_global_data():
     df['Name'] = 'Temp_latest'
     return df[['Year', 'Name', 'Value']]
 
+def get_be_global_data2():
+
+    df = pd.read_csv(BE_GLOBAL_URL, sep=r'\s+', comment = '%', \
+        names = ['Year', 'Annual Anomaly', 'Annual Unc.', 'Five-year Anomaly', 'Five-year Unc.', \
+        'Annual Anomaly(W)', 'Annual Unc.(W)', 'Five-year Anomaly(W)', 'Five-year Unc.(W)'])
+    df = df[~df['Year'].isna()]
+
+    return df
+
 @st.cache_data()
 def get_be_antarct_data():
     df = pd.read_csv(BE_ANTARCT_URL, sep=r'\s+', comment = '%', \
