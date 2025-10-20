@@ -9,6 +9,7 @@ from get_data import (
     get_be_global_data,
     get_be_global_data2,
     get_gistemp_global_data,
+    get_hadcrut_global_data,
     get_osman_data,
     get_parrenin_data,
     get_co2_latest_data,
@@ -169,6 +170,8 @@ def create_instrumental_temperature_section():
         )
     else:
         df_gistemp = get_gistemp_global_data()
+        df_hadcrut = get_hadcrut_global_data()
+
         # Add traces
         fig0.add_trace(
             go.Scatter(x=df['Year'],
@@ -187,6 +190,15 @@ def create_instrumental_temperature_section():
                 'Value: %{y:.1f} °C'+
                 '<br>Year: %{x:.0f}',
                 line=dict(color='red'))
+        )
+        fig0.add_trace(
+            go.Scatter(x=df_hadcrut['Time'],
+                y=df_hadcrut['Five-year Anomaly'], 
+                name="HADCRUT5",
+                hovertemplate =
+                'Value: %{y:.1f} °C'+
+                '<br>Year: %{x:.0f}',
+                line=dict(color='green'))
         )
     # Set x-axis title
     fig0.update_xaxes(title_text="Year")
