@@ -29,6 +29,8 @@ SEA_ICE_S_URL = r'https://noaadata.apps.nsidc.org/NOAA/G02135/south/monthly/data
 BE_GLOBAL_URL = r'https://berkeley-earth-temperature.s3.us-west-1.amazonaws.com/Global/Land_and_Ocean_summary.txt'
 BE_GLOBAL_BACKUP = Path("data/Land_and_Ocean_summary.txt")
 BE_ANTARCT_URL = r'https://berkeley-earth-temperature.s3.us-west-1.amazonaws.com/Regional/TAVG/antarctica-TAVG-Trend.txt'
+GISTEMP_GLOBAL_URL = r'https://data.giss.nasa.gov/gistemp/tabledata_v4/GLB.Ts+dSST.csv'
+GISTEMP_GLOBAL_BACKUP = Path("data/GLB.Ts+dSST.csv")
 CO2_LATEST_URL = r'https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_annmean_gl.csv'
 CO2_LATEST_BACKUP = Path("data/co2_annmean_gl.csv")
 CH4_LATEST_URL = r'https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_annmean_gl.csv'
@@ -215,6 +217,15 @@ def get_be_antarct_data():
 
     df['Name'] = 'Temp_antarct_latest'
     return df[['Year', 'Name', 'Value']]
+
+def get_gistemp_global_data():
+
+    df = read_csv_from_url(GISTEMP_GLOBAL_URL, GISTEMP_GLOBAL_BACKUP, skiprows = 1)
+    df = df[~df['Year'].isna()]
+    df = df.replace('***', float("NaN"))
+    df['Five-year Anomaly'] = df['J-D'].rolling(5, center = True)
+
+    return df
 
 @st.cache_data()
 def get_parrenin_data():
