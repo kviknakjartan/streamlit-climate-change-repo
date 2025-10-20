@@ -27,6 +27,7 @@ ICE_SHEET_BACKUP = Path("data/ice_sheets_fig-1.csv")
 SEA_ICE_N_URL = r'https://noaadata.apps.nsidc.org/NOAA/G02135/north/monthly/data/'
 SEA_ICE_S_URL = r'https://noaadata.apps.nsidc.org/NOAA/G02135/south/monthly/data/'
 BE_GLOBAL_URL = r'https://berkeley-earth-temperature.s3.us-west-1.amazonaws.com/Global/Land_and_Ocean_summary.txt'
+BE_GLOBAL_BACKUP = Path("data/Land_and_Ocean_summary.txt")
 BE_ANTARCT_URL = r'https://berkeley-earth-temperature.s3.us-west-1.amazonaws.com/Regional/TAVG/antarctica-TAVG-Trend.txt'
 CO2_LATEST_URL = r'https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_annmean_gl.csv'
 CO2_LATEST_BACKUP = Path("data/co2_annmean_gl.csv")
@@ -61,7 +62,7 @@ def fractional_year_to_datetime(year_float):
     base_date = pd.to_datetime(f'{year}-01-01')
     return base_date + pd.DateOffset(days=days)
 
-def read_csv_from_url(csv_url, backup, timeout = 5, **kwargs):
+def read_csv_from_url(csv_url, backup, timeout = 3, **kwargs):
     try:
         response = requests.get(csv_url, timeout = timeout)
         response.raise_for_status() # Raise an exception for bad status codes
@@ -180,7 +181,7 @@ def get_cmip6_data():
 @st.cache_data()
 def get_be_global_data():
 
-    df = pd.read_csv(BE_GLOBAL_URL, sep=r'\s+', comment = '%', \
+    df = read_csv_from_url(BE_GLOBAL_URL, BE_GLOBAL_BACKUP, sep=r'\s+', comment = '%', \
         names = ['Year', 'Annual Anomaly', 'Annual Unc.', 'Five-year Anomaly', 'Five-year Unc.', \
         'Annual Anomaly(W)', 'Annual Unc.(W)', 'Five-year Anomaly(W)', 'Five-year Unc.(W)'])
     df = df[~df['Year'].isna()]
@@ -195,7 +196,7 @@ def get_be_global_data():
 
 def get_be_global_data2():
 
-    df = pd.read_csv(BE_GLOBAL_URL, sep=r'\s+', comment = '%', \
+    df = read_csv_from_url(BE_GLOBAL_URL, BE_GLOBAL_BACKUP, sep=r'\s+', comment = '%', \
         names = ['Year', 'Annual Anomaly', 'Annual Unc.', 'Five-year Anomaly', 'Five-year Unc.', \
         'Annual Anomaly(W)', 'Annual Unc.(W)', 'Five-year Anomaly(W)', 'Five-year Unc.(W)'])
     df = df[~df['Year'].isna()]
