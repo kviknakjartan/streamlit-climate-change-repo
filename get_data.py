@@ -225,8 +225,6 @@ def get_gistemp_global_data():
 
     df = read_csv_from_url(GISTEMP_GLOBAL_URL, GISTEMP_GLOBAL_BACKUP, skiprows = 1)
     df = df[~df['Year'].isna()]
-    t1951_1980mean = df.loc[(df.Time < 1981) & (df.Time > 1950), 'Anomaly (deg C)'].mean()
-    df['Anomaly (deg C)'] -= t1951_1980mean
     df['Five-year Anomaly'] = df['J-D'].rolling(5, center = True).mean()
 
     return df
@@ -236,7 +234,9 @@ def get_hadcrut_global_data():
 
     df = read_csv_from_url(HADCRUT_GLOBAL_URL, HADCRUT_GLOBAL_BACKUP)
     df = df[~df['Time'].isna()]
-    df['Five-year Anomaly'] = df['J-D'].rolling(5, center = True).mean()
+    t1951_1980mean = df.loc[(df.Time < 1981) & (df.Time > 1950), 'Anomaly (deg C)'].mean()
+    df['Anomaly (deg C)'] -= t1951_1980mean
+    df['Five-year Anomaly'] = df['Anomaly (deg C)'].rolling(5, center = True).mean()
 
     return df
 
