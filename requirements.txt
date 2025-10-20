@@ -11,3 +11,4 @@ scipy
 numpy
 cartopy
 rasterio
+pydeck

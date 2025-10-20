@@ -249,7 +249,7 @@ def get_noaa_global_data():
     df = read_csv_from_url(NOAA_GLOBAL_URL, NOAA_GLOBAL_BACKUP, sep=r'\s+', 
         names = ['Year', 'Anomaly', 'nan1', 'nan2', 'nan3', 'nan4'])
     df = df[~df['Year'].isna()]
-    print(df.Year)
+    
     t1951_1980mean = df.loc[(df.Year < 1981) & (df.Year > 1950), 'Anomaly'].mean()
     df['Anomaly'] -= t1951_1980mean
     df['Five-year Anomaly'] = df['Anomaly'].rolling(5, center = True).mean()
