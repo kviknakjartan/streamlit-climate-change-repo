@@ -17,7 +17,8 @@ from get_data import (
     get_n2o_latest_data,
     get_co2_hist_data,
     get_ch4_hist_data,
-    get_n2o_hist_data
+    get_n2o_hist_data,
+    get_noaa_global_data
 )
 
 def range_slider_with_inputs(title, label, min_bound, max_bound, default_range):
@@ -171,6 +172,7 @@ def create_instrumental_temperature_section():
     else:
         df_gistemp = get_gistemp_global_data()
         df_hadcrut = get_hadcrut_global_data()
+        df_noaa = get_noaa_global_data()
 
         # Add traces
         fig0.add_trace(
@@ -200,17 +202,29 @@ def create_instrumental_temperature_section():
                 '<br>Year: %{x:.0f}',
                 line=dict(color='green'))
         )
+        fig0.add_trace(
+            go.Scatter(x=df_noaa['Year'],
+                y=df_noaa['Five-year Anomaly'], 
+                name="NOAAGlobalTempv6",
+                hovertemplate =
+                'Value: %{y:.1f} °C'+
+                '<br>Year: %{x:.0f}',
+                line=dict(color='magenta'))
+        )
     # Set x-axis title
     fig0.update_xaxes(title_text="Year")
 
     # Set y-axes titles
     fig0.update_yaxes(title_text="Global mean temperature (°C)")
     st.plotly_chart(fig0, use_container_width=True)
-    st.caption("""Graph 1: Estimated atmospheric concentration levels of three greenhouse gases for the past ~800,000 years.
-        Based on Antarctic icecore data. Also shown are modern measured annual average levels (instrumental record).
+    st.caption("""Graph 1: Global mean temperature with uncertainty and global mean temperature anomaly for four different 
+        datasets, 1850 to present. On the former graph a 5-year moving average is shown as well as annual average and 
+        uncertainty for the 5-year average. On the latter graph 5-year moving averages are shown for each dataset.
         See references for data access.""")
 
 def create_ghg_section():
+    st.write("")
+
     df = get_and_combine_ghg_data()
 
     min_value = df['Year'].min()
@@ -611,7 +625,31 @@ create_cmip6_section()
 st.markdown("### References")
 
 st.markdown(
-    f"""*Estimated global average surface temperature (Graphs 1, 4 and 5)*  \nRohde, R. A. and Hausfather, Z.: 
+    f"""*Global average surface instrumental temperature (Graph 1)*  \nGISTEMP Team, 2025: GISS Surface Temperature Analysis 
+    (GISTEMP), version 4. NASA Goddard Institute for Space Studies. 
+    Dataset accessed {date.today()} at https://data.giss.nasa.gov/gistemp/."""
+)
+st.markdown(
+    """*Global average surface instrumental temperature (Graph 1)*  \nLenssen, N., G.A. Schmidt, M. Hendrickson, P. Jacobs, 
+    M. Menne, and R. Ruedy, 2024: A GISTEMPv4 observational uncertainty ensemble. J. Geophys. Res. Atmos., 129, no. 17, 
+    e2023JD040179, doi:10.1029/2023JD040179."""
+)
+st.markdown(
+    f"""*Global average surface instrumental temperature (Graph 1)*  \nMorice, C. P., Kennedy, J. J., Rayner, N. A., Winn, 
+    J. P., Hogan, E., Killick, R. E., et al. (2021). An updated assessment of near-surface temperature change from 1850: 
+    the HadCRUT5 data set. Journal of Geophysical Research: Atmospheres, 126, 
+    e2019JD032361. https://doi.org/10.1029/2019JD032361.
+    Accessed {date.today()}."""
+)
+st.markdown(
+    f"""*Global average surface instrumental temperature (Graph 1)*  \nHuang, B., X. Yin, M. J. Menne, R. Vose, and H. 
+    Zhang, NOAA Global Surface Temperature Dataset (NOAAGlobalTemp), Version 6.0.0 
+    [aravg.ann.land_ocean.90S.90N.v6.0.0.202508.asc]. NOAA National Centers for Environmental 
+    Information. https://doi.org/10.25921/rzxg-p717.
+    Accessed {date.today()}."""
+)
+st.markdown(
+    f"""*Global average surface instrumental temperature (Graphs 1, 4 and 5)*  \nRohde, R. A. and Hausfather, Z.: 
     The Berkeley Earth Land/Ocean Temperature Record, Earth Syst. Sci. Data, 12, 3469-3479, 
     https://doi.org/10.5194/essd-12-3469-2020, 2020. 
     Accessed {date.today()}."""
