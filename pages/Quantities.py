@@ -406,7 +406,8 @@ if selected_assessment == 'Equilibrium climate sensitivity':
             customdata = np.array([[0,0],[1.6,3.5],[1.5,8],[0,0],[0,0],[0,0]]),
             base=[0, 1.6, 1.5, 0, 0, 0],
             showlegend=True,
-            marker_color='rgba(70, 51, 245, 0.3)'
+            marker_color='rgba(70, 51, 245, 0.3)',
+            width=0.2
     ))
     fig6.add_trace(go.Bar(
             name='Very likely range',
@@ -417,7 +418,8 @@ if selected_assessment == 'Equilibrium climate sensitivity':
             customdata = np.array([[2.1,7.7],[1.8,3.5],[1.5,3.4],[1.5,5],[2,5],[0,0]]),
             base=[2.1, 1.8, 1.5, 1.5, 2, 0],
             showlegend=True,
-            marker_color='rgba(56, 41, 196, 0.5)'
+            marker_color='rgba(56, 41, 196, 0.5)',
+            width=0.2
     ))
     fig6.add_trace(go.Bar(
             name='Likely range',
@@ -428,7 +430,8 @@ if selected_assessment == 'Equilibrium climate sensitivity':
             customdata = np.array([[2.5,5.1],[2.2,3.5],[3.3,4.5],[0,0],[2.5,4],[0,0]]),
             base=[2.5, 2.2, 3.3, 0, 2.5, 0],
             showlegend=True,
-            marker_color='rgba(42, 31, 148, 0.7)'
+            marker_color='rgba(42, 31, 148, 0.7)',
+            width=0.2
     ))
     fig6.add_trace(go.Bar(
             name='Central value range',
@@ -439,7 +442,8 @@ if selected_assessment == 'Equilibrium climate sensitivity':
             customdata = np.array([[0,0],[2.5,3.5],[3.3,3.4],[2.4,3.3],[0,0],[0,0]]),
             base=[0, 2.5, 3.3, 2.4, 0, 0],
             showlegend=True,
-            marker_color='rgba(30, 22, 105, 0.9)'
+            marker_color='rgba(30, 22, 105, 0.9)',
+            width=0.2
     ))
     fig6.add_trace(go.Scatter(
             name='Central value',
@@ -474,7 +478,8 @@ else:
             customdata = np.array([[1.3,3.1],[1.3,2.7],[0,0],[1.1,2.3],[1.2,2.4],[0,0]]),
             base=[1.3, 1.3, 0, 1.1, 1.2, 0],
             showlegend=True,
-            marker_color='rgba(56, 41, 196, 0.5)'
+            marker_color='rgba(56, 41, 196, 0.5)',
+            width=0.2
     ))
     fig6.add_trace(go.Bar(
             name='Likely range',
@@ -485,7 +490,8 @@ else:
             customdata = np.array([[1.6,2.7],[1.5,2.3],[0,0],[0,0],[1.4,2.2],[0,0]]),
             base=[1.6, 1.5, 0, 0, 1.4, 0],
             showlegend=True,
-            marker_color='rgba(42, 31, 148, 0.7)'
+            marker_color='rgba(42, 31, 148, 0.7)',
+            width=0.2
     ))
     fig6.add_trace(go.Scatter(
             name='Central value',

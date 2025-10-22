@@ -55,6 +55,7 @@ ERF_HISTORIC_PC95_PATH = Path("data/AR6_ERF_1750-2019_pc95.csv")
 WARMING_HISTORIC_PATH = Path("data/fig7.8.csv")
 ECS_PATH = Path("data/ecs_for_faq.csv")
 TCR_PATH = Path("data/tcr_for_faq.csv")
+GHG_HISTORIC_URL = r'https://ourworldindata.org/grapher/ghg-emissions-by-gas.csv?v=1&csvType=full&useColumnShortNames=true'
 
 def integer_to_datetime(int_date):
     year, remainder = divmod(int_date, 10000)
@@ -90,6 +91,11 @@ def get_season(date):
     elif date.month in [9,10,11]:
         season = 'Autumn'
     return f'{season} {year}'
+
+@st.cache_data()
+def get_historic_ghg_data():
+    df = pd.read_csv(GHG_HISTORIC_URL, storage_options = {'User-Agent': 'Our World In Data data fetch/1.0'})
+    return df
 
 @st.cache_data()
 def get_snow_data():
@@ -517,4 +523,4 @@ def get_climate_feedback_data():
     return df_cmip5, df_cmip6, df_ar6
     
 if __name__ == "__main__":
-    get_climate_feedback_data()
+    get_historic_ghg_data()

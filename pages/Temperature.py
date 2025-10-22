@@ -158,17 +158,6 @@ def create_instrumental_temperature_section():
                 '<br>Year: %{x:.0f}',
                 line=dict(color='magenta', width=1))
         )
-        fig0.update_layout(
-            title_text="Graph 1: Global average temperature (instrumental record)",
-            xaxis=dict(range=[from_year, to_year]),
-            legend=dict(
-                x=0.1,  # x-position (0.1 is near left)
-                y=0.7,  # y-position (0.9 is near top)
-                xref="container",
-                yref="container",
-                orientation = 'h'
-            )
-        )
     else:
         df_gistemp = get_gistemp_global_data()
         df_hadcrut = get_hadcrut_global_data()
@@ -211,6 +200,17 @@ def create_instrumental_temperature_section():
                 '<br>Year: %{x:.0f}',
                 line=dict(color='magenta'))
         )
+    fig0.update_layout(
+        title_text="Graph 1: Global average temperature (instrumental record)",
+        xaxis=dict(range=[from_year, to_year]),
+        legend=dict(
+            x=0.1,  # x-position (0.1 is near left)
+            y=0.7,  # y-position (0.9 is near top)
+            xref="container",
+            yref="container",
+            orientation = 'h'
+        )
+    )
     # Set x-axis title
     fig0.update_xaxes(title_text="Year")
 

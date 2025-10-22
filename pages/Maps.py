@@ -9,7 +9,6 @@ import cartopy.crs as ccrs
 from cartopy.util import add_cyclic_point
 import rasterio
 from rasterio.plot import show
-import pydeck as pdk
 
 st.set_page_config(
     page_title='Climate Change in Graphs: Maps',
