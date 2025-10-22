@@ -21,6 +21,8 @@ st.write("---")
 col1, col2 = st.columns([1,4])
 
 with col1:
+    if st.button("Emissions", icon=":material/factory:", width = "stretch", help = "World greenhouse gas emissions"):
+        st.switch_page("pages/Emissions.py")
     if st.button("Ice", icon=":material/ac_unit:", width = "stretch", help = "Ice and snowcover extent"):
         st.switch_page("pages/Ice.py")
     if st.button("Maps", icon=":material/map:", width = "stretch", 

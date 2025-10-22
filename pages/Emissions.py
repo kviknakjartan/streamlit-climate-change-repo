@@ -92,10 +92,12 @@ st.sidebar.header("Emissions")
 
 st.markdown("# Greenhouse gas emissions")
 ############################################# Historic GHG plot ###########################################################
-df = get_historic_ghg_data()
+df_historic_ghg = get_historic_ghg_data()
+df_historic_ghg['total_emissions_co2eq'] = df_historic_ghg[['annual_emissions_co2_total','annual_emissions_ch4_total_co2eq',
+    'annual_emissions_n2o_total_co2eq']].sum(axis=1)
 
-min_value = df['Year'].min()
-max_value = df['Year'].max()
+min_value = df_historic_ghg['Year'].min()
+max_value = df_historic_ghg['Year'].max()
 
 from_year, to_year = range_slider_with_inputs("What timescale are you interested in?", \
     'ghg_historical', min_value*1.0, max_value*1.0, (min_value*1.0, max_value*1.0))
@@ -109,7 +111,7 @@ fig1 = make_subplots()
 
 if selected_graph == 'World total GHG emissions by substance':
 
-    df_world = df[df.Entity == 'World']
+    df_world = df_historic_ghg[df_historic_ghg.Entity == 'World']
     # Add traces
     fig1.add_trace(
         go.Scatter(x=df_world.Year,
@@ -141,6 +143,25 @@ if selected_graph == 'World total GHG emissions by substance':
             line=dict(color='green'),
             stackgroup='one')
     )
+else:
+    col1, col2 = st.columns([5,2])
+    # Multiselect countries
+    with col1:
+        selected_countries = st.multiselect(
+            'Select Countries',
+            df_historic_ghg.Entity.unique(),
+            default = ['United States','China','Russia','European Union (28)'],
+            placeholder = "Choose at least one"
+        )
+    for country in selected_countries:
+        fig1.add_trace(
+            go.Scatter(x=df_historic_ghg.loc[df_historic_ghg.Entity == country, 'Year'],
+                y=df_historic_ghg.loc[df_historic_ghg.Entity == country, 'total_emissions_co2eq'], 
+                name=country,
+                hovertemplate =
+                'Value: %{y:.2e} ton'+
+                '<br>Year: %{x:.0f}')
+        )
 
 fig1.update_layout(
     title_text=f"Graph 1: {selected_graph} by year in CO<sub>2</sub> equivalent",
@@ -162,11 +183,55 @@ st.plotly_chart(fig1, use_container_width=True)
 st.caption("""Graph 1: World total GHG emissions by substance and GHG emissions by country, by year in CO<sub>2</sub> 
     equivalent. Data from [Our World in Data](https://ourworldindata.org/grapher/ghg-emissions-by-gas).""")
 
+############################################# Country 2023 GHG plot ###########################################################
+
+col1, col2 = st.columns(2)
+
+with col1:
+    selected_graph = st.selectbox("Choose a graph:", ['Cumulative GHG emissions by country 1850-2023',
+        'GHG emissions by country 2023'])
+
+if selected_graph == 'Cumulative GHG emissions by country 1850-2023':
+
+    df_countries = df_historic_ghg[(~df_historic_ghg.Code.isnull()) & (df_historic_ghg.Entity != 'World')]
+    df_cumulative = df_countries.groupby(by=['Entity','Code'], as_index=False).sum()
+    df_cumulative = df_cumulative.rename(columns = {'total_emissions_co2eq' : 'Emissions (tons CO<sub>2</sub> eqv.)'})
+    
+    fig2 = px.choropleth(df_cumulative, locations="Code",
+                    color="Emissions (tons CO<sub>2</sub> eqv.)", 
+                    hover_name="Entity", # column to add to hover information
+                    color_continuous_scale=px.colors.sequential.turbid,
+                    title=f'Graph 2: {selected_graph}')
+
+elif selected_graph == 'GHG emissions by country 2023':
+
+    df_countries = df_historic_ghg[(~df_historic_ghg.Code.isnull()) & (df_historic_ghg.Entity != 'World')]
+    df_2023 = df_countries[df_countries.Year == 2023]
+    df_2023 = df_2023.rename(columns = {'total_emissions_co2eq' : 'Emissions (tons CO<sub>2</sub> eqv.)'})
+
+    fig2 = px.choropleth(df_2023, locations="Code",
+                    color="Emissions (tons CO<sub>2</sub> eqv.)", 
+                    hover_name="Entity", # column to add to hover information
+                    color_continuous_scale=px.colors.sequential.turbid,
+                    title=f'Graph 2: {selected_graph}')
+
+fig2.update_layout(
+    coloraxis_colorbar=dict(
+        orientation="h",  # Horizontal orientation
+        yanchor="bottom", # Anchor the legend's bottom to the specified y-coordinate
+        y=-0.3,           # Position below the plot area (adjust as needed)
+        xanchor="left",   # Anchor the legend's left to the specified x-coordinate
+        x=0.13               # Position at the left edge of the plot area
+    )
+)
+st.plotly_chart(fig2, use_container_width=True)
+st.caption("""Graph 2: Cumulative GHG emissions by country 1850-2023 and GHG emissions by country 2023 in CO<sub>2</sub> 
+    equivalent. Data from [Our World in Data](https://ourworldindata.org/grapher/ghg-emissions-by-gas).""")
 ###########################################################################################################################
 st.markdown("### References")
 
 st.markdown(
-    f"""*Greenhouse gas emissions, world total and by country (Graph 1)*  \nJones, M. W., Peters, G. P., Gasser, T., Andrew, 
+    f"""*Greenhouse gas emissions, world total and by country (Graphs 1 and 2)*  \nJones, M. W., Peters, G. P., Gasser, T., Andrew, 
     R. M., Schwingshackl, C., Gütschow, J., Houghton, R. A., Friedlingstein, P., Pongratz, J., & Le Quéré, C. (2024) – with major 
     processing by Our World in Data. “Annual carbon dioxide, methane and nitrous oxide emissions including land use” [dataset]. 
     Jones et al., “National contributions to climate change 2024.2” [original data].
