@@ -57,6 +57,7 @@ ECS_PATH = Path("data/ecs_for_faq.csv")
 TCR_PATH = Path("data/tcr_for_faq.csv")
 GHG_HISTORIC_URL = r'https://ourworldindata.org/grapher/ghg-emissions-by-gas.csv?v=1&csvType=full&useColumnShortNames=true'
 GHG_PER_CAPITA_URL = r'https://ourworldindata.org/grapher/co-emissions-per-capita.csv?v=1&csvType=full&useColumnShortNames=true'
+POPULATION_PATH = Path("data/population.xlsx")
 
 def integer_to_datetime(int_date):
     year, remainder = divmod(int_date, 10000)
@@ -101,6 +102,11 @@ def get_historic_ghg_data():
 @st.cache_data()
 def get_per_capita_ghg_data():
     df = pd.read_csv(GHG_PER_CAPITA_URL, storage_options = {'User-Agent': 'Our World In Data data fetch/1.0'})
+    return df
+
+@st.cache_data()
+def get_population_data():
+    df = pd.read_csv(POPULATION_PATH)
     return df
 
 @st.cache_data()
@@ -529,4 +535,4 @@ def get_climate_feedback_data():
     return df_cmip5, df_cmip6, df_ar6
     
 if __name__ == "__main__":
-    get_historic_ghg_data()
+    get_population_data()

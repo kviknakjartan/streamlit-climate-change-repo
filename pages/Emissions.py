@@ -181,7 +181,8 @@ fig1.update_xaxes(title_text="Year")
 fig1.update_yaxes(title_text="Emissions (tons of CO<sub>2</sub> equivalent)")
 st.plotly_chart(fig1, use_container_width=True)
 st.caption("""Graph 1: World total GHG emissions by substance and GHG emissions by country, by year in CO<sub>2</sub> 
-    equivalent. Data from [Our World in Data](https://ourworldindata.org/grapher/ghg-emissions-by-gas).""")
+    equivalent, emissions from all sources, including agriculture and land-use change. Data 
+    from [Our World in Data](https://ourworldindata.org/grapher/ghg-emissions-by-gas).""")
 
 ############################################# Country 2023 GHG plot ###########################################################
 
@@ -226,7 +227,8 @@ fig2.update_layout(
 )
 st.plotly_chart(fig2, use_container_width=True)
 st.caption("""Graph 2: Cumulative GHG emissions by country 1850-2023 and GHG emissions by country 2023 in CO<sub>2</sub> 
-    equivalent. Data from [Our World in Data](https://ourworldindata.org/grapher/ghg-emissions-by-gas).""")
+    equivalent, emissions from all sources, including agriculture and land-use change. Data 
+    from [Our World in Data](https://ourworldindata.org/grapher/ghg-emissions-by-gas).""")
 ###########################################################################################################################
 st.markdown("### References")
 
