@@ -56,8 +56,7 @@ WARMING_HISTORIC_PATH = Path("data/fig7.8.csv")
 ECS_PATH = Path("data/ecs_for_faq.csv")
 TCR_PATH = Path("data/tcr_for_faq.csv")
 GHG_HISTORIC_PATH = Path("data/ghg-emissions-by-gas.csv")
-GHG_PER_CAPITA_URL = r'https://ourworldindata.org/grapher/co-emissions-per-capita.csv?v=1&csvType=full&useColumnShortNames=true'
-POPULATION_PATH = Path("data/population.csv")
+GHG_PER_CAPITA_PATH = Path("data/per-capita-ghg-emissions.csv")
 
 def integer_to_datetime(int_date):
     year, remainder = divmod(int_date, 10000)
@@ -97,17 +96,11 @@ def get_season(date):
 @st.cache_data()
 def get_historic_ghg_data():
     df = pd.read_csv(GHG_HISTORIC_PATH, names=['Entity','Code','Year','n2o','ch4','co2'], skiprows=1)
-    print(df.head())
     return df
 
 @st.cache_data()
 def get_per_capita_ghg_data():
-    df = pd.read_csv(GHG_PER_CAPITA_URL, storage_options = {'User-Agent': 'Our World In Data data fetch/1.0'})
-    return df
-
-@st.cache_data()
-def get_population_data():
-    df = pd.read_csv(POPULATION_PATH)
+    df = pd.read_csv(GHG_PER_CAPITA_PATH, names=['Entity','Code','Year','ghg'], skiprows=1)
     return df
 
 @st.cache_data()

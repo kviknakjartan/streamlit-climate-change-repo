@@ -8,7 +8,7 @@ from datetime import date
 
 from get_data import (
     get_historic_ghg_data,
-    get_population_data
+    get_per_capita_ghg_data
 )
 
 st.set_page_config(
@@ -95,16 +95,7 @@ st.markdown("# Greenhouse gas emissions")
 ############################################# Historic GHG plot ###########################################################
 df_historic_ghg = get_historic_ghg_data()
 df_historic_ghg['total_emissions_co2eq'] = df_historic_ghg[['co2','ch4','n2o']].sum(axis=1)
-df_pop = get_population_data()
-df_pop = df_pop[df_pop.Year > 1849]
-
-df_per_capita = pd.DataFrame()
-for country in df_historic_ghg.Entity.unique():
-    ghg = df_historic_ghg[df_historic_ghg.Entity == country].reindex()
-    pop = df_pop[df_pop.Entity == country].reindex()
-    if len(ghg) == len(pop):
-        ghg['total_emissions_co2eq'] /= pop['Population (historical)'].values
-        df_per_capita = pd.concat([df_per_capita, ghg])
+df_per_capita = get_per_capita_ghg_data()
 
 min_value = df_historic_ghg['Year'].min()
 max_value = df_historic_ghg['Year'].max()
@@ -180,7 +171,7 @@ else:
     for country in selected_countries:
         fig1.add_trace(
             go.Scatter(x=df_per_capita.loc[df_per_capita.Entity == country, 'Year'],
-                y=df_per_capita.loc[df_per_capita.Entity == country, 'total_emissions_co2eq'], 
+                y=df_per_capita.loc[df_per_capita.Entity == country, 'ghg'], 
                 name=country,
                 hovertemplate =
                 'Value: %{y:.2e} ton'+
