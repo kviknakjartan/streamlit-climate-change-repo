@@ -188,7 +188,7 @@ fig1.update_xaxes(title_text="Year")
 # # Set y-axes titles
 fig1.update_yaxes(title_text="Emissions (tons of CO<sub>2</sub> equivalent)")
 st.plotly_chart(fig1, use_container_width=True)
-st.caption("""Graph 1: World GHG emissions by substance and total GHG emissions by country, by year in CO₂ 
+st.caption("""Graph 1: World greenhouse gas emissions by substance and total greenhouse gas emissions by country, by year in CO₂ 
     equivalent, emissions from all sources, including agriculture and land-use change. Total greenhouse gas emissions include 
     emissions of carbon dioxide (CO₂), nitrous oxide (N₂O) and methane (CH₄). Data 
     from [Our World in Data](https://ourworldindata.org/grapher/ghg-emissions-by-gas).""")
@@ -199,7 +199,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     selected_graph = st.selectbox("Choose a graph:", ['Cumulative GHG emissions by country 1850-2023',
-        'GHG emissions by country 2023'])
+        'GHG emissions by country 2023', 'Per capita GHG emissions by country 2023'])
 
 if selected_graph == 'Cumulative GHG emissions by country 1850-2023':
 
@@ -225,6 +225,18 @@ elif selected_graph == 'GHG emissions by country 2023':
                     color_continuous_scale=px.colors.sequential.turbid,
                     title=f'Graph 2: {selected_graph}')
 
+else:
+
+    df_countries = df_per_capita[(~df_per_capita.Code.isnull()) & (df_per_capita.Entity != 'World')]
+    df_2023 = df_countries[df_countries.Year == 2023]
+    df_2023 = df_2023.rename(columns = {'ghg' : 'Emissions (tons CO<sub>2</sub> eqv.)'})
+
+    fig2 = px.choropleth(df_2023, locations="Code",
+                    color="Emissions (tons CO<sub>2</sub> eqv.)", 
+                    hover_name="Entity", # column to add to hover information
+                    color_continuous_scale=px.colors.sequential.turbid,
+                    title=f'Graph 2: {selected_graph}')
+
 fig2.update_layout(
     coloraxis_colorbar=dict(
         orientation="h",  # Horizontal orientation
@@ -235,9 +247,9 @@ fig2.update_layout(
     )
 )
 st.plotly_chart(fig2, use_container_width=True)
-st.caption("""Graph 2: Cumulative total GHG emissions by country 1850-2023 and total GHG emissions by country 2023 in CO₂ 
-    equivalent, emissions from all sources, including agriculture and land-use change. Total greenhouse gas emissions include 
-    emissions of carbon dioxide (CO₂), nitrous oxide (N₂O) and methane (CH₄). Data 
+st.caption("""Graph 2: Cumulative total greenhouse gas emissions by country 1850-2023 and total greenhouse gas emissions by 
+    country 2023 in CO₂ equivalent, emissions from all sources, including agriculture and land-use change. Total greenhouse 
+    gas emissions include emissions of carbon dioxide (CO₂), nitrous oxide (N₂O) and methane (CH₄). Data 
     from [Our World in Data](https://ourworldindata.org/grapher/ghg-emissions-by-gas).""")
 ###########################################################################################################################
 st.markdown("### References")
