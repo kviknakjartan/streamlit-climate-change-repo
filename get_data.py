@@ -55,7 +55,7 @@ ERF_HISTORIC_PC95_PATH = Path("data/AR6_ERF_1750-2019_pc95.csv")
 WARMING_HISTORIC_PATH = Path("data/fig7.8.csv")
 ECS_PATH = Path("data/ecs_for_faq.csv")
 TCR_PATH = Path("data/tcr_for_faq.csv")
-GHG_HISTORIC_URL = r'https://ourworldindata.org/grapher/ghg-emissions-by-gas.csv?v=1&csvType=full&useColumnShortNames=true'
+GHG_HISTORIC_PATH = Path("data/ghg-emissions-by-gas.csv")
 GHG_PER_CAPITA_URL = r'https://ourworldindata.org/grapher/co-emissions-per-capita.csv?v=1&csvType=full&useColumnShortNames=true'
 POPULATION_PATH = Path("data/population.csv")
 
@@ -96,7 +96,8 @@ def get_season(date):
 
 @st.cache_data()
 def get_historic_ghg_data():
-    df = pd.read_csv(GHG_HISTORIC_URL, storage_options = {'User-Agent': 'Our World In Data data fetch/1.0'})
+    df = pd.read_csv(GHG_HISTORIC_PATH, names=['Entity','Code','Year','n2o','ch4','co2'], skiprows=1)
+    print(df.head())
     return df
 
 @st.cache_data()

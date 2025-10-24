@@ -94,8 +94,7 @@ st.sidebar.header("Emissions")
 st.markdown("# Greenhouse gas emissions")
 ############################################# Historic GHG plot ###########################################################
 df_historic_ghg = get_historic_ghg_data()
-df_historic_ghg['total_emissions_co2eq'] = df_historic_ghg[['annual_emissions_co2_total','annual_emissions_ch4_total_co2eq',
-    'annual_emissions_n2o_total_co2eq']].sum(axis=1)
+df_historic_ghg['total_emissions_co2eq'] = df_historic_ghg[['co2','ch4','n2o']].sum(axis=1)
 df_pop = get_population_data()
 df_pop = df_pop[df_pop.Year > 1849]
 
@@ -127,7 +126,7 @@ if selected_graph == 'World total GHG emissions by substance':
     # Add traces
     fig1.add_trace(
         go.Scatter(x=df_world.Year,
-            y=df_world.annual_emissions_co2_total, 
+            y=df_world.co2, 
             name='CO<sub>2</sub>',
             hovertemplate =
             'Value: %{y:.2e} ton'+
@@ -137,7 +136,7 @@ if selected_graph == 'World total GHG emissions by substance':
     )
     fig1.add_trace(
         go.Scatter(x=df_world.Year,
-            y=df_world.annual_emissions_ch4_total_co2eq, 
+            y=df_world.ch4, 
             name='CH<sub>4</sub>',
             hovertemplate =
             'Value: %{y:.2e} ton'+
@@ -147,7 +146,7 @@ if selected_graph == 'World total GHG emissions by substance':
     )
     fig1.add_trace(
         go.Scatter(x=df_world.Year,
-            y=df_world.annual_emissions_n2o_total_co2eq, 
+            y=df_world.n2o, 
             name='N<sub>2</sub>O',
             hovertemplate =
             'Value: %{y:.2e} ton'+
