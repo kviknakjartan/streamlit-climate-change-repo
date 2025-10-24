@@ -7,7 +7,8 @@ from plotly.subplots import make_subplots
 from datetime import date
 
 from get_data import (
-    get_historic_ghg_data
+    get_historic_ghg_data,
+    get_population_data
 )
 
 st.set_page_config(
@@ -95,6 +96,16 @@ st.markdown("# Greenhouse gas emissions")
 df_historic_ghg = get_historic_ghg_data()
 df_historic_ghg['total_emissions_co2eq'] = df_historic_ghg[['annual_emissions_co2_total','annual_emissions_ch4_total_co2eq',
     'annual_emissions_n2o_total_co2eq']].sum(axis=1)
+df_pop = get_population_data()
+df_pop = df_pop[df_pop.Year > 1849]
+
+df_per_capita = pd.DataFrame()
+for country in df_historic_ghg.Entity.unique():
+    ghg = df_historic_ghg[df_historic_ghg.Entity == country].reindex()
+    pop = df_pop[df_pop.Entity == country].reindex()
+    if len(ghg) == len(pop):
+        ghg['total_emissions_co2eq'] /= pop['Population (historical)'].values
+        df_per_capita = pd.concat([df_per_capita, ghg])
 
 min_value = df_historic_ghg['Year'].min()
 max_value = df_historic_ghg['Year'].max()
@@ -105,7 +116,8 @@ from_year, to_year = range_slider_with_inputs("What timescale are you interested
 col1, col2 = st.columns(2)
 
 with col1:
-    selected_graph = st.selectbox("Choose a graph:", ['World total GHG emissions by substance', 'GHG emissions by country'])
+    selected_graph = st.selectbox("Choose a graph:", ['World total GHG emissions by substance', 'GHG emissions by country', 
+        'GHG emissions per capita by country'])
 
 fig1 = make_subplots()
 
@@ -143,16 +155,13 @@ if selected_graph == 'World total GHG emissions by substance':
             line=dict(color='green'),
             stackgroup='one')
     )
-else:
-    col1, col2 = st.columns([5,2])
-    # Multiselect countries
-    with col1:
-        selected_countries = st.multiselect(
+elif selected_graph == 'GHG emissions by country':
+    selected_countries = st.multiselect(
             'Select Countries',
             df_historic_ghg.Entity.unique(),
             default = ['United States','China','Russia','European Union (28)'],
             placeholder = "Choose at least one"
-        )
+    )
     for country in selected_countries:
         fig1.add_trace(
             go.Scatter(x=df_historic_ghg.loc[df_historic_ghg.Entity == country, 'Year'],
@@ -162,17 +171,26 @@ else:
                 'Value: %{y:.2e} ton'+
                 '<br>Year: %{x:.0f}')
         )
+else:
+    selected_countries = st.multiselect(
+            'Select Countries',
+            df_per_capita.Entity.unique(),
+            default = ['United States','China','Russia','European Union (27)','United Kingdom','Japan','World'],
+            placeholder = "Choose at least one"
+    )
+    for country in selected_countries:
+        fig1.add_trace(
+            go.Scatter(x=df_per_capita.loc[df_per_capita.Entity == country, 'Year'],
+                y=df_per_capita.loc[df_per_capita.Entity == country, 'total_emissions_co2eq'], 
+                name=country,
+                hovertemplate =
+                'Value: %{y:.2e} ton'+
+                '<br>Year: %{x:.0f}')
+        )
 
 fig1.update_layout(
     title_text=f"Graph 1: {selected_graph} by year in CO<sub>2</sub> equivalent",
-    xaxis=dict(range=[from_year, to_year]),
-    legend=dict(
-        x=0.1,  # x-position (0.1 is near left)
-        y=0.7,  # y-position (0.9 is near top)
-        xref="container",
-        yref="container",
-        orientation = 'h'
-    )
+    xaxis=dict(range=[from_year, to_year])
 )
 # # Set x-axis title
 fig1.update_xaxes(title_text="Year")
@@ -180,8 +198,9 @@ fig1.update_xaxes(title_text="Year")
 # # Set y-axes titles
 fig1.update_yaxes(title_text="Emissions (tons of CO<sub>2</sub> equivalent)")
 st.plotly_chart(fig1, use_container_width=True)
-st.caption("""Graph 1: World total GHG emissions by substance and GHG emissions by country, by year in CO<sub>2</sub> 
-    equivalent, emissions from all sources, including agriculture and land-use change. Data 
+st.caption("""Graph 1: World GHG emissions by substance and total GHG emissions by country, by year in CO₂ 
+    equivalent, emissions from all sources, including agriculture and land-use change. Total greenhouse gas emissions include 
+    emissions of carbon dioxide (CO₂), nitrous oxide (N₂O) and methane (CH₄). Data 
     from [Our World in Data](https://ourworldindata.org/grapher/ghg-emissions-by-gas).""")
 
 ############################################# Country 2023 GHG plot ###########################################################
@@ -226,8 +245,9 @@ fig2.update_layout(
     )
 )
 st.plotly_chart(fig2, use_container_width=True)
-st.caption("""Graph 2: Cumulative GHG emissions by country 1850-2023 and GHG emissions by country 2023 in CO<sub>2</sub> 
-    equivalent, emissions from all sources, including agriculture and land-use change. Data 
+st.caption("""Graph 2: Cumulative total GHG emissions by country 1850-2023 and total GHG emissions by country 2023 in CO₂ 
+    equivalent, emissions from all sources, including agriculture and land-use change. Total greenhouse gas emissions include 
+    emissions of carbon dioxide (CO₂), nitrous oxide (N₂O) and methane (CH₄). Data 
     from [Our World in Data](https://ourworldindata.org/grapher/ghg-emissions-by-gas).""")
 ###########################################################################################################################
 st.markdown("### References")

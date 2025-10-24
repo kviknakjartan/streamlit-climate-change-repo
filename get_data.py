@@ -57,7 +57,7 @@ ECS_PATH = Path("data/ecs_for_faq.csv")
 TCR_PATH = Path("data/tcr_for_faq.csv")
 GHG_HISTORIC_URL = r'https://ourworldindata.org/grapher/ghg-emissions-by-gas.csv?v=1&csvType=full&useColumnShortNames=true'
 GHG_PER_CAPITA_URL = r'https://ourworldindata.org/grapher/co-emissions-per-capita.csv?v=1&csvType=full&useColumnShortNames=true'
-POPULATION_PATH = Path("data/population.xlsx")
+POPULATION_PATH = Path("data/population.csv")
 
 def integer_to_datetime(int_date):
     year, remainder = divmod(int_date, 10000)
