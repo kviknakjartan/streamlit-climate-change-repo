@@ -57,6 +57,7 @@ ECS_PATH = Path("data/ecs_for_faq.csv")
 TCR_PATH = Path("data/tcr_for_faq.csv")
 GHG_HISTORIC_PATH = Path("data/ghg-emissions-by-gas.csv")
 GHG_PER_CAPITA_PATH = Path("data/per-capita-ghg-emissions.csv")
+GHG_BY_SECTOR_PATH = Path("data/EDGAR_AR5_GHG_1970_2024.xlsx")
 
 def integer_to_datetime(int_date):
     year, remainder = divmod(int_date, 10000)
@@ -102,6 +103,69 @@ def get_historic_ghg_data():
 def get_per_capita_ghg_data():
     df = pd.read_csv(GHG_PER_CAPITA_PATH, names=['Entity','Code','Year','ghg'], skiprows=1)
     return df
+
+@st.cache_data()
+def get_ghg_sector_data():
+    df = pd.read_excel(GHG_BY_SECTOR_PATH, sheet_name='IPCC 2006', skiprows=9)
+    df['C_group_IM24_sh'] = df['C_group_IM24_sh'].map({
+        'Rest Central America' : 'Latin America',
+        'India +' : 'South Asia',
+        'Southern_Africa' : 'Sub-Saharan Africa',
+        'Central Europe' : 'Europe',
+        'Middle_East' : 'Middle East',
+        'Rest South America' : 'Latin America',
+        'Russia +' : 'Eurasia',
+        'Oceania' : 'Asia Pacific',
+        'OECD_Europe' : 'Europe',
+        'Eastern_Africa' : 'Sub-Saharan Africa',
+        'Western_Africa' : 'Sub-Saharan Africa',
+        'Ukraine +' : 'Europe',
+        'Brazil' : 'Latin America',
+        'Southeastern Asia' : 'Southeast Asia',
+        'Canada' : 'North America',
+        'China +' : 'East Asia',
+        'Northern_Africa' : 'Middle East',
+        'Indonesia +' : 'Southeast Asia',
+        'Japan' : 'East Asia',
+        'Asia-Stan' : 'Eurasia',
+        'Korea' : 'East Asia',
+        'Mexico' : 'Latin America',
+        'USA' : 'North America',
+        'Turkey' : 'Europe'
+        })
+    df['ipcc_code_2006_for_standard_report'] = \
+        df['ipcc_code_2006_for_standard_report'].replace(r'1\.A\.1.*', 'Energy systems', regex=True)
+    df['ipcc_code_2006_for_standard_report'] = \
+        df['ipcc_code_2006_for_standard_report'].replace(r'1\.A\.2.*', 'Industry', regex=True)
+    df['ipcc_code_2006_for_standard_report'] = \
+        df['ipcc_code_2006_for_standard_report'].replace(r'1\.A\.3.*', 'Transport', regex=True)
+    df['ipcc_code_2006_for_standard_report'] = \
+        df['ipcc_code_2006_for_standard_report'].replace(r'1\.A\.4.*', 'Buildings', regex=True)
+    df['ipcc_code_2006_for_standard_report'] = \
+        df['ipcc_code_2006_for_standard_report'].replace(r'1\.A\.5.*', 'Energy systems', regex=True)
+    df['ipcc_code_2006_for_standard_report'] = \
+        df['ipcc_code_2006_for_standard_report'].replace(r'1\.B.*', 'Transport', regex=True)
+    df['ipcc_code_2006_for_standard_report'] = \
+        df['ipcc_code_2006_for_standard_report'].replace(r'2.+', 'Industry', regex=True)
+    df['ipcc_code_2006_for_standard_report'] = \
+        df['ipcc_code_2006_for_standard_report'].replace(r'3.+', 'AFOLU', regex=True)
+    df['ipcc_code_2006_for_standard_report'] = \
+        df['ipcc_code_2006_for_standard_report'].replace(r'4.+', 'Waste', regex=True)
+    df['ipcc_code_2006_for_standard_report'] = \
+        df['ipcc_code_2006_for_standard_report'].replace(r'5.+', 'Waste', regex=True)
+
+    df = df.drop(columns = ['IPCC_annex','Country_code_A3','Name','ipcc_code_2006_for_standard_report_name','Substance',
+        'fossil_bio'])   
+    df_long = pd.melt(df,
+                  id_vars=['C_group_IM24_sh', 'ipcc_code_2006_for_standard_report'],  # Columns to keep as identifiers
+                  var_name='Year',       # Name for the new column holding the original column names
+                  value_name='Emissions')
+    df_long['Year'] = pd.to_numeric(df_long['Year'].str.replace('Y_', ''))
+    df_long = df_long.rename(columns = {'C_group_IM24_sh' : 'Region', 'ipcc_code_2006_for_standard_report' : 'Sector'})
+    df_long = df_long.groupby(['Region', 'Sector', 'Year'], as_index=False)['Emissions'].sum()
+    df_total = df_long.groupby(['Sector', 'Year'])['Emissions'].sum()
+
+    return df_long, df_total
 
 @st.cache_data()
 def get_snow_data():
@@ -529,4 +593,4 @@ def get_climate_feedback_data():
     return df_cmip5, df_cmip6, df_ar6
     
 if __name__ == "__main__":
-    get_population_data()
+    get_ghg_sector_data()
