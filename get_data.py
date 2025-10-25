@@ -163,7 +163,7 @@ def get_ghg_sector_data():
     df_long['Year'] = pd.to_numeric(df_long['Year'].str.replace('Y_', ''))
     df_long = df_long.rename(columns = {'C_group_IM24_sh' : 'Region', 'ipcc_code_2006_for_standard_report' : 'Sector'})
     df_long = df_long.groupby(['Region', 'Sector', 'Year'], as_index=False)['Emissions'].sum()
-    df_total = df_long.groupby(['Sector', 'Year'])['Emissions'].sum()
+    df_total = df_long.groupby(['Sector', 'Year'], as_index=False)['Emissions'].sum()
 
     return df_long, df_total
 

@@ -8,7 +8,8 @@ from datetime import date
 
 from get_data import (
     get_historic_ghg_data,
-    get_per_capita_ghg_data
+    get_per_capita_ghg_data,
+    get_ghg_sector_data
 )
 
 st.set_page_config(
@@ -251,13 +252,79 @@ st.caption("""Graph 2: Cumulative total greenhouse gas emissions by country 1850
     country 2023 in CO₂ equivalent, emissions from all sources, including agriculture and land-use change. Total greenhouse 
     gas emissions include emissions of carbon dioxide (CO₂), nitrous oxide (N₂O) and methane (CH₄). Data 
     from [Our World in Data](https://ourworldindata.org/grapher/ghg-emissions-by-gas).""")
+
+############################################# Historic GHG by sector/region plot ###########################################################
+df, df_total = get_ghg_sector_data()
+
+df.Emissions *= 1000
+df_total.Emissions *= 1000
+df = df.rename(columns = {'Emissions' : "Emissions (tons of CO<sub>2</sub> equivalent)"})
+
+min_value = df['Year'].min()
+max_value = df['Year'].max()
+
+from_year, to_year = range_slider_with_inputs("What timescale are you interested in?", \
+    'ghg_by_sector', min_value*1.0, max_value*1.0, (min_value*1.0, max_value*1.0))
+
+col1, col2 = st.columns(2)
+
+with col1:
+    selected_graph = st.selectbox("Choose a graph:", ['World total GHG emissions by sector 1970-2024',
+        'Regional total GHG emissions by sector 1970-2024 (1)', 'Regional total GHG emissions by sector 1970-2024 (2)'])
+
+if selected_graph == 'World total GHG emissions by sector 1970-2024':
+    fig3 = px.area(df_total, x="Year", y="Emissions", color="Sector")
+    
+    fig3.update_yaxes(title_text="Emissions (tons of CO<sub>2</sub> equivalent)")
+elif selected_graph == 'Regional total GHG emissions by sector 1970-2024 (1)':
+    
+    df1 = df[df.Region.isin(['Europe','Eurasia','North America','Asia Pacific','Middle East'])]
+
+    fig3 = px.area(df1, x="Year", y="Emissions (tons of CO<sub>2</sub> equivalent)", color="Sector", facet_col='Region')
+
+    fig3.update_layout(
+        yaxis=dict(range=[0, 10000000000])
+    )
+else:
+    df1 = df[df.Region.isin(['South Asia','Southeast Asia','East Asia','Sub-Saharan Africa','Latin America'])]
+
+    fig3 = px.area(df1, x="Year", y="Emissions (tons of CO<sub>2</sub> equivalent)", color="Sector", facet_col='Region')
+
+    fig3.update_layout(
+        yaxis=dict(range=[0, 20000000000])
+    )
+
+fig3.update_traces(hovertemplate =
+                'Value: %{y:.2e} ton'+
+                '<br>Year: %{x:.0f}')
+
+fig3.update_layout(
+    title_text=f"Graph 3: {selected_graph} by year in CO<sub>2</sub> equivalent",
+    xaxis=dict(range=[from_year, to_year])
+)
+# # Set x-axis title
+fig3.update_xaxes(title_text="Year")
+
+# # Set y-axes titles
+st.plotly_chart(fig3, use_container_width=True)
+st.caption("""Graph 3: World and regional greenhouse gas emissions by year in CO₂ equivalent, emissions from all sources, 
+    excluding land-use, land-use change and forestry (LULUCF). Total greenhouse gas emissions include all anthropogenic 
+    greenhouse gases. Data from [European Commission](https://edgar.jrc.ec.europa.eu/dataset_ghg2025).""")
 ###########################################################################################################################
 st.markdown("### References")
 
 st.markdown(
-    f"""*Greenhouse gas emissions, world total and by country (Graphs 1 and 2)*  \nJones, M. W., Peters, G. P., Gasser, T., Andrew, 
+    """*Greenhouse gas emissions, world total and by country (Graphs 1 and 2)*  \nJones, M. W., Peters, G. P., Gasser, T., Andrew, 
     R. M., Schwingshackl, C., Gütschow, J., Houghton, R. A., Friedlingstein, P., Pongratz, J., & Le Quéré, C. (2024) – with major 
     processing by Our World in Data. “Annual carbon dioxide, methane and nitrous oxide emissions including land use” [dataset]. 
     Jones et al., “National contributions to climate change 2024.2” [original data].
-    Accessed {date.today()}."""
+    Accessed 2025-10-21."""
+)
+st.markdown(
+    """*Greenhouse gas emissions, world and regional total by sector (Graph 3)*  \nEDGAR (Emissions Database for Global 
+    Atmospheric Research) Community GHG Database, a collaboration between the European Commission, Joint Research Centre (JRC), 
+    the International Energy Agency (IEA), and comprising IEA-EDGAR CO2, EDGAR CH4, EDGAR N2O, EDGAR F-GASES version 
+    EDGAR_2025_GHG (2025) European Commission, JRC (Datasets). The complete citation of the EDGAR Community GHG Database is 
+    available in the 'Sources and References' section.
+    Accessed 2025-10-23."""
 )
