@@ -97,11 +97,12 @@ def get_season(date):
 
 @st.cache_data()
 def get_pathways_ghg_data():
-    df = pd.read_csv(GHG_PATHWAYS_PATH)
+    df = pd.read_csv(GHG_PATHWAYS_PATH, decimal='.')
     df_long = pd.melt(df,
                   id_vars=['Pathway', 'Limit'],  # Columns to keep as identifiers
                   var_name='Year',       # Name for the new column holding the original column names
                   value_name='Emissions')
+    
     return df_long
 
 @st.cache_data()
