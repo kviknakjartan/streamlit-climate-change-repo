@@ -9,8 +9,9 @@ from datetime import date
 from get_data import (
     get_historic_ghg_data,
     get_per_capita_ghg_data,
+    get_pathways_temp_data,
     get_ghg_sector_data,
-    get_pathways_ghg_data
+    get_pathways_ghg_data,
 )
 
 st.set_page_config(
@@ -486,9 +487,174 @@ st.caption("""Graph 4: Past and future GHG emission pathways up to year 2100 in 
     scenario where only Nationally Determined Contributions (NDCs) for the target year 2030 are implemented in the future. 
     "Pledges and targets" (blue-green range) pathways are based on 2030 NDC targets as well as the implementation of submitted 
     and binding long-term targets. "Optimistic scenario" describes a scenario of full implementation of all announced targets, 
-    including net-zero targets. The light-green dashed line is the implementation of policies that would meet the Paris agreement goal 
+    including net-zero targets. The light-green dashed line corresponds to implementation of policies that would meet the Paris agreement goal 
     of limiting warming to 1.5°C. All pathways are based on 2022 emissions. Historical emissions data 
     from [European Commission](https://edgar.jrc.ec.europa.eu/report_2025). Other data and graph exemplar from [Climate Action Tracker](https://climateactiontracker.org/global/emissions-pathways/).""")
+############################################# Pathways temp plot ###########################################################
+df = get_pathways_temp_data()
+
+fig5 = make_subplots()
+
+# Add traces
+# blue range
+x = df.loc[df.Pathway == '2030 Targets only', 'Year']
+y_lower = df.loc[(df.Pathway == 'Policies and action ') & (df.Limit == 'Low'), 'gmt']
+y_upper = df.loc[(df.Pathway == 'Policies and action ') & (df.Limit == 'High'), 'gmt']
+
+fig5.add_trace(
+    go.Scatter(x=pd.concat([x, x[::-1]]),
+        y=pd.concat([y_upper, y_lower[::-1]]), 
+        name='Policies and action',
+        mode='lines',
+        fill='toself',
+        fillcolor='rgba(0,0,255,0.2)',
+        hoverinfo="skip",
+        line=dict(color='rgba(0,0,255,0.2)', width=0.1))
+)
+fig5.add_annotation(x=2100, y=y_upper.values[-1],
+            text="+2.9°C",
+            showarrow=False,
+            xshift=18,
+            font = dict(color='rgba(0,0,255,0.6)'),
+            captureevents=True,
+            hovertext="+2.9°C warming projected by 2100"
+)
+fig5.add_annotation(x=2100, y=y_lower.values[-1],
+            text="+2.5°C",
+            showarrow=False,
+            xshift=18,
+            font = dict(color='rgba(0,0,255,0.6)'),
+            captureevents=True,
+            hovertext="+2.5°C warming projected by 2100"
+)
+y_lower = df.loc[(df.Pathway == 'Pledges and Targets') & (df.Limit == 'Low'), 'gmt']
+y_upper = df.loc[(df.Pathway == 'Pledges and Targets') & (df.Limit == 'High'), 'gmt']
+# blue-green range
+fig5.add_trace(
+    go.Scatter(x=x,
+        y=y_upper, 
+        name="Pledges and targets",
+        mode='lines',
+        hoverinfo = 'skip',
+        line=dict(color='rgba(29, 140, 173,0.2)', width=0.1),
+        showlegend=False)
+)
+fig5.add_trace(
+    go.Scatter(x=x,
+        y=y_lower, 
+        name='Pledges and targets',
+        mode='lines',
+        fill='tonexty',
+        fillcolor='rgba(29, 140, 173,0.2)',
+        hoverinfo="skip",
+        line=dict(color='rgba(29, 140, 173,0.2)', width=0.1))
+)
+fig5.add_annotation(x=2100, y=y_upper.values[-1],
+            text="+2.1°C",
+            showarrow=False,
+            xshift=18,
+            font = dict(color='rgba(29, 140, 173,0.6)'),
+            captureevents=True,
+            hovertext="+2.1°C warming projected by 2100"
+)
+# blue-green line
+y = df.loc[df.Pathway == 'Optimistic scenario (net-zero pledges)', 'gmt']
+fig5.add_trace(
+    go.Scatter(x=df.loc[df.Pathway == 'Optimistic scenario (net-zero pledges)', 'Year'],
+        y=y, 
+        name='Optimistic scenario',
+        mode='lines',
+        hovertemplate =
+        'Value: %{y:.1f} °C'+
+        '<br>Year: %{x:.0f}',
+        line=dict(color='rgb(29, 140, 173)'))
+)
+fig5.add_annotation(x=2100, y=y.values[-1],
+            text="+1.9°C",
+            showarrow=False,
+            xshift=18,
+            font = dict(color='rgb(29, 140, 173)'),
+            captureevents=True,
+            hovertext="+1.9°C warming projected by 2100"
+)
+# blue line
+y = df.loc[df.Pathway == '2030 Targets only', 'gmt']
+fig5.add_trace(
+    go.Scatter(x=df.loc[df.Pathway == '2030 Targets only', 'Year'],
+        y=y, 
+        name='2030 targets only',
+        mode='lines',
+        hovertemplate =
+        'Value: %{y:.1f} °C'+
+        '<br>Year: %{x:.0f}',
+        line=dict(color='blue'))
+)
+fig5.add_annotation(x=2100, y=y.values[-1],
+            text="+2.6°C",
+            showarrow=False,
+            xshift=18,
+            yshift=4,
+            font = dict(color='rgba(0,0,255,1)'),
+            captureevents=True,
+            hovertext="+2.6°C warming projected by 2100"
+)
+y = df.loc[(df.Pathway == 'Paris agreement'), 'gmt']
+# green line
+fig5.add_trace(
+    go.Scatter(x=x,
+        y=y, 
+        name='1.5°C compatible',
+        mode='lines',
+        hovertemplate =
+        'Value: %{y:.1f} °C'+
+        '<br>Year: %{x:.0f}',
+        line=dict(color='rgb(188, 189, 34)'))
+)
+fig5.add_annotation(x=2100, y=y.values[-1],
+            text="+1.5°C",
+            showarrow=False,
+            xshift=18,
+            font = dict(color='rgb(188, 189, 34)'),
+            captureevents=True,
+            hovertext="+1.5°C warming projected by 2100"
+)
+fig5.add_trace(
+    go.Scatter(x=df.loc[df.Pathway == 'Historical', 'Year'],
+        y=df.loc[df.Pathway == 'Historical', 'gmt'], 
+        name='Historical',
+        mode="lines+markers+text",
+        text=["+0.6°C", "+0.8°C", "+1.0°C", "", "+1.3°C"],
+        textposition="top center",
+        hovertemplate =
+        'Value: %{y:.1f} °C'+
+        '<br>Year: %{x:.0f}',
+        line=dict(color='black'))
+)
+fig5.update_layout(
+    title_text=f"Graph 5: Projected warming corresponding to emission pathways",
+    legend=dict(
+            x=0.1,  # x-position (0.1 is near left)
+            y=0.7,  # y-position (0.9 is near top)
+            xref="container",
+            yref="container",
+            orientation = 'h'
+        )
+)
+# # Set x-axis title
+fig5.update_xaxes(title_text="Year")
+
+# # Set y-axes titles
+fig5.update_yaxes(title_text="Warming since pre-industrial (°C)")
+st.plotly_chart(fig5, use_container_width=True)
+st.caption("""Graph 5: Projected warming (relative to pre-industrial) corresponding to emission pathways. Each pathway or range of pathways 
+    is based on future scenario of implementation of policies or climate action (Climate Action Tracker, 2024). "Policies and 
+    action" (blue range) corresponds 
+    to a scenario where future emissions are governed by current policies. "2030 targets only" (blue line) correspongs to a 
+    scenario where only Nationally Determined Contributions (NDCs) for the target year 2030 are implemented in the future. 
+    "Pledges and targets" (blue-green range) pathways are based on 2030 NDC targets as well as the implementation of submitted 
+    and binding long-term targets. "Optimistic scenario" describes a scenario of full implementation of all announced targets, 
+    including net-zero targets. The light-green corresponds to implementation of policies that would meet the Paris agreement goal 
+    of limiting warming to 1.5°C. All pathways are based on 2022 emissions. Data and graph exemplar from [Climate Action Tracker](https://climateactiontracker.org/global/emissions-pathways/).""")
 ###########################################################################################################################
 st.markdown("### References")
 
@@ -508,7 +674,7 @@ st.markdown(
     Accessed 2025-10-23."""
 )
 st.markdown(
-    """*Emission pathways up to year 2100 (Graph 4)*  \nClimate Action Tracker (2024). 2100 Warming Projections: Emissions and 
+    """*Emission pathways up to year 2100 (Graphs 4 and 5)*  \nClimate Action Tracker (2024). 2100 Warming Projections: Emissions and 
     expected warming based on pledges and current policies. November 2024. Available 
     at: https://climateactiontracker.org/global/temperatures/. Copyright ©2024 by Climate Analytics and NewClimate Institute. 
     All rights reserved.

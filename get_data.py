@@ -112,7 +112,7 @@ def get_pathways_temp_data():
     df_long = pd.melt(df,
                   id_vars=['Pathway', 'Limit'],  # Columns to keep as identifiers
                   var_name='Year',       # Name for the new column holding the original column names
-                  value_name='Emissions')
+                  value_name='gmt')
 
     return df_long
 
