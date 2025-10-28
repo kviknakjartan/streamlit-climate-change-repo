@@ -62,6 +62,7 @@ GHG_PATHWAYS_PATH = Path("data/Climate Action Tracker.csv")
 TEMP_PATHWAYS_PATH = Path("data/Climate Action Tracker - GMT time series.csv")
 ENERGY_CONSUMPTION_PATH = Path("data/global-primary-energy.csv")
 ELECTRICITY_SOURCE_PATH = Path("data/electricity-production-by-source.csv")
+SECTOR_CONSUMPTION_PATH = Path("data/International Energy Agency - total final consumption in World.csv")
 
 def integer_to_datetime(int_date):
     year, remainder = divmod(int_date, 10000)
@@ -97,6 +98,11 @@ def get_season(date):
     elif date.month in [9,10,11]:
         season = 'Autumn'
     return f'{season} {year}'
+
+@st.cache_data()
+def get_energy_sector_data():
+    df = pd.read_csv(SECTOR_CONSUMPTION_PATH, decimal='.')
+    return df
 
 @st.cache_data()
 def get_electricity_data():

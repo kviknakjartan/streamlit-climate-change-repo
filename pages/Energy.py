@@ -8,7 +8,8 @@ from datetime import date
 
 from get_data import (
     get_energy_consumption_data,
-    get_electricity_data
+    get_electricity_data,
+    get_energy_sector_data
 )
 
 st.set_page_config(
@@ -185,7 +186,51 @@ st.plotly_chart(fig2, use_container_width=True)
 st.caption("""Graph 2: World electricity generation by source 2000-2024. Data 
     from [Our World in Data](https://ourworldindata.org/grapher/electricity-production-by-source).""")
 
+############################################# Historic energy by sector plot ###########################################################
+df = get_energy_sector_data()
 
+min_value = df['Year'].min()
+max_value = df['Year'].max()
+
+from_year, to_year = range_slider_with_inputs("What timescale are you interested in?", \
+    'sector_historical', min_value*1.0, max_value*1.0, (min_value*1.0, max_value*1.0))
+
+fig3 = make_subplots()
+
+for sector in ['Industry','Transport','Non-energy use','Commercial and Public Services','Agriculture and forestry',
+    'Residential','Other non-specified','Fishing']:
+
+    df_sector = df[df['total final consumption in World'] == sector]
+    # Add traces
+    fig3.add_trace(
+        go.Scatter(x=df_sector.Year,
+            y=df_sector.Value/3600, 
+            name=sector,
+            hovertemplate =
+            'Value: %{y:.2e} TWh'+
+            '<br>Year: %{x:.0f}',
+            stackgroup='one')
+    )
+
+fig3.update_layout(
+    title_text=f"Graph 3: World final energy consumption by sector 2000-2023",
+    xaxis=dict(range=[from_year, to_year]),
+    legend=dict(
+            x=0.1,  # x-position (0.1 is near left)
+            y=0.7,  # y-position (0.9 is near top)
+            xref="container",
+            yref="container",
+            orientation = 'h'
+        )
+)
+# # Set x-axis title
+fig3.update_xaxes(title_text="Year")
+
+# # Set y-axes titles
+fig3.update_yaxes(title_text="Electricity generation (TWh)")
+st.plotly_chart(fig3, use_container_width=True)
+st.caption("""Graph 3: World final energy consumption by sector 2000-2023. Data 
+    from [IEA](https://www.iea.org/world/energy-mix).""")
 ###########################################################################################################################
 st.markdown("### References")
 
@@ -208,4 +253,8 @@ st.markdown(
 st.markdown(
     """*World electricity generation by source (Graph 2)*  \nEmber - Yearly Electricity Data (2025) – with major 
     processing by Our World in Data [dataset]. Accessed 2025-10-28."""
+)
+st.markdown(
+    """*World energy consumption by year (Graph 3)*  \nInternational Energy Agency (2024); World - IEA, 
+    https://www.iea.org/world/energy-mix [dataset], License: CC BY 4.0; Accessed 2025-10-27."""
 )
