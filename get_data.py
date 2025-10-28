@@ -60,6 +60,7 @@ GHG_PER_CAPITA_PATH = Path("data/per-capita-ghg-emissions.csv")
 GHG_BY_SECTOR_PATH = Path("data/EDGAR_AR5_GHG_1970_2024.xlsx")
 GHG_PATHWAYS_PATH = Path("data/Climate Action Tracker.csv")
 TEMP_PATHWAYS_PATH = Path("data/Climate Action Tracker - GMT time series.csv")
+ENERGY_CONSUMPTION_PATH = Path("data/global-primary-energy.csv")
 
 def integer_to_datetime(int_date):
     year, remainder = divmod(int_date, 10000)
@@ -115,6 +116,12 @@ def get_pathways_temp_data():
                   value_name='gmt')
 
     return df_long
+
+@st.cache_data()
+def get_energy_consumption_data():
+    df = pd.read_csv(ENERGY_CONSUMPTION_PATH)
+    df.columns = df.columns.str.replace(' (TWh, direct energy)', '')
+    return df
 
 @st.cache_data()
 def get_historic_ghg_data():

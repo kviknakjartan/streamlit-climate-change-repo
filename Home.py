@@ -18,22 +18,33 @@ st.subheader("""Interactive graphs and maps showing past, present and future (?)
 
 st.write("---")
 
-col1, col2 = st.columns([1,4])
+col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     if st.button("Emissions", icon=":material/factory:", width = "stretch", help = "World greenhouse gas emissions"):
         st.switch_page("pages/Emissions.py")
+with col2:
+    if st.button("Energy", icon=":material/oil_barrel:", width = "stretch", help = "World greenhouse gas emissions"):
+        st.switch_page("pages/Energy.py")
+with col3:
     if st.button("Ice", icon=":material/ac_unit:", width = "stretch", help = "Ice and snowcover extent"):
         st.switch_page("pages/Ice.py")
+with col4:
     if st.button("Maps", icon=":material/map:", width = "stretch", 
         help = "Global spatial distributions of various climate indicators and projections"):
         st.switch_page("pages/Maps.py")
+
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
     if st.button("Ocean", icon=":material/water:", width = "stretch", 
         help = "Global mean sea level anomaly and ocean acidification"):
         st.switch_page("pages/Ocean.py")
+with col2:
     if st.button("Quantities", icon=":material/special_character:", width = "stretch", 
         help = "Physical quantities"):
         st.switch_page("pages/Ocean.py")
+with col3:
     if st.button("Temperature", icon=":material/device_thermostat:", width = "stretch", 
         help = "Global average temperature and greenhouse gas concentration"):
         st.switch_page("pages/Temperature.py")
