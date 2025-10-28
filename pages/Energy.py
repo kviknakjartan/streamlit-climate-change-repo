@@ -7,7 +7,8 @@ from plotly.subplots import make_subplots
 from datetime import date
 
 from get_data import (
-    get_energy_consumption_data
+    get_energy_consumption_data,
+    get_electricity_data
 )
 
 st.set_page_config(
@@ -137,6 +138,53 @@ st.caption("""Graph 1: World energy consumption by year 1800-2024 in terms of di
     traditional biomass is assumed constant since 2015. Data 
     from [Our World in Data](https://ourworldindata.org/grapher/global-primary-energy).""")
 
+############################################# Historic electricity by source plot ###########################################################
+df = get_electricity_data()
+
+df = df[(df.Year > 1999) & (df.Entity == 'World')]
+df = df.sort_values(by='Year')
+
+min_value = df['Year'].min()
+max_value = df['Year'].max()
+
+from_year, to_year = range_slider_with_inputs("What timescale are you interested in?", \
+    'el_historical', min_value*1.0, max_value*1.0, (min_value*1.0, max_value*1.0))
+
+fig2 = make_subplots()
+
+for col in ['Coal','Gas','Oil','Nuclear','Hydro','Solar','Wind','Bioenergy','Other renewables']:
+
+    # Add traces
+    fig2.add_trace(
+        go.Scatter(x=df.Year,
+            y=df[col], 
+            name=col,
+            hovertemplate =
+            'Value: %{y:.2e} TWh'+
+            '<br>Year: %{x:.0f}',
+            stackgroup='one')
+    )
+
+fig2.update_layout(
+    title_text=f"Graph 2: World electricity generation by source 2000-2024",
+    xaxis=dict(range=[from_year, to_year]),
+    legend=dict(
+            x=0.1,  # x-position (0.1 is near left)
+            y=0.7,  # y-position (0.9 is near top)
+            xref="container",
+            yref="container",
+            orientation = 'h'
+        )
+)
+# # Set x-axis title
+fig2.update_xaxes(title_text="Year")
+
+# # Set y-axes titles
+fig2.update_yaxes(title_text="Electricity generation (TWh)")
+st.plotly_chart(fig2, use_container_width=True)
+st.caption("""Graph 2: World electricity generation by source 2000-2024. Data 
+    from [Our World in Data](https://ourworldindata.org/grapher/electricity-production-by-source).""")
+
 
 ###########################################################################################################################
 st.markdown("### References")
@@ -146,7 +194,18 @@ st.markdown(
     (2nd Edition). Praeger."""
 )
 st.markdown(
-    """*World energy consumption by year (Graph 1)*  \nStatistical Review of World Energy (2025) – with major 
+    """*World energy consumption by year (Graph 1)*  \nEnergy Institute - Statistical Review of World Energy (2025) – with major 
     processing by Our World in Data [dataset]. Accessed 2025-10-27."""
 )
-
+st.markdown(
+    """*World electricity generation by source (Graph 2)*  \nEnergy Institute - Statistical Review of World Energy (2025) – with major 
+    processing by Our World in Data [dataset]. Accessed 2025-10-28."""
+)
+st.markdown(
+    """*World electricity generation by source (Graph 2)*  \nEmber - Yearly Electricity Data Europe (2025) – with major 
+    processing by Our World in Data [dataset]. Accessed 2025-10-28."""
+)
+st.markdown(
+    """*World electricity generation by source (Graph 2)*  \nEmber - Yearly Electricity Data (2025) – with major 
+    processing by Our World in Data [dataset]. Accessed 2025-10-28."""
+)
