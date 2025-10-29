@@ -104,6 +104,7 @@ def get_season(date):
 def get_energy_per_cap_data():
     df = pd.read_csv(ENERGY_PER_PERSON_PATH, decimal='.', names=['Hydro','Nuclear','Gas','Oil','Coal','Wind','Total',
         'Solar','Entity','Year'], skiprows=1)
+
     return df
 
 @st.cache_data()
@@ -642,4 +643,4 @@ def get_climate_feedback_data():
     return df_cmip5, df_cmip6, df_ar6
     
 if __name__ == "__main__":
-    get_ghg_sector_data()
+    get_energy_per_cap_data()

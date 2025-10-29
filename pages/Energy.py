@@ -95,10 +95,10 @@ st.sidebar.header("Energy")
 
 st.markdown("# World energy consumption and production")
 ############################################# Historic energy consumption plot ###########################################################
-df = get_energy_consumption_data()
+df_energy = get_energy_consumption_data()
 
-min_value = df['Year'].min()
-max_value = df['Year'].max()
+min_value = df_energy['Year'].min()
+max_value = df_energy['Year'].max()
 
 from_year, to_year = range_slider_with_inputs("What timescale are you interested in?", \
     'ec_historical', min_value*1.0, max_value*1.0, (min_value*1.0, max_value*1.0))
@@ -109,8 +109,8 @@ for col in ['Traditional biomass','Coal','Oil','Gas','Nuclear','Hydropower','Win
 
     # Add traces
     fig1.add_trace(
-        go.Scatter(x=df.Year,
-            y=df[col], 
+        go.Scatter(x=df_energy.Year,
+            y=df_energy[col], 
             name=col,
             hovertemplate =
             'Value: %{y:.2e} TWh'+
@@ -141,9 +141,9 @@ st.caption("""Graph 1: World energy consumption by year 1800-2024 in terms of di
     from [Our World in Data](https://ourworldindata.org/grapher/global-primary-energy).""")
 
 ############################################# Historic electricity by source plot ###########################################################
-df = get_electricity_data()
+df_el = get_electricity_data()
 
-df = df[(df.Year > 1999) & (df.Entity == 'World')]
+df = df_el[(df_el.Year > 1999) & (df_el.Entity == 'World')]
 df = df.sort_values(by='Year')
 
 min_value = df['Year'].min()
@@ -233,7 +233,7 @@ st.plotly_chart(fig3, use_container_width=True)
 st.caption("""Graph 3: World final energy consumption by sector 2000-2023. Data 
     from [IEA](https://www.iea.org/world/energy-mix).""")
 
-############################################# Historic energy by sector plot ###########################################################
+############################################# Historic per capita energy by source plot ###########################################################
 df = get_energy_per_cap_data()
 
 min_value = df['Year'].min()
@@ -284,6 +284,35 @@ fig4.update_yaxes(title_text="Energy consumption (kWh)")
 st.plotly_chart(fig4, use_container_width=True)
 st.caption("""Graph 4: Per capita primary energy consumption by source 1965-2024. Data 
     from [Our World in Data](https://ourworldindata.org/energy).""")
+
+############################################# Historic per capita 2023 map ###########################################################
+df = df.merge(df_el.loc[df_el.Year == 2023, ['Entity','Code']], on='Entity', how='left')
+
+col1, col2 = st.columns(2)
+
+with col1:
+    selected_source = st.selectbox("Choose an energy source:", ['Hydro','Nuclear','Gas','Oil','Coal','Wind','Total','Solar'], 
+        key='source')
+
+fig5 = px.choropleth(df[df.Year == 2023], locations="Code",
+                    color=selected_source, 
+                    hover_name="Entity", # column to add to hover information
+                    color_continuous_scale=px.colors.sequential.turbid,
+                    title=f'Graph 5: Per capita primary energy consumption by source 2023')
+
+fig5.update_layout(
+    coloraxis_colorbar=dict(
+        orientation="h",  # Horizontal orientation
+        yanchor="bottom", # Anchor the legend's bottom to the specified y-coordinate
+        y=-0.3,           # Position below the plot area (adjust as needed)
+        xanchor="left",   # Anchor the legend's left to the specified x-coordinate
+        x=0.13,               # Position at the left edge of the plot area
+        title=f'{selected_source} (kWh)'
+    )
+)
+st.plotly_chart(fig5, use_container_width=True)
+st.caption("""Graph 5: Per capita primary energy consumption by source 2023. Data 
+    from [Our World in Data](https://ourworldindata.org/energy).""")
 ###########################################################################################################################
 st.markdown("### References")
 
@@ -312,6 +341,6 @@ st.markdown(
     https://www.iea.org/world/energy-mix [dataset], License: CC BY 4.0; Accessed 2025-10-27."""
 )
 st.markdown(
-    """*Primary energy consumption per capida (Graph 4)*  \nEnergy Institute - Statistical Review of World Energy (2025) – with 
+    """*Primary energy consumption per capida (Graphs 4 and 5)*  \nEnergy Institute - Statistical Review of World Energy (2025) – with 
     major processing by Our World in Data [dataset]. Accessed 2025-10-28."""
 )
