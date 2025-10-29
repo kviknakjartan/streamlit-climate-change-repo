@@ -9,7 +9,8 @@ from datetime import date
 from get_data import (
     get_energy_consumption_data,
     get_electricity_data,
-    get_energy_sector_data
+    get_energy_sector_data,
+    get_energy_per_cap_data
 )
 
 st.set_page_config(
@@ -231,6 +232,58 @@ fig3.update_yaxes(title_text="Electricity generation (TWh)")
 st.plotly_chart(fig3, use_container_width=True)
 st.caption("""Graph 3: World final energy consumption by sector 2000-2023. Data 
     from [IEA](https://www.iea.org/world/energy-mix).""")
+
+############################################# Historic energy by sector plot ###########################################################
+df = get_energy_per_cap_data()
+
+min_value = df['Year'].min()
+max_value = df['Year'].max()
+
+from_year, to_year = range_slider_with_inputs("What timescale are you interested in?", \
+    'pp_historical', min_value*1.0, max_value*1.0, (min_value*1.0, max_value*1.0))
+
+fig4 = make_subplots()
+
+col1, col2 = st.columns(2)
+
+with col1:
+    selected_source = st.selectbox("Choose an energy source:", ['Hydro','Nuclear','Gas','Oil','Coal','Wind','Total','Solar'])
+
+selected_countries = st.multiselect(
+        'Select Countries',
+        df.Entity.unique(),
+        default = ['United States','China','Russia','European Union (27)'],
+        placeholder = "Choose at least one"
+)
+for country in selected_countries:
+    fig4.add_trace(
+        go.Scatter(x=df.loc[df.Entity == country, 'Year'],
+            y=df.loc[df.Entity == country, selected_source], 
+            name=country,
+            hovertemplate =
+            'Value: %{y:.2e} kWh'+
+            '<br>Year: %{x:.0f}')
+    )
+
+fig4.update_layout(
+    title_text=f"Graph 4: Per capita primary energy consumption by source 1965-2024",
+    xaxis=dict(range=[from_year, to_year]),
+    legend=dict(
+            x=0.1,  # x-position (0.1 is near left)
+            y=0.7,  # y-position (0.9 is near top)
+            xref="container",
+            yref="container",
+            orientation = 'h'
+        )
+)
+# # Set x-axis title
+fig4.update_xaxes(title_text="Year")
+
+# # Set y-axes titles
+fig4.update_yaxes(title_text="Energy consumption (kWh)")
+st.plotly_chart(fig4, use_container_width=True)
+st.caption("""Graph 4: Per capita primary energy consumption by source 1965-2024. Data 
+    from [Our World in Data](https://ourworldindata.org/energy).""")
 ###########################################################################################################################
 st.markdown("### References")
 
@@ -243,8 +296,8 @@ st.markdown(
     processing by Our World in Data [dataset]. Accessed 2025-10-27."""
 )
 st.markdown(
-    """*World electricity generation by source (Graph 2)*  \nEnergy Institute - Statistical Review of World Energy (2025) – with major 
-    processing by Our World in Data [dataset]. Accessed 2025-10-28."""
+    """*World electricity generation by source (Graph 2)*  \nEnergy Institute - Statistical Review of World Energy (2025) – with 
+    major processing by Our World in Data [dataset]. Accessed 2025-10-28."""
 )
 st.markdown(
     """*World electricity generation by source (Graph 2)*  \nEmber - Yearly Electricity Data Europe (2025) – with major 
@@ -257,4 +310,8 @@ st.markdown(
 st.markdown(
     """*World energy consumption by year (Graph 3)*  \nInternational Energy Agency (2024); World - IEA, 
     https://www.iea.org/world/energy-mix [dataset], License: CC BY 4.0; Accessed 2025-10-27."""
+)
+st.markdown(
+    """*Primary energy consumption per capida (Graph 4)*  \nEnergy Institute - Statistical Review of World Energy (2025) – with 
+    major processing by Our World in Data [dataset]. Accessed 2025-10-28."""
 )
