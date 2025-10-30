@@ -10,7 +10,8 @@ from get_data import (
     get_energy_consumption_data,
     get_electricity_data,
     get_energy_sector_data,
-    get_energy_per_cap_data
+    get_energy_per_cap_data,
+    get_levelized_cost_data
 )
 
 st.set_page_config(
@@ -313,6 +314,44 @@ fig5.update_layout(
 st.plotly_chart(fig5, use_container_width=True)
 st.caption("""Graph 5: Per capita primary energy consumption by source 2023. Data 
     from [Our World in Data](https://ourworldindata.org/energy).""")
+
+############################################# levelized cost of energy plot ###########################################################
+df = get_levelized_cost_data()
+
+fig6 = make_subplots()
+
+for col in [c for c in df.columns if c != 'Year']:
+    fig6.add_trace(
+        go.Scatter(x=df.Year,
+            y=df[col], 
+            name=col,
+            hovertemplate =
+            'Value: %{y:.0f} $/MWh'+
+            '<br>Year: %{x:.0f}')
+    )
+
+fig6.update_layout(
+    title_text=f"Graph 6: Levelized cost of energy (LCOE) by year 2009-2024",
+    legend=dict(
+            x=0.1,  # x-position (0.1 is near left)
+            y=0.7,  # y-position (0.9 is near top)
+            xref="container",
+            yref="container",
+            orientation = 'h'
+        )
+)
+# # Set x-axis title
+fig6.update_xaxes(title_text="Year")
+
+# # Set y-axes titles
+fig6.update_yaxes(title_text="LCOE ($/MWh)")
+st.plotly_chart(fig6, use_container_width=True)
+st.caption("""Graph 6: Levelized cost of energy (LCOE) by year 2009-2024. LCOE is a metric that measures the average cost to 
+    build and operate a power plant over its lifetime, divided by the total energy it produces. It's used to compare the 
+    economic viability of different electricity generation technologies, such as solar, wind, or natural gas, by providing a 
+    standardized, lifetime-based cost per unit of energy produced (e.g., dollars per megawatt-hour or $/MWh). The LCOE 
+    represents the minimum price at which energy must be sold to break even over the project's lifespan (Lazard, 2024). Data 
+    from Lazard (2024).""")
 ###########################################################################################################################
 st.markdown("### References")
 
@@ -343,4 +382,7 @@ st.markdown(
 st.markdown(
     """*Primary energy consumption per capida (Graphs 4 and 5)*  \nEnergy Institute - Statistical Review of World Energy (2025) – with 
     major processing by Our World in Data [dataset]. Accessed 2025-10-28."""
+)
+st.markdown(
+    """*Levelized cost of energy (Graph 6)*  \nLazard (2024). Lazard Levelized Cost of Energy+. Lazard."""
 )
