@@ -7,8 +7,6 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import cartopy.crs as ccrs
 from cartopy.util import add_cyclic_point
-import rasterio
-from rasterio.plot import show
 
 st.set_page_config(
     page_title='Climate Change in Graphs: Maps',

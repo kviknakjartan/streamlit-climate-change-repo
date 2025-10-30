@@ -5,6 +5,11 @@ import plotly.express as px
 import numpy as np
 from plotly.subplots import make_subplots
 from datetime import date
+from pathlib import Path
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+import cartopy.crs as ccrs
+from cartopy.util import add_cyclic_point
 
 from get_data import (
     get_energy_consumption_data,
@@ -91,6 +96,29 @@ def range_slider_with_inputs(title, label, min_bound, max_bound, default_range):
         selected_range = (lower_bound, upper_bound)
 
     return selected_range
+
+def plot_map(filePath, label, vmin, vmax, cmap, nlevels = 12, scaling = 1):
+
+    df = pd.read_csv(filePath)
+
+    lats = df.latitude
+    df = df.drop(columns=['latitude'])
+    lons = df.columns
+    data = df.values
+
+    data_cyclic, lon_cyclic = add_cyclic_point(data, coord=pd.to_numeric(lons))
+
+    fig = plt.figure(figsize=(16, 12))
+    ax = plt.axes(projection=ccrs.Mollweide(central_longitude=0, globe=None))
+
+    mappable = ax.contourf(lon_cyclic, lats, data_cyclic * scaling, nlevels, vmin = vmin, vmax = vmax, cmap=cmap,
+                 transform=ccrs.PlateCarree())
+
+    ax.coastlines()
+
+    fig.colorbar(mappable, label=label, orientation='horizontal', pad=0.01, shrink=0.6) # Add a colorbar
+
+    st.pyplot(fig, width='stretch')
 
 st.sidebar.header("Energy")
 
@@ -352,6 +380,20 @@ st.caption("""Graph 6: Levelized cost of energy (LCOE) by year 2009-2024. LCOE i
     standardized, lifetime-based cost per unit of energy produced (e.g., dollars per megawatt-hour or $/MWh). The LCOE 
     represents the minimum price at which energy must be sold to break even over the project's lifespan (Lazard, 2024). Data 
     from Lazard (2024).""")
+#################################################### solar power map ######################################################
+
+st.markdown(f"###### Graph 7: Longterm average of daily totals of potential photovoltaic electricity production")
+
+plot_map(Path("data/df_wide_solar.csv"), 'Potential (kWh/kWp)', 1.6, 6.4, 'YlOrRd')
+
+st.caption("""Graph 7: Longterm average of daily totals of potential photovoltaic (PV) electricity production in kWh/kWp 
+    for a free standing PV power plant with c-Si modules mounted at optimum tilt to maximize monthly PV production. The unit 
+    is kWh/kWp where kWp stands for kilowatt-peak, a unit used to measure the maximum power output of a solar photovoltaic 
+    (PV) system. It represents the system's peak power capacity under standardized laboratory conditions. Data obtained 
+    from the “Global Solar Atlas 2.0, a free, web-based application is developed and operated by the company Solargis s.r.o. 
+    on behalf of the World Bank Group, utilizing Solargis data, with funding provided by the Energy Sector Management 
+    Assistance Program (ESMAP). For additional information: https://globalsolaratlas.info.""")
+
 ###########################################################################################################################
 st.markdown("### References")
 
@@ -385,4 +427,8 @@ st.markdown(
 )
 st.markdown(
     """*Levelized cost of energy (Graph 6)*  \nLazard (2024). Lazard Levelized Cost of Energy+. Lazard."""
+)
+st.markdown(
+    """*Potential PV electricity production (Graph 7)*  \nSolargis (2024). Global Solar Atlas, 
+    https://globalsolaratlas.info/download [dataset], License: CC BY 4.0; Accessed 2025-10-293."""
 )
