@@ -97,7 +97,7 @@ def range_slider_with_inputs(title, label, min_bound, max_bound, default_range):
 
     return selected_range
 
-def plot_map(filePath, label, vmin, vmax, cmap, nlevels = 12, scaling = 1):
+def plot_map_solar(filePath, label, vmin, vmax, cmap, nlevels = 12, scaling = 1):
 
     df = pd.read_csv(filePath)
 
@@ -113,6 +113,29 @@ def plot_map(filePath, label, vmin, vmax, cmap, nlevels = 12, scaling = 1):
 
     mappable = ax.contourf(lon_cyclic, lats, data_cyclic * scaling, nlevels, vmin = vmin, vmax = vmax, cmap=cmap,
                  transform=ccrs.PlateCarree())
+
+    ax.coastlines()
+
+    fig.colorbar(mappable, label=label, orientation='horizontal', pad=0.01, shrink=0.6) # Add a colorbar
+
+    st.pyplot(fig, width='stretch')
+
+def plot_map_wind(filePath, label, vmin, vmax, cmap, nlevels = 12, scaling = 1):
+
+    df = pd.read_csv(filePath)
+
+    lats = df.latitude
+    df = df.drop(columns=['latitude'])
+    lons = df.columns
+    data = df.values
+
+    data_cyclic, lon_cyclic = add_cyclic_point(data, coord=pd.to_numeric(lons))
+
+    fig = plt.figure(figsize=(16, 12))
+    ax = plt.axes(projection=ccrs.Mollweide(central_longitude=0, globe=None))
+
+    mappable = ax.contourf(lon_cyclic, lats, np.clip(data_cyclic * scaling,0,1000), nlevels, vmin = vmin, vmax = vmax, cmap=cmap,
+                 transform=ccrs.PlateCarree(), extend='max')
 
     ax.coastlines()
 
@@ -384,15 +407,28 @@ st.caption("""Graph 6: Levelized cost of energy (LCOE) by year 2009-2024. LCOE i
 
 st.markdown(f"###### Graph 7: Longterm average of daily totals of potential photovoltaic electricity production")
 
-plot_map(Path("data/df_wide_solar.csv"), 'Potential (kWh/kWp)', 1.6, 6.4, 'YlOrRd')
+plot_map_solar(Path("data/df_wide_solar.csv"), 'Potential (kWh/kWp)', 1.6, 6.4, 'YlOrRd')
 
 st.caption("""Graph 7: Longterm average of daily totals of potential photovoltaic (PV) electricity production in kWh/kWp 
     for a free standing PV power plant with c-Si modules mounted at optimum tilt to maximize monthly PV production. The unit 
     is kWh/kWp where kWp stands for kilowatt-peak, a unit used to measure the maximum power output of a solar photovoltaic 
-    (PV) system. It represents the system's peak power capacity under standardized laboratory conditions. Data obtained 
+    (PV) system. It represents the system's peak power capacity under standardized laboratory conditions (Solargis, 2024). Data obtained 
     from the “Global Solar Atlas 2.0, a free, web-based application is developed and operated by the company Solargis s.r.o. 
     on behalf of the World Bank Group, utilizing Solargis data, with funding provided by the Energy Sector Management 
     Assistance Program (ESMAP). For additional information: https://globalsolaratlas.info.""")
+
+#################################################### wind power map ######################################################
+
+st.markdown(f"###### Graph 8: Mean wind power density")
+
+plot_map_wind(Path("data/df_wide_wind.csv"), 'Density (W m<sup>-2</sup>)', 0, 1000, 'BuPu')
+
+st.caption("""Graph 8: Wind power density is the average kinetic energy of the wind per unit area, measured in watts per square 
+    meter (W/m²). It's a key metric for evaluating a wind resource because it accounts for both wind speed and air density, and 
+    higher values indicate a better location for wind energy generation (Davis et. al., 2023). Data obtained from the Global Wind Atlas version 4.0, 
+    a free, web-based application developed, owned and operated by the Technical University of Denmark (DTU). The Global Wind 
+    Atlas version 4.0 is released in partnership with the World Bank Group, utilizing data provided by Vortex, using funding 
+    provided by the Energy Sector Management Assistance Program (ESMAP). For additional information: https://globalwindatlas.info.""")
 
 ###########################################################################################################################
 st.markdown("### References")
@@ -419,7 +455,8 @@ st.markdown(
 )
 st.markdown(
     """*World energy consumption by year (Graph 3)*  \nInternational Energy Agency (2024); World - IEA, 
-    https://www.iea.org/world/energy-mix [dataset], License: CC BY 4.0; Accessed 2025-10-27."""
+    https://www.iea.org/world/energy-mix [dataset], License: [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/); 
+    Accessed 2025-10-27."""
 )
 st.markdown(
     """*Primary energy consumption per capida (Graphs 4 and 5)*  \nEnergy Institute - Statistical Review of World Energy (2025) – with 
@@ -430,5 +467,20 @@ st.markdown(
 )
 st.markdown(
     """*Potential PV electricity production (Graph 7)*  \nSolargis (2024). Global Solar Atlas, 
-    https://globalsolaratlas.info/download [dataset], License: CC BY 4.0; Accessed 2025-10-293."""
+    https://globalsolaratlas.info/download [dataset], License: [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/); 
+    Accessed 2025-10-29."""
+)
+st.markdown(
+    """*Mean wind power density (Graph 8)*  \nThe Global Wind Atlas. 
+    https://globalwindatlas.info/en/download/gis-files [dataset], 
+    License: [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/); 
+    Accessed 2025-10-27."""
+)
+st.markdown(
+    """*Mean wind power density (Graph 8)*  \nNeil N. Davis, Jake Badger, Andrea N. Hahmann, Brian O. Hansen, Niels G. 
+    Mortensen, Mark Kelly, Xiaoli G. Larsén, Bjarke T. Olsen, Rogier Floors, Gil Lizcano, Pau Casso, Oriol Lacave, Albert Bosch, 
+    Ides Bauwens, Oliver James Knight, Albertine Potter van Loon, Rachel Fox, Tigran Parvanyan, Søren Bo Krohn Hansen, Duncan 
+    Heathfield, Marko Onninen, Ray Drummond; The Global Wind Atlas: A high-resolution dataset of climatologies and associated 
+    web-based application; Bulletin of the American Meteorological Society, Volume 104: Issue 8, Pages E1507-E1525, August 2023, 
+    DOI: https://doi.org/10.1175/BAMS-D-21-0075.1"""
 )
