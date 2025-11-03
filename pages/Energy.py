@@ -318,7 +318,7 @@ for country in selected_countries:
     )
 
 fig4.update_layout(
-    title_text=f"Graph 4: Per capita primary energy consumption by source 1965-2024",
+    title_text=f"Graph 4: Per capita primary energy consumption ({selected_source}) 1965-2024",
     xaxis=dict(range=[from_year, to_year]),
     legend=dict(
             x=0.1,  # x-position (0.1 is near left)
@@ -350,7 +350,7 @@ fig5 = px.choropleth(df[df.Year == 2023], locations="Code",
                     color=selected_source, 
                     hover_name="Entity", # column to add to hover information
                     color_continuous_scale=px.colors.sequential.turbid,
-                    title=f'Graph 5: Per capita primary energy consumption by source 2023')
+                    title=f'Graph 5: Per capita primary energy consumption ({selected_source}) 2023')
 
 fig5.update_layout(
     coloraxis_colorbar=dict(

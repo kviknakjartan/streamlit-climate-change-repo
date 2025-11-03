@@ -115,10 +115,10 @@ def create_instrumental_temperature_section():
     # Instrumental temperature plot
     fig0 = make_subplots()
 
-    selected_graph = st.selectbox("Select graph:", ['Global mean temperature with uncertainty 1850 to present', 
-            'Global mean temperature anomaly for four different datasets 1850 to present'])
+    selected_graph = st.selectbox("Select graph:", ['Global mean surface temperature with uncertainty 1850 to present', 
+            'Global mean surface temperature anomaly for four different datasets 1850 to present'])
 
-    if selected_graph == 'Global mean temperature with uncertainty 1850 to present':
+    if selected_graph == 'Global mean surface temperature with uncertainty 1850 to present':
 
         # Add traces
         fig0.add_trace(
@@ -201,7 +201,7 @@ def create_instrumental_temperature_section():
                 line=dict(color='magenta'))
         )
     fig0.update_layout(
-        title_text="Graph 1: Global average temperature (instrumental record)",
+        title_text="Graph 1: Global mean surface temperature (instrumental record) 1850 to present",
         xaxis=dict(range=[from_year, to_year]),
         legend=dict(
             x=0.1,  # x-position (0.1 is near left)
@@ -217,7 +217,7 @@ def create_instrumental_temperature_section():
     # Set y-axes titles
     fig0.update_yaxes(title_text="Global mean temperature (°C)")
     st.plotly_chart(fig0, use_container_width=True)
-    st.caption("""Graph 1: Global mean temperature with uncertainty and global mean temperature anomaly for four different 
+    st.caption("""Graph 1: Global mean surface temperature with uncertainty and global mean temperature anomaly for four different 
         datasets, 1850 to present. On the former graph a 5-year moving average is shown as well as annual average and 
         uncertainty for the 5-year average. On the latter graph 5-year moving averages are shown for each dataset.
         See references for data access.""")
@@ -299,7 +299,7 @@ def create_ghg_section():
     )
 
     fig1.update_layout(
-        title_text="Graph 2: Atmospheric concentrations for selected greenhouse gases",
+        title_text="Graph 2: Global atmospheric concentrations for selected greenhouse gases",
         xaxis=dict(range=[from_year, to_year]),
         legend=dict(
             x=0.1,  # x-position (0.1 is near left)
@@ -317,7 +317,7 @@ def create_ghg_section():
     fig1.update_yaxes(title_text="CO<sub>2</sub> (ppm)", secondary_y=False)
     fig1.update_yaxes(title_text="CH<sub>4</sub> (ppb) / N<sub>2</sub>O (ppb)", secondary_y=True)
     st.plotly_chart(fig1, use_container_width=True)
-    st.caption("""Graph 2: Estimated atmospheric concentration levels of three greenhouse gases for the past ~800,000 years.
+    st.caption("""Graph 2: Estimated global atmospheric concentration levels of three greenhouse gases for the past ~800,000 years.
         Based on Antarctic icecore data. Also shown are modern measured annual average levels (instrumental record).
         See references for data access.""")
 
@@ -348,7 +348,7 @@ def create_ghg_section():
 
     # Add figure title
     fig2.update_layout(
-        title_text="Graph 3: Antarctic average air temperature change and global CO<sub>2</sub> concentration",
+        title_text="Graph 3: Estimated Antarctic air temperature change and global CO<sub>2</sub> concentration",
         xaxis=dict(range=[from_year, to_year]),
         legend=dict(
             x=0.1,  # x-position (0.1 is near left)
@@ -365,8 +365,8 @@ def create_ghg_section():
     fig2.update_yaxes(title_text="CO<sub>2</sub> (ppm)", secondary_y=False)
     fig2.update_yaxes(title_text="Temperature change (°C)", secondary_y=True)
     st.plotly_chart(fig2, use_container_width=True)
-    st.caption("""Graph 3: Recostruction of Antarctic temperature change for the past ~800,000 years, based on Antarctic 
-        icecore data and estimation of past carbon dioxide levels based on Antarctic icecore data. Temperature data from
+    st.caption("""Graph 3: Recostruction of Antarctic air temperature change for the past ~800,000 years, based on Antarctic 
+        icecore data from five different sites, and estimation of past carbon dioxide levels based on Antarctic icecore data. Temperature data from
         [PANGAEA](https://doi.org/10.1594/PANGAEA.810188).""")
     st.write("")
     st.write("")
@@ -427,7 +427,7 @@ def create_ghg_section2():
     )
 
     fig1.update_layout(
-        title_text="Graph 4: Annual global average surface temperature and CO<sub>2</sub> concentration",
+        title_text="Graph 4: Estimated annual global mean surface temperature and CO<sub>2</sub> concentration",
         xaxis=dict(range=[from_year, to_year]),
         legend=dict(
             x=0.1,  # x-position (0.1 is near left)
@@ -445,7 +445,7 @@ def create_ghg_section2():
     fig1.update_yaxes(title_text="CO<sub>2</sub> (ppm)", secondary_y=False)
     fig1.update_yaxes(title_text="Temperature (°C)", secondary_y=True)
     st.plotly_chart(fig1, use_container_width=True)
-    st.caption("""Graph 4: Recostruction of annual global average temperature for the past ~24,000 years based on climate modeling and geochemical proxy data,
+    st.caption("""Graph 4: Recostruction of annual global mean temperature for the past ~24,000 years based on climate modeling and geochemical proxy data,
          estimation of past carbon dioxide levels based on Antarctic icecore data and modern measured temperature and 
          carbon dioxide levels (instrumental record). Temperature reconstruction data from [NOAA](https://doi.org/10.25921/njxd-hg08).
          Temperature instrumental record from [The Berkeley Earth Land/Ocean Temperature Record](https://doi.org/10.5194/essd-12-3469-2020).""")
@@ -579,7 +579,7 @@ def create_cmip6_section():
             line=dict(color='magenta', width=0.5))
     )
     fig1.update_layout(
-        title_text="Graph 5: CMIP6 model ensemble annual global average temperature quantiles and instrumental record",
+        title_text="Graph 5: CMIP6 model ensemble annual global mean temperature quantiles and instrumental record 1850-2100",
         legend=dict(
             x=0.1,  # x-position (0.1 is near left)
             y=0.7,  # y-position (0.9 is near top)
@@ -594,13 +594,13 @@ def create_cmip6_section():
     # Set y-axes titles
     fig1.update_yaxes(title_text="Temperature (°C)")
     st.plotly_chart(fig1, use_container_width=True)
-    st.caption("""Graph 5: Climate model ensemble annual global average temperature quantiles for four different scenarios 
+    st.caption("""Graph 5: Climate model ensemble annual global mean temperature quantiles for four different scenarios 
         from year 1850 to year 2100. Shown are quantiles for the output of 37 models.
         For each of the three scenarios [SSP1-2.6](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways), 
         [SSP2-4.5](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways) and 
         [SSP5-8.5](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways) each model outputs forecast based on 
         parameters governed by assumptions about socioeconomic factors in the future as well as physical quantities.
-        Each model also outputs estimation of historical global average temperatures based on physical quantities
+        Each model also outputs estimation of historical global mean temperatures based on physical quantities
         as well as data from past atmospheric records and proxies. The instrumental record is shown for comparison. 
         Graph adopted from [Copernicus Climate Change Service (C3S) Data Tutorials](https://ecmwf-projects.github.io/copernicus-training-c3s/intro.html).
         CMIP6 data from [Copernicus Climate Change Service, Climate Data Store](https://cds.climate.copernicus.eu/datasets/projections-cmip6?tab=overview).""")
@@ -614,7 +614,7 @@ st.set_page_config(
 
 st.sidebar.header("Temperature")
 
-st.markdown("# Global Average Temperature and Greenhouse Gas Concentration")
+st.markdown("# Global Mean Temperature and Greenhouse Gas Concentration")
 
 create_instrumental_temperature_section()
 create_ghg_section()
@@ -625,31 +625,31 @@ create_cmip6_section()
 st.markdown("### References")
 
 st.markdown(
-    f"""*Global average surface instrumental temperature (Graph 1)*  \nGISTEMP Team, 2025: GISS Surface Temperature Analysis 
+    f"""*Global mean surface instrumental temperature (Graph 1)*  \nGISTEMP Team, 2025: GISS Surface Temperature Analysis 
     (GISTEMP), version 4. NASA Goddard Institute for Space Studies. 
     Dataset accessed {date.today()} at https://data.giss.nasa.gov/gistemp/."""
 )
 st.markdown(
-    """*Global average surface instrumental temperature (Graph 1)*  \nLenssen, N., G.A. Schmidt, M. Hendrickson, P. Jacobs, 
+    """*Global mean surface instrumental temperature (Graph 1)*  \nLenssen, N., G.A. Schmidt, M. Hendrickson, P. Jacobs, 
     M. Menne, and R. Ruedy, 2024: A GISTEMPv4 observational uncertainty ensemble. J. Geophys. Res. Atmos., 129, no. 17, 
     e2023JD040179, doi:10.1029/2023JD040179."""
 )
 st.markdown(
-    f"""*Global average surface instrumental temperature (Graph 1)*  \nMorice, C. P., Kennedy, J. J., Rayner, N. A., Winn, 
+    f"""*Global mean surface instrumental temperature (Graph 1)*  \nMorice, C. P., Kennedy, J. J., Rayner, N. A., Winn, 
     J. P., Hogan, E., Killick, R. E., et al. (2021). An updated assessment of near-surface temperature change from 1850: 
     the HadCRUT5 data set. Journal of Geophysical Research: Atmospheres, 126, 
     e2019JD032361. https://doi.org/10.1029/2019JD032361.
     Accessed {date.today()}."""
 )
 st.markdown(
-    f"""*Global average surface instrumental temperature (Graph 1)*  \nHuang, B., X. Yin, M. J. Menne, R. Vose, and H. 
+    f"""*Global mean surface instrumental temperature (Graph 1)*  \nHuang, B., X. Yin, M. J. Menne, R. Vose, and H. 
     Zhang, NOAA Global Surface Temperature Dataset (NOAAGlobalTemp), Version 6.0.0 
     [aravg.ann.land_ocean.90S.90N.v6.0.0.202508.asc]. NOAA National Centers for Environmental 
     Information. https://doi.org/10.25921/rzxg-p717.
     Accessed {date.today()}."""
 )
 st.markdown(
-    f"""*Global average surface instrumental temperature (Graphs 1, 4 and 5)*  \nRohde, R. A. and Hausfather, Z.: 
+    f"""*Global mean surface instrumental temperature (Graphs 1, 4 and 5)*  \nRohde, R. A. and Hausfather, Z.: 
     The Berkeley Earth Land/Ocean Temperature Record, Earth Syst. Sci. Data, 12, 3469-3479, 
     https://doi.org/10.5194/essd-12-3469-2020, 2020. 
     Accessed {date.today()}."""

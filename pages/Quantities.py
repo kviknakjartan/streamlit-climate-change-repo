@@ -98,7 +98,7 @@ fig1.add_trace(
 )
 
 fig1.update_layout(
-    title_text=f"Graph 1: Evolution of effective radiative forcing (ERF) 1750-2019",
+    title_text=f"Graph 1: Evolution of effective radiative forcing (ERF) by source 1750-2019",
     
 )
 # Set x-axis title
@@ -108,8 +108,8 @@ fig1.update_xaxes(title_text="Year")
 fig1.update_yaxes(title_text="Effective radiative forcing (W m<sup>-2</sup>)")
 st.plotly_chart(fig1, use_container_width=True)
 
-st.caption(f"""Graph 1: Evolution of effective radiative forcing (ERF) 1750-2019. Effective radiative forcing is the energy 
-    gained or lost by the Earth that results from an event or activity, such as the addition of greenhouse gases or aerosols. 
+st.caption(f"""Graph 1: Evolution of effective radiative forcing (ERF) by source 1750-2019. Effective radiative forcing is the energy 
+    gained or lost by the Earth that results from an event or activity, such as the addition of greenhouse gases (GHGs) or aerosols. 
     It is a fundamental driver of changes in the energy budget of the Earth at the top of the atmosphere (Forster et. al., 2021). 
     Shaded regions show the "very likely" (5-95%) ranges. 
     Data from [IPCC](https://ipcc-browser.ipcc-data.org/browser/dataset/7506/0).""")
@@ -187,14 +187,14 @@ fig2.add_trace(go.Bar(
 
 fig2.update_layout(
     barmode='stack', 
-    title='Graph 2: Change in effective radiative forcing (ERF) 1750-2019',
+    title='Graph 2: Change in effective radiative forcing (ERF) by source 1750-2019',
     yaxis=dict(range=[-2, 4]),
     )
 fig2.update_yaxes(title_text="Effective radiative forcing (W m<sup>-2</sup>)")
 
 st.plotly_chart(fig2, use_container_width=True)
 
-st.caption("""Graph 2: Change in effective radiative forcing (ERF) 1750-2019 by forcing agents. Solid bars represent best 
+st.caption("""Graph 2: Change in effective radiative forcing (ERF) by source 1750-2019 by forcing agents. Solid bars represent best 
     estimates, and "very likely" (5–95%) ranges are given by error bars. Plot adopted from Forster et. al. (2021)""")
 
 #################### Evolution of warming #############################
@@ -224,7 +224,7 @@ fig3.add_trace(
 )
 
 fig3.update_layout(
-    title_text=f"Graph 3: Evolution of attributed warming due to ERF 1750-2019",
+    title_text=f"Graph 3: Evolution of attributed warming due to ERF by source 1750-2019",
     
 )
 # Set x-axis title
@@ -235,7 +235,7 @@ fig3.update_yaxes(title_text="Attributed warming (°C)")
 st.plotly_chart(fig3, use_container_width=True)
 
 
-st.caption(f"""Graph 3: Evolution of attributed warming due to ERF 1750-2019. The degree of warming resulting from ERF is 
+st.caption(f"""Graph 3: Evolution of attributed warming due to ERF by source 1750-2019. The degree of warming resulting from ERF is 
     produced using emulation. The results shown are the medians from a 2237-member ensemble (Forster et. al, 2021). 
     Shaded regions show the "very likely" (5-95%) ranges. 
     Data and figure adoption from [IPCC](https://ipcc-browser.ipcc-data.org/browser/dataset/7512).""")
@@ -314,14 +314,14 @@ fig4.add_trace(go.Bar(
 
 fig4.update_layout(
     barmode='stack', 
-    title='Graph 4: Change in attributed warming due to ERF 1750-2019',
+    title='Graph 4: Change in attributed warming due to ERF by source 1750-2019',
     yaxis=dict(range=[-1.5, 2]),
     )
 fig4.update_yaxes(title_text="°C")
 
 st.plotly_chart(fig4, use_container_width=True)
 
-st.caption("""Graph 4: Change in attributed warming due to ERF 1750-2019 by forcing agents. The contribution of forcing 
+st.caption("""Graph 4: Change in attributed warming due to ERF by source 1750-2019 by forcing agents. The contribution of forcing 
     agents to 2019 temperature change relative to 1750 was produced using emulation (Forster et. al., 2021). The results 
     are from a 2237-member ensemble. Solid bars represent best estimates, and "very likely" (5–95%) ranges are given by error 
     bars. The error bars show the combined effects of forcing and climate response uncertainty using estimation 

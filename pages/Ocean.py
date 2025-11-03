@@ -53,7 +53,7 @@ fig5.add_trace(
 )
 
 fig5.update_layout(
-    title_text=f"Graph 1: Reconstructed global mean sea level anomaly",
+    title_text=f"Graph 1: Reconstructed global mean sea level anomaly 1880-2013",
     legend=dict(
             x=0.1,  # x-position (0.1 is near left)
             y=0.7,  # y-position (0.9 is near top)
@@ -68,7 +68,7 @@ fig5.update_xaxes(title_text="Year")
 # Set y-axes titles
 fig5.update_yaxes(title_text=f"Sea level anomaly (mm)")
 st.plotly_chart(fig5, use_container_width=True)
-st.caption(f"""Graph 1: Reconstructed global mean sea level anomaly relative to 1990. The reconstruction is based on 
+st.caption(f"""Graph 1: Reconstructed global mean sea level anomaly relative to 1990 for the years 1880-2013. The reconstruction is based on 
     satellite data and tide gauge records. 
     Data from [CSIRO](https://www.cmar.csiro.au/sealevel/sl_data_cmar.html).""")
 
@@ -114,7 +114,7 @@ fig6.add_trace(
 )
 
 fig6.update_layout(
-    title_text=f"Graph 2: Latest global mean sea level anomaly",
+    title_text=f"Graph 2: Global mean sea level anomaly 1993-2024",
     legend=dict(
             x=0.1,  # x-position (0.1 is near left)
             y=0.7,  # y-position (0.9 is near top)
@@ -129,7 +129,7 @@ fig6.update_xaxes(title_text="Observation time")
 # Set y-axes titles
 fig6.update_yaxes(title_text=f"Sea level anomaly (mm)")
 st.plotly_chart(fig6, use_container_width=True)
-st.caption(f"""Graph 2: Global mean sea level anomaly from satellite altimetry. 30% of the global mean sea 
+st.caption(f"""Graph 2: Global mean sea level anomaly from satellite altimetry for years 1993-2024. 30% of the global mean sea 
     level rise is due to thermal expansion in the ocean while remaining contribution mainly comes from the melting of 
     glaciers and ice sheets. The rise in global mean sea level has increased by 46%, from a trend of 2.9 mm/year over 
     1999–2009 to a trend of 4.2 mm/year over 2014–2024 (Copernicus Climate Change Service).
@@ -222,7 +222,7 @@ fig6.add_trace(
 )
 
 fig6.update_layout(
-    title_text=f"Graph 3: Projected global mean sea level anomaly",
+    title_text=f"Graph 3: Projected global mean sea level anomaly 2020-2150",
     legend=dict(
             x=0.1,  # x-position (0.1 is near left)
             y=0.7,  # y-position (0.9 is near top)
@@ -237,7 +237,7 @@ fig6.update_xaxes(title_text="Year")
 # Set y-axes titles
 fig6.update_yaxes(title_text=f"Sea level anomaly (m)")
 st.plotly_chart(fig6, use_container_width=True)
-st.caption(f"""Graph 3: Projected global mean sea level anomaly from CMIP6 modeling. For each of the three 
+st.caption(f"""Graph 3: Projected global mean sea level anomaly from CMIP6 modeling for years 2020-2150. For each of the three 
     scenarios [SSP1-2.6](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways), 
     [SSP2-4.5](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways) and 
     [SSP5-8.5](https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways); solid lines show the median value from
@@ -288,7 +288,7 @@ fig7.add_trace(
 )
 
 fig7.update_layout(
-    title_text="Graph 5: Estimated global average and measured (Hawaii) ocean pH level",
+    title_text="Graph 4: Estimated global average and measured (Hawaii) ocean pH level 1985-2024",
     legend=dict(
         x=0.1,  # x-position (0.1 is near left)
         y=0.7,  # y-position (0.9 is near top)
@@ -304,7 +304,7 @@ fig7.update_xaxes(title_text="Observation time")
 # Set y-axes titles
 fig7.update_yaxes(title_text="Acidity (pH)")
 st.plotly_chart(fig7, use_container_width=True)
-st.caption("""Graph 5: Estimated global average and measured (Hawaii) ocean pH level. The ocean has absorbed roughly 20-30% of 
+st.caption("""Graph 4: Estimated global average and measured (Hawaii) ocean pH level 1985-2024. The ocean has absorbed roughly 20-30% of 
     total anthropogenic carbon dioxide emissions since the 1980’s. 
     This is causing acidification of the oceans at a rate faster than any time in the past 300 million years (Copernicus). 
     pH is measured on a logarithmic scale which means that ocean acidity has increased by 40% since the pre-industrial era. 
@@ -398,7 +398,7 @@ fig8.add_trace(
 )
 
 fig8.update_layout(
-    title_text="Graph 6: Ocean heat content anomalies of the ocean for various depth ranges",
+    title_text="Graph 5: Ocean heat content anomalies of the ocean for various depth ranges 1975-2024",
     legend=dict(
         x=0.1,  # x-position (0.1 is near left)
         y=0.7,  # y-position (0.9 is near top)
@@ -414,7 +414,7 @@ fig8.update_xaxes(title_text="Observation time")
 # Set y-axes titles
 fig8.update_yaxes(title_text="Heat content (ZJ)")
 st.plotly_chart(fig8, use_container_width=True)
-st.caption("""Graph 6: Ocean heat content anomalies of the ocean for various depth ranges. The ocean absorbes and stores up to 
+st.caption("""Graph 5: Ocean heat content anomalies of the ocean for various depth ranges 1975-2024. The ocean absorbes and stores up to 
     90% of the excess heat that is received by Earth and interned by the greenhouse effect. This heat is distributed by ocean 
     circulation from low to mid and high latitudes, and from the surface to deeper layers (Copernicus). The heat content is 
     measured in zettajoules (ZJ), which represents a factor of 10 to the power of 21.
@@ -454,17 +454,17 @@ st.markdown(
     Version 20210809. PO.DAAC, CA, USA. Dataset accessed [2025-10-14] at [https://sealevel.nasa.gov/ipcc-ar6-sea-level-projection-tool?type=global]."""
 )
 st.markdown(
-    """*Global average pH estimation (Graph 5)*  \nCopernicus Marine Service. 
+    """*Global average pH estimation (Graph 4)*  \nCopernicus Marine Service. 
     Ocean Climate Portal - Ocean Acidification. [Dataset]. https://marine.copernicus.eu/ocean-climate-portal/ocean-acidification.
     Date Accessed 2025-10-04."""
 )
 st.markdown(
-    f"""*Measured pH levels from Aloha Station Hawaii (Graph 5)*  \nHawaii Ocean Time-series (HOT).  
+    f"""*Measured pH levels from Aloha Station Hawaii (Graph 4)*  \nHawaii Ocean Time-series (HOT).  
     [Dataset]. https://hahana.soest.hawaii.edu/hot/hotco2/hotco2.html.
     Date Accessed {date.today()}."""
 )
 st.markdown(
-    """*Global ocean heat content anomalies (Graph 6)*  \nCopernicus Climate Change Service. 
+    """*Global ocean heat content anomalies (Graph 5)*  \nCopernicus Climate Change Service. 
     CLIMATE INDICATORS - Ocean heat content. [Dataset]. https://climate.copernicus.eu/climate-indicators/ocean-heat-content.
     Date Accessed 2025-10-04."""
 )

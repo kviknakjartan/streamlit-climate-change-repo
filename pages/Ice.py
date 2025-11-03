@@ -184,7 +184,7 @@ fig2.update_yaxes(title_text="Cumulative mass change (tons)")
 st.plotly_chart(fig2, use_container_width=True)
 st.caption("""Graph 2: Cumulative Mass Balance of Greenland and Antarctica from 1992. 
     The dark lines show combined data that is based on more than 20 different studies where data has been combined 
-    over multiple region. Shading shows the uncertainty estimates that is cumulated from uncertainties calculated for each study.
+    over multiple regions. Shading shows the uncertainty estimates that is cumulated from uncertainties calculated for each study.
     The two thin lines show data from one commonly cited analysis where seasonal variations can be seen. 
     All estimates are centered at zero in 2002. A downward slope indicates a net loss of ice and snow. 
     For reference, 1,000 billion metric tons (one Teraton) is equal to about 260 cubic miles of ice which is enough to raise sea 
