@@ -21,6 +21,9 @@ from get_data import (
     get_noaa_global_data
 )
 
+if 'instrumental_slider' not in st.session_state:
+    st.session_state.ghg_slider = None
+
 def range_slider_with_inputs(title, label, min_bound, max_bound, default_range):
     """
     Creates a Streamlit range slider with associated number input fields.
