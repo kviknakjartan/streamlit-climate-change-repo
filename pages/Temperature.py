@@ -22,7 +22,7 @@ from get_data import (
 )
 
 if 'instrumental_slider' not in st.session_state:
-    st.session_state.ghg_slider = None
+    st.session_state.instrumental_slider = None
 
 def range_slider_with_inputs(title, label, min_bound, max_bound, default_range):
     """
