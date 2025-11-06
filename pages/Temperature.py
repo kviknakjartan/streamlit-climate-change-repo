@@ -108,9 +108,6 @@ def create_instrumental_temperature_section():
     min_value = df['Year'].min()
     max_value = df['Year'].max()
 
-    if 'instrumental_slider' not in st.session_state:
-        st.session_state.instrumental_slider = (min_value*1.0,max_value*1.0)
-
     from_year, to_year = range_slider_with_inputs("What timescale are you interested in?", \
         'instrumental', min_value*1.0, max_value*1.0, (min_value*1.0, max_value*1.0))
 
