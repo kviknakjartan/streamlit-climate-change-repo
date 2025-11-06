@@ -44,8 +44,6 @@ def range_slider_with_inputs(title, label, min_bound, max_bound, default_range):
     if f"{label}_slider" not in st.session_state:
         st.session_state[f"{label}_slider"] = default_range
 
-    print(st.session_state[f"{label}_slider"])
-
     col1, col2, col3 = st.columns([1, 4, 1])
 
     with col2:
@@ -89,6 +87,7 @@ def range_slider_with_inputs(title, label, min_bound, max_bound, default_range):
     if lower_bound != selected_range[0] or upper_bound != selected_range[1]:
         # If input fields are modified, update the slider's session state
         # This requires using st.session_state to manage the slider's value
+        print(st.session_state[f"{label}_slider"])
         st.session_state[f"{label}_slider"] = (lower_bound, upper_bound)
         selected_range = (lower_bound, upper_bound)
 
