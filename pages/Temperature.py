@@ -44,6 +44,8 @@ def range_slider_with_inputs(title, label, min_bound, max_bound, default_range):
     if f"{label}_slider" not in st.session_state:
         st.session_state[f"{label}_slider"] = default_range
 
+    print(st.session_state[f"{label}_slider"])
+
     col1, col2, col3 = st.columns([1, 4, 1])
 
     with col2:
