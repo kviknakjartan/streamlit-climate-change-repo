@@ -3,8 +3,6 @@ streamlit==1.49.1
 plotly==5.24.1
 requests==2.32.3
 xarray==2025.9.0
-datetime
-pathlib
 netcdf4==1.7.2
 openpyxl==3.1.5
 scipy==1.15.3
