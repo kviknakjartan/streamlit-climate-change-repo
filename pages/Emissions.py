@@ -21,77 +21,6 @@ st.set_page_config(
     initial_sidebar_state='collapsed'
 )
 
-def range_slider_with_inputs(title, label, min_bound, max_bound, default_range):
-    """
-    Creates a Streamlit range slider with associated number input fields.
-
-    Args:
-        label (str): The label for the slider and input fields.
-        min_bound (int/float): The minimum value for the range.
-        max_bound (int/float): The maximum value for the range.
-        default_range (tuple/list): The initial selected range (e.g., (low, high)).
-
-    Returns:
-        tuple: A tuple containing the selected lower and upper bounds.
-    """
-    st.write(title)
-
-    def update_slider_value():
-        updated_lower_value = st.session_state[f"{label}_lower_input"]
-        updated_upper_value = st.session_state[f"{label}_upper_input"]
-        st.session_state[f"{label}_slider"] = (updated_lower_value,updated_upper_value)
-
-    if f"{label}_slider" not in st.session_state:
-        st.session_state[f"{label}_slider"] = default_range
-
-    col1, col2, col3 = st.columns([1, 4, 1])
-
-    with col2:
-        # Create the range slider
-        selected_range = st.slider(
-            "Lower bound",
-            min_value=min_bound,
-            max_value=max_bound,
-            format="%0.0f",
-            label_visibility='collapsed',
-            key=f"{label}_slider" # Unique key for the slider
-        )
-    
-    with col1:
-        lower_bound = st.number_input(
-            "Slider",
-            min_value=min_bound,
-            max_value=max_bound,
-            value=selected_range[0],
-            on_change=update_slider_value,
-            format="%0.0f",
-            step=1.0,
-            label_visibility='collapsed',
-            key=f"{label}_lower_input" # Unique key for the lower input
-        )
-
-    with col3:
-        upper_bound = st.number_input(
-            "Upper bound",
-            min_value=min_bound,
-            max_value=max_bound,
-            value=selected_range[1],
-            on_change=update_slider_value,
-            format="%0.0f",
-            step=1.0,
-            label_visibility='collapsed',
-            key=f"{label}_upper_input" # Unique key for the upper input
-        )
-
-    # Ensure consistency between slider and input values
-    if lower_bound != selected_range[0] or upper_bound != selected_range[1]:
-        # If input fields are modified, update the slider's session state
-        # This requires using st.session_state to manage the slider's value
-        st.session_state[f"{label}_slider"] = (lower_bound, upper_bound)
-        selected_range = (lower_bound, upper_bound)
-
-    return selected_range
-
 st.sidebar.header("Emissions")
 
 st.markdown("# Greenhouse gas emissions")
@@ -103,8 +32,14 @@ df_per_capita = get_per_capita_ghg_data()
 min_value = df_historic_ghg['Year'].min()
 max_value = df_historic_ghg['Year'].max()
 
-from_year, to_year = range_slider_with_inputs("What timescale are you interested in?", \
-    'ghg_historical', min_value*1.0, max_value*1.0, (min_value*1.0, max_value*1.0))
+from_year, to_year = st.slider(
+    "Select year range",
+    min_value=min_value,
+    max_value=max_value,
+    format="%0.0f",
+    value=(min_value, max_value),
+    key="historic_ghg_slider"
+)
 
 col1, col2 = st.columns(2)
 
@@ -265,8 +200,14 @@ df = df.rename(columns = {'Emissions' : "Emissions (tons of CO<sub>2</sub> equiv
 min_value = df['Year'].min()
 max_value = df['Year'].max()
 
-from_year, to_year = range_slider_with_inputs("What timescale are you interested in?", \
-    'ghg_by_sector', min_value*1.0, max_value*1.0, (min_value*1.0, max_value*1.0))
+from_year, to_year = st.slider(
+    "Select year range",
+    min_value=min_value,
+    max_value=max_value,
+    format="%0.0f",
+    value=(min_value, max_value),
+    key="sector_ghg_slider"
+)
 
 col1, col2 = st.columns(2)
 

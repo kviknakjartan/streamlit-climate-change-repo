@@ -26,77 +26,6 @@ st.set_page_config(
     initial_sidebar_state='collapsed'
 )
 
-def range_slider_with_inputs(title, label, min_bound, max_bound, default_range):
-    """
-    Creates a Streamlit range slider with associated number input fields.
-
-    Args:
-        label (str): The label for the slider and input fields.
-        min_bound (int/float): The minimum value for the range.
-        max_bound (int/float): The maximum value for the range.
-        default_range (tuple/list): The initial selected range (e.g., (low, high)).
-
-    Returns:
-        tuple: A tuple containing the selected lower and upper bounds.
-    """
-    st.write(title)
-
-    def update_slider_value():
-        updated_lower_value = st.session_state[f"{label}_lower_input"]
-        updated_upper_value = st.session_state[f"{label}_upper_input"]
-        st.session_state[f"{label}_slider"] = (updated_lower_value,updated_upper_value)
-
-    if f"{label}_slider" not in st.session_state:
-        st.session_state[f"{label}_slider"] = default_range
-
-    col1, col2, col3 = st.columns([1, 4, 1])
-
-    with col2:
-        # Create the range slider
-        selected_range = st.slider(
-            "Lower bound",
-            min_value=min_bound,
-            max_value=max_bound,
-            format="%0.0f",
-            label_visibility='collapsed',
-            key=f"{label}_slider" # Unique key for the slider
-        )
-    
-    with col1:
-        lower_bound = st.number_input(
-            "Slider",
-            min_value=min_bound,
-            max_value=max_bound,
-            value=selected_range[0],
-            on_change=update_slider_value,
-            format="%0.0f",
-            step=1.0,
-            label_visibility='collapsed',
-            key=f"{label}_lower_input" # Unique key for the lower input
-        )
-
-    with col3:
-        upper_bound = st.number_input(
-            "Upper bound",
-            min_value=min_bound,
-            max_value=max_bound,
-            value=selected_range[1],
-            on_change=update_slider_value,
-            format="%0.0f",
-            step=1.0,
-            label_visibility='collapsed',
-            key=f"{label}_upper_input" # Unique key for the upper input
-        )
-
-    # Ensure consistency between slider and input values
-    if lower_bound != selected_range[0] or upper_bound != selected_range[1]:
-        # If input fields are modified, update the slider's session state
-        # This requires using st.session_state to manage the slider's value
-        st.session_state[f"{label}_slider"] = (lower_bound, upper_bound)
-        selected_range = (lower_bound, upper_bound)
-
-    return selected_range
-
 def plot_map_solar(filePath, label, vmin, vmax, cmap, nlevels = 12, scaling = 1):
 
     df = pd.read_csv(filePath)
@@ -152,8 +81,14 @@ df_energy = get_energy_consumption_data()
 min_value = df_energy['Year'].min()
 max_value = df_energy['Year'].max()
 
-from_year, to_year = range_slider_with_inputs("What timescale are you interested in?", \
-    'ec_historical', min_value*1.0, max_value*1.0, (min_value*1.0, max_value*1.0))
+from_year, to_year = st.slider(
+    "Select year range",
+    min_value=min_value,
+    max_value=max_value,
+    format="%0.0f",
+    value=(min_value, max_value),
+    key="historic_energy_cons_slider"
+)
 
 fig1 = make_subplots()
 
@@ -201,8 +136,14 @@ df = df.sort_values(by='Year')
 min_value = df['Year'].min()
 max_value = df['Year'].max()
 
-from_year, to_year = range_slider_with_inputs("What timescale are you interested in?", \
-    'el_historical', min_value*1.0, max_value*1.0, (min_value*1.0, max_value*1.0))
+from_year, to_year = st.slider(
+    "Select year range",
+    min_value=min_value,
+    max_value=max_value,
+    format="%0.0f",
+    value=(min_value, max_value),
+    key="historic_electr_slider"
+)
 
 fig2 = make_subplots()
 
@@ -245,8 +186,14 @@ df = get_energy_sector_data()
 min_value = df['Year'].min()
 max_value = df['Year'].max()
 
-from_year, to_year = range_slider_with_inputs("What timescale are you interested in?", \
-    'sector_historical', min_value*1.0, max_value*1.0, (min_value*1.0, max_value*1.0))
+from_year, to_year = st.slider(
+    "Select year range",
+    min_value=min_value,
+    max_value=max_value,
+    format="%0.0f",
+    value=(min_value, max_value),
+    key="historic_energy_by_sector_slider"
+)
 
 fig3 = make_subplots()
 
@@ -291,8 +238,14 @@ df = get_energy_per_cap_data()
 min_value = df['Year'].min()
 max_value = df['Year'].max()
 
-from_year, to_year = range_slider_with_inputs("What timescale are you interested in?", \
-    'pp_historical', min_value*1.0, max_value*1.0, (min_value*1.0, max_value*1.0))
+from_year, to_year = st.slider(
+    "Select year range",
+    min_value=min_value,
+    max_value=max_value,
+    format="%0.0f",
+    value=(min_value, max_value),
+    key="historic_per_capita_energy_by_source_slider"
+)
 
 fig4 = make_subplots()
 
