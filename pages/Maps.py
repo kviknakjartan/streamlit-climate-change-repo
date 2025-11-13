@@ -130,7 +130,7 @@ def plot_tws_map(filePath, label, session_state_label):
 
     ax.coastlines()
 
-    fig.colorbar(mappable, label='label', orientation='horizontal', pad=0.01, shrink=0.6) # Add a colorbar
+    fig.colorbar(mappable, label=label, orientation='horizontal', pad=0.01, shrink=0.6) # Add a colorbar
 
     st.pyplot(fig, width='stretch')
     
